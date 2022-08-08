@@ -1,6 +1,6 @@
-import { fileURLToPath, URL } from "url";
+import {fileURLToPath, URL} from "url";
 
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 
@@ -19,7 +19,7 @@ export default defineConfig({
     emptyOutDir: true,
     lib: {
       entry: "src/index.ts",
-      name: "PluginTemplate",
+      name: "PluginCommentWidget",
       formats: ["iife"],
       fileName: () => "main.js",
     },

@@ -5,7 +5,7 @@ plugins {
     id 'java'
 }
 
-group 'run.halo.template'
+group 'run.halo.comment.widget'
 version '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_17
 
@@ -22,9 +22,7 @@ bootJar {
 jar {
     enabled = true
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest.attributes(
-            'Plugin-Version': "${project.version}",
-    )
+    manifest.attributes('Plugin-Version': "${project.version}",)
     from {
         configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)
