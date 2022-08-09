@@ -4,5 +4,7 @@ import "@halo-dev/comment-widget/dist/style.css";
 </script>
 
 <template>
-  <Comment msg="Halo"></Comment>
+  <div style="padding: 10px">
+    <Comment msg="Halo"></Comment>
+  </div>
 </template>
