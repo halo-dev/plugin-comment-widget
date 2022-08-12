@@ -17,15 +17,15 @@ rules:
       directory: static
 ```
 
-最终可通过 `/static/comment-widget.iife.js` 访问到评论组件的 JavaScript 资源。
+最终可通过 `/assets/PluginCommentWidget/static/comment-widget.iife.js` 访问到评论组件的 JavaScript 资源。
 
 根据 [RFC](https://github.com/halo-dev/rfcs/tree/main/theme#%E4%B8%BB%E9%A2%98%E5%85%AC%E5%85%B1%E6%A8%A1%E6%9D%BF%E6%89%A9%E5%B1%95)，最终主题使用该插件需要在对应扩展点插入以下代码：
 
 ```html
 <div id="comment"></div>
-<script src="/static/comment-widget.iife.js"></script>
+<script src="/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
 <script>
-    CommentWidget.init("#comment", "/static/style.css", {
+    CommentWidget.init("#comment", "/assets/PluginCommentWidget/static/style.css", {
         postId: 0,
     });
 </script>
