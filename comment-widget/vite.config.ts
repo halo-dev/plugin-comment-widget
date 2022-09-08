@@ -15,6 +15,7 @@ export default defineConfig({
     outDir: fileURLToPath(
       new URL("../src/main/resources/static", import.meta.url)
     ),
+    emptyOutDir: true,
     lib: {
       entry: "./src/index.ts",
       formats: ["iife"],
