@@ -50,7 +50,7 @@ test {
 }
 
 node {
-    nodeProjectDir = file("${project.projectDir}/admin-frontend")
+    nodeProjectDir = file("${project.projectDir}/widget")
 }
 
 task buildFrontend(type: NpxTask) {
