@@ -1,5 +1,4 @@
 import { createApp } from "vue";
-import { createPinia } from "pinia";
 import { Comment } from "@halo-dev/comment-widget";
 import "@halo-dev/comment-widget/dist/style.css";
 
@@ -25,6 +24,5 @@ export function init(
   parent?.appendChild(container);
 
   const app = createApp(Comment, props);
-  app.use(createPinia());
   app.mount(root);
 }

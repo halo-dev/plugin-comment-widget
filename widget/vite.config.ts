@@ -1,14 +1,15 @@
 import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import vueJsx from "@vitejs/plugin-vue-jsx";
+import Vue from "@vitejs/plugin-vue";
+import path from "path";
 
 export default defineConfig({
-  plugins: [vue(), vueJsx()],
+  plugins: [Vue()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      vue: "vue/dist/vue.esm-bundler.js",
     },
   },
   build: {
@@ -16,16 +17,16 @@ export default defineConfig({
       new URL("../src/main/resources/static", import.meta.url)
     ),
     emptyOutDir: true,
+    cssCodeSplit: false,
     lib: {
-      entry: "./src/index.ts",
+      entry: path.resolve(__dirname, "src/index.ts"),
       formats: ["iife"],
       name: "CommentWidget",
       fileName: (format) => `comment-widget.${format}.js`,
     },
-    rollupOptions: {
-      output: {
-        generatedCode: "es5",
-      },
-    },
+    sourcemap: false,
+  },
+  optimizeDeps: {
+    include: ["vue"],
   },
 });
