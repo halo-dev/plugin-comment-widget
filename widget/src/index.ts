@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { Comment } from "@halo-dev/comment-widget";
+import "./styles/style.css";
 import "@halo-dev/comment-widget/dist/style.css";
 
 export function init(
