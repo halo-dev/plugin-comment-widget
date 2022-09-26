@@ -23,11 +23,18 @@ rules:
 
 ```html
 <div id="comment"></div>
-<script src="/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
+<script src="/plugin/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
 <script>
-    CommentWidget.init("#comment", "/assets/PluginCommentWidget/static/style.css", {
-        postId: 0,
-    });
+  CommentWidget.init(
+    "#comment",
+    "/plugin/assets/PluginCommentWidget/static/style.css",
+    {
+      group: "content.halo.run",
+      version: "v1alpha1",
+      kind: "Post",
+      name: "<replace-post-name>",
+    }
+  );
 </script>
 ```
 
