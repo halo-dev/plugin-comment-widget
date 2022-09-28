@@ -24,21 +24,15 @@ public class DefaultCommentWidget implements CommentWidget {
                        IProcessableElementTag tag,
                        IElementTagStructureHandler structureHandler) {
         IAttribute groupAttribute = tag.getAttribute("group");
-        IAttribute versionAttribute = tag.getAttribute("version");
         IAttribute kindAttribute = tag.getAttribute("kind");
         IAttribute nameAttribute = tag.getAttribute("name");
 
-        structureHandler.replaceWith(commentHtml(groupAttribute, versionAttribute,
-            kindAttribute, nameAttribute), false);
+        structureHandler.replaceWith(commentHtml(groupAttribute, kindAttribute, nameAttribute),
+            false);
     }
 
-    private String commentHtml(IAttribute groupAttribute, IAttribute versionAttribute,
-                               IAttribute kindAttribute,
+    private String commentHtml(IAttribute groupAttribute, IAttribute kindAttribute,
                                IAttribute nameAttribute) {
-        if (versionAttribute == null || StringUtils.isBlank(versionAttribute.getValue())) {
-            log.warn("Comment widget tag attributes 'version' is missing.");
-            return "<p style=\"color:red\">Comment widget attributes 'version' is required but missing found.</p>";
-        }
         if (kindAttribute == null || StringUtils.isBlank(kindAttribute.getValue())) {
             log.warn("Comment widget tag attributes 'kind' is missing.");
             return "<p style=\"color:red\">Comment widget attributes 'kind' is required but missing found.</p>";
@@ -57,14 +51,12 @@ public class DefaultCommentWidget implements CommentWidget {
                 "/assets/PluginCommentWidget/static/style.css",
                 {
                   group: "%s",
-                  version: "%s",
                   kind: "%s",
                   name: "%s",
                 }
               );
             </script>
-            """.formatted(group, versionAttribute.getValue(), kindAttribute.getValue(),
-            nameAttribute.getValue());
+            """.formatted(group, kindAttribute.getValue(), nameAttribute.getValue());
     }
 
     private String getGroup(IAttribute groupAttribute) {
