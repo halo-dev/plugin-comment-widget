@@ -11,13 +11,10 @@ import run.halo.app.plugin.BasePlugin;
  */
 @Component
 public class CommentWidgetPlugin extends BasePlugin {
-    private final SchemeManager schemeManager;
 
     public CommentWidgetPlugin(PluginWrapper wrapper) {
         super(wrapper);
-        this.schemeManager = getApplicationContext().getBean(SchemeManager.class);
     }
-
     @Override
     public void start() {
     }
