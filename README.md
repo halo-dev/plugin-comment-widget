@@ -23,11 +23,11 @@ rules:
 
 ```html
 <div id="comment"></div>
-<script src="/plugin/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
+<script src="/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
 <script>
   CommentWidget.init(
     "#comment",
-    "/plugin/assets/PluginCommentWidget/static/style.css",
+    "/assets/PluginCommentWidget/static/style.css",
     {
       group: "content.halo.run",
       version: "v1alpha1",
