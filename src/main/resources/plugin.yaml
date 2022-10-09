@@ -4,7 +4,7 @@ metadata:
   name: PluginCommentWidget
 spec:
   enabled: true
-  version: 0.0.1-SNAPSHOT
+  version: 1.0.0-alpha.3
   requires: "*"
   author: halo-dev
   logo: https://halo.run/logo
