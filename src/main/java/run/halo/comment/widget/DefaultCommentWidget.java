@@ -41,14 +41,15 @@ public class DefaultCommentWidget implements CommentWidget {
             log.warn("Comment widget tag attributes 'name' is missing.");
             return "<p style=\"color:red\">Comment widget attributes 'name' is required but missing found.</p>";
         }
+
         String group = getGroup(groupAttribute);
         return """
             <div id="comment"></div>
-            <script src="/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
+            <script src="/plugins/PluginCommentWidget/assets/static/comment-widget.iife.js"></script>
             <script>
               CommentWidget.init(
                 "#comment",
-                "/assets/PluginCommentWidget/static/style.css",
+                "/plugins/PluginCommentWidget/assets/static/style.css",
                 {
                   group: "%s",
                   kind: "%s",
