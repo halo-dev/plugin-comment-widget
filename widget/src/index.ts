@@ -24,6 +24,8 @@ export function init(
   shadowDOM.appendChild(root);
   parent?.appendChild(container);
 
-  const app = createApp(Comment, props);
-  app.mount(root);
+  styleEl.addEventListener("load", function () {
+    const app = createApp(Comment, props);
+    app.mount(root);
+  });
 }
