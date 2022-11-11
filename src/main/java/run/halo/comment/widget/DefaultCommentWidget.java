@@ -26,13 +26,14 @@ public class DefaultCommentWidget implements CommentWidget {
         IAttribute groupAttribute = tag.getAttribute("group");
         IAttribute kindAttribute = tag.getAttribute("kind");
         IAttribute nameAttribute = tag.getAttribute("name");
+        IAttribute colorSchemeAttribute = tag.getAttribute("colorScheme");
 
-        structureHandler.replaceWith(commentHtml(groupAttribute, kindAttribute, nameAttribute),
+        structureHandler.replaceWith(commentHtml(groupAttribute, kindAttribute, nameAttribute, colorSchemeAttribute),
             false);
     }
 
     private String commentHtml(IAttribute groupAttribute, IAttribute kindAttribute,
-                               IAttribute nameAttribute) {
+                               IAttribute nameAttribute, IAttribute colorSchemeAttribute) {
         if (kindAttribute == null || StringUtils.isBlank(kindAttribute.getValue())) {
             log.warn("Comment widget tag attributes 'kind' is missing.");
             return "<p style=\"color:red\">Comment widget attributes 'kind' is required but missing found.</p>";
@@ -54,14 +55,20 @@ public class DefaultCommentWidget implements CommentWidget {
                   group: "%s",
                   kind: "%s",
                   name: "%s",
+                  colorScheme: %s
                 }
               );
             </script>
-            """.formatted(group, kindAttribute.getValue(), nameAttribute.getValue());
+            """.formatted(group, kindAttribute.getValue(), nameAttribute.getValue(), getColorScheme(colorSchemeAttribute));
     }
 
     private String getGroup(IAttribute groupAttribute) {
         return groupAttribute.getValue() == null ? ""
             : StringUtils.defaultString(groupAttribute.getValue());
+    }
+
+    private String getColorScheme(IAttribute colorSchemeAttribute) {
+        return colorSchemeAttribute == null ? "'light'"
+            : StringUtils.defaultString(colorSchemeAttribute.getValue(), "'light'");
     }
 }
