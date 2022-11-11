@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@halo-dev/comment-widget': 0.0.0-alpha.16
+  '@halo-dev/comment-widget': 0.0.0-alpha.17
   '@rushstack/eslint-patch': ^1.2.0
   '@types/jsdom': ^16.2.15
   '@types/node': ^16.11.68
@@ -24,7 +24,7 @@ specifiers:
   vue-tsc: ^0.40.13
 
 dependencies:
-  '@halo-dev/comment-widget': 0.0.0-alpha.16
+  '@halo-dev/comment-widget': 0.0.0-alpha.17
   pinia: 2.0.23_lrjaoqkmph6q2hmgd3qeuy6rom
   vue: 3.2.41
   vue-router: 4.1.5_vue@3.2.41
@@ -174,13 +174,12 @@ packages:
     resolution: {integrity: sha512-+WBXS2/tHmeugeiDNXmBrtV9NiU22lylzwcugH/eTXGy7MnpAG4j//o2OOYyhVcp9BUBoh7MHuu0UcyLHq1bgg==}
     dev: false
 
-  /@halo-dev/comment-widget/0.0.0-alpha.16:
-    resolution: {integrity: sha512-OsUs6hUpP6iEOILexB8tWzN4ss5TXDSQG3lsyJ4Ink3yvcf9ofWIuT2DSzKxeoafu172900DsvqDpaA4k3sD6w==}
+  /@halo-dev/comment-widget/0.0.0-alpha.17:
+    resolution: {integrity: sha512-3kRI4EZ6QHHMMfrhDC0KuYNUYAoC+Vn55/UuIBkTDMmxsN+SktArqbd2zBg+iPajs8y8i/rEUHqxsEcW7fBH8A==}
     dependencies:
       '@emoji-mart/data': 1.0.6
       '@halo-dev/api-client': 0.0.35
       '@halo-dev/components': 0.0.0-alpha.5_4g567gsol3fv3jos66rjdswwp4
-      '@headlessui/vue': 1.7.3_vue@3.2.41
       '@vueuse/components': 8.9.4_vue@3.2.41
       '@vueuse/core': 8.9.4_vue@3.2.41
       axios: 0.27.2
@@ -209,15 +208,6 @@ packages:
       codemirror: 6.0.1
       vue: 3.2.41
       vue-router: 4.1.5_vue@3.2.41
-    dev: false
-
-  /@headlessui/vue/1.7.3_vue@3.2.41:
-    resolution: {integrity: sha512-Is4iakKts9u9E0+jEZNzoJpBjwq2SamwEIoEl2RlyYSu6Zco536GsPXaQEfg/o7Eyc1GUUlcL+dJd4Rt7qyf7A==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      vue: ^3.2.0
-    dependencies:
-      vue: 3.2.41
     dev: false
 
   /@humanwhocodes/config-array/0.10.7:
