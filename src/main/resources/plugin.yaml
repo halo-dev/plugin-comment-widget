@@ -4,14 +4,11 @@ metadata:
   name: PluginCommentWidget
 spec:
   enabled: true
-  version: 1.0.0-alpha.4
-  requires: "*"
+  requires: ">=2.0.0"
   author:
     name: Halo OSS Team
     website: https://github.com/halo-dev
   logo: https://halo.run/logo
-  settingName:
-  configMapName:
   homepage: https://github.com/halo-sigs/plugin-comment-widget
   displayName: "评论组件"
   description: "为用户前台提供完整的评论解决方案"
