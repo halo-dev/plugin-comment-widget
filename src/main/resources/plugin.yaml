@@ -4,6 +4,7 @@ metadata:
   name: PluginCommentWidget
 spec:
   enabled: true
+  version: "1.0.0"
   requires: ">=2.0.0"
   author:
     name: Halo OSS Team
