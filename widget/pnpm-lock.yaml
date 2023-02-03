@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@halo-dev/comment-widget': 1.2.0
+  '@halo-dev/comment-widget': 1.3.0
   '@rushstack/eslint-patch': ^1.2.0
   '@types/jsdom': ^16.2.15
   '@types/node': ^16.18.4
@@ -24,7 +24,7 @@ specifiers:
   vue-tsc: ^0.40.13
 
 dependencies:
-  '@halo-dev/comment-widget': 1.2.0
+  '@halo-dev/comment-widget': 1.3.0
   pinia: 2.0.27_e7lp6ggkpgyi5vqd44m2kxvk6i
   vue: 3.2.45
   vue-router: 4.1.6_vue@3.2.45
@@ -218,8 +218,8 @@ packages:
     resolution: {integrity: sha512-HAmJ1BDZxHj2Xp41oNOqZG/1vaR6r4EbBAUQ7ayvUY8SGJMHtJD9dyhCn7k23q6G7FmzFKFNGxajovsjBEM+yg==}
     dev: false
 
-  /@halo-dev/comment-widget/1.2.0:
-    resolution: {integrity: sha512-LX3rVEEHDR02Co1SXx60NtFMg2KQ2SH4X3oqzRz8CmBKvpFStHE19hjnbvKm9jKoBhhVl0CaMsvPXhDSk+5uVw==}
+  /@halo-dev/comment-widget/1.3.0:
+    resolution: {integrity: sha512-Bnb+YnbYeWCJh0RgpoMMKAONinnEIVe5K4BBKgiy9cGGRK14+k243cCDKdFCd+sjmJTFUagKXFv9bP0sfJ7qQA==}
     dependencies:
       '@emoji-mart/data': 1.0.8
       '@halo-dev/api-client': 0.0.60

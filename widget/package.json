@@ -11,7 +11,7 @@
   "author": "@halo-dev",
   "license": "GPL-3.0",
   "dependencies": {
-    "@halo-dev/comment-widget": "1.2.0",
+    "@halo-dev/comment-widget": "1.3.0",
     "pinia": "^2.0.27",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
