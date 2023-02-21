@@ -17,6 +17,8 @@ cd path/to/plugin-comment-widget
 ```
 
 ```bash
+./gradlew pnpmInstall
+
 ./gradlew build
 ```
 

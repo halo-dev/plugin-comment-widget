@@ -40,12 +40,12 @@ test {
 }
 
 node {
-    nodeProjectDir = file("${project.projectDir}/widget")
+    nodeProjectDir = file("${project.projectDir}")
 }
 
 task buildFrontend(type: NpxTask) {
     command = 'pnpm'
-    args = ['build']
+    args = ['build:packages']
 }
 
 task pnpmInstall(type: NpxTask) {
