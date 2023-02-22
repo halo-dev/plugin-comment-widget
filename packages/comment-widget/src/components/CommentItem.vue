@@ -10,9 +10,11 @@ import {
 } from "@halo-dev/components";
 import Form from "./Form.vue";
 import type { CommentVo, ReplyVo } from "@halo-dev/api-client";
-import { computed, provide, ref, watch, type Ref } from "vue";
+import { computed, provide, ref, watch, inject, type Ref } from "vue";
 import { apiClient } from "@/utils/api-client";
 import { useTimeAgo } from "@vueuse/core";
+import MdiCardsHeart from "~icons/mdi/cards-heart";
+import MdiCardsHeartOutline from "~icons/mdi/cards-heart-outline";
 
 const props = withDefaults(
   defineProps<{
@@ -91,6 +93,28 @@ const onReplyCreated = () => {
   showReplies.value = true;
   handleFetchReplies();
 };
+
+// upvote
+const upvotedComments = inject<Ref<string[]>>("upvotedComments", ref([]));
+const handleUpvote = async () => {
+  if (!props.comment) {
+    return;
+  }
+
+  if (upvotedComments.value.includes(props.comment.metadata.name)) {
+    return;
+  }
+
+  await apiClient.tracker.upvote({
+    voteRequest: {
+      name: props.comment.metadata.name,
+      plural: "comments",
+      group: "content.halo.run",
+    },
+  });
+
+  upvotedComments.value.push(props.comment.metadata.name);
+};
 </script>
 
 <template>
@@ -141,6 +165,20 @@ const onReplyCreated = () => {
           </p>
         </div>
         <div class="comment-actions mt-2 flex flex-auto items-center gap-1">
+          <div
+            class="inline-flex cursor-pointer select-none items-center gap-0.5 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+            @click="handleUpvote()"
+          >
+            <MdiCardsHeartOutline
+              v-if="!upvotedComments.includes(comment?.metadata.name as string)"
+              class="h-3.5 w-3.5 hover:text-red-600 hover:dark:text-red-400"
+            />
+            <MdiCardsHeart
+              v-else
+              class="h-3.5 w-3.5 text-red-600 dark:text-red-400"
+            />
+          </div>
+          <span class="text-gray-600">·</span>
           <span
             class="cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
             @click="showReplies = !showReplies"

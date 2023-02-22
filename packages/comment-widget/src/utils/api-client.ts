@@ -1,6 +1,7 @@
 import {
   ApiConsoleHaloRunV1alpha1UserApi,
   ApiHaloRunV1alpha1CommentApi,
+  ApiHaloRunV1alpha1TrackerApi,
 } from "@halo-dev/api-client";
 import axios, { AxiosError } from "axios";
 
@@ -48,6 +49,7 @@ axiosInstance.interceptors.response.use(
 const apiClient = {
   user: new ApiConsoleHaloRunV1alpha1UserApi(undefined, apiUrl, axiosInstance),
   comment: new ApiHaloRunV1alpha1CommentApi(undefined, apiUrl, axiosInstance),
+  tracker: new ApiHaloRunV1alpha1TrackerApi(undefined, apiUrl, axiosInstance),
 };
 
 export { apiClient };
