@@ -1,0 +1,19 @@
+.empty-title {
+  @apply dark:!text-slate-50;
+}
+
+.empty-message {
+  @apply dark:!text-slate-400;
+}
+
+.btn-default {
+  @apply dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600 dark:hover:text-white;
+}
+
+.btn-icon {
+  @apply dark:text-slate-100;
+}
+
+.btn-secondary {
+  @apply dark:border-slate-600 dark:border-solid	dark:border dark:bg-slate-900 dark:text-slate-50 dark:hover:text-white dark:hover:bg-slate-800;
+}

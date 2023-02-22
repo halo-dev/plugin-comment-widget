@@ -14,7 +14,7 @@ export default defineConfig({
   },
   build: {
     outDir: fileURLToPath(
-      new URL("../src/main/resources/static", import.meta.url)
+      new URL("../../src/main/resources/static", import.meta.url)
     ),
     emptyOutDir: true,
     cssCodeSplit: false,
