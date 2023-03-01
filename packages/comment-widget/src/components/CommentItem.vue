@@ -15,6 +15,8 @@ import { apiClient } from "@/utils/api-client";
 import { useTimeAgo } from "@vueuse/core";
 import MdiCardsHeart from "~icons/mdi/cards-heart";
 import MdiCardsHeartOutline from "~icons/mdi/cards-heart-outline";
+import MdiCommentQuoteOutline from "~icons/mdi/comment-quote-outline";
+import MdiCommentQuote from "~icons/mdi/comment-quote";
 
 const props = withDefaults(
   defineProps<{
@@ -164,9 +166,9 @@ const handleUpvote = async () => {
             {{ comment?.spec.content }}
           </p>
         </div>
-        <div class="comment-actions mt-2 flex flex-auto items-center gap-1">
+        <div class="comment-actions mt-2 flex flex-auto items-center gap-1.5">
           <div
-            class="inline-flex cursor-pointer select-none items-center gap-0.5 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+            class="inline-flex cursor-pointer select-none items-center gap-1 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
             @click="handleUpvote()"
           >
             <MdiCardsHeartOutline
@@ -177,14 +179,19 @@ const handleUpvote = async () => {
               v-else
               class="h-3.5 w-3.5 text-red-600 dark:text-red-400"
             />
+            <span>
+              {{ comment?.stats.upvote }}
+            </span>
           </div>
           <span class="text-gray-600">·</span>
-          <span
-            class="cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+          <div
+            class="inline-flex cursor-pointer select-none items-center gap-1 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
             @click="showReplies = !showReplies"
           >
-            {{ comment?.status?.replyCount || 0 }} 条回复
-          </span>
+            <MdiCommentQuoteOutline v-if="!showReplies" class="h-3.5 w-3.5" />
+            <MdiCommentQuote v-else class="h-3.5 w-3.5" />
+            <span> {{ comment?.status?.replyCount || 0 }} </span>
+          </div>
           <span class="text-gray-600">·</span>
           <span
             class="cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"

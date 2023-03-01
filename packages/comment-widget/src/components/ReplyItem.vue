@@ -148,7 +148,7 @@ const handleUpvote = async () => {
         </div>
         <div class="reply-actions mt-2 flex flex-auto items-center gap-1">
           <div
-            class="inline-flex cursor-pointer select-none items-center gap-0.5 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+            class="inline-flex cursor-pointer select-none items-center gap-1 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
             @click="handleUpvote()"
           >
             <MdiCardsHeartOutline
@@ -159,6 +159,9 @@ const handleUpvote = async () => {
               v-else
               class="h-3.5 w-3.5 text-red-600 dark:text-red-400"
             />
+            <span>
+              {{ reply.stats.upvote }}
+            </span>
           </div>
           <span class="text-gray-600">·</span>
           <span
