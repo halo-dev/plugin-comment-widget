@@ -52,8 +52,8 @@ importers:
   packages/comment-widget:
     specifiers:
       '@emoji-mart/data': ^1.1.2
-      '@halo-dev/api-client': ^0.0.60
-      '@halo-dev/components': ^1.1.0
+      '@halo-dev/api-client': ^2.3.0
+      '@halo-dev/components': ^1.2.0
       '@iconify-json/mdi': ^1.1.47
       '@tailwindcss/forms': ^0.5.3
       '@types/lodash.clonedeep': ^4.5.7
@@ -77,8 +77,8 @@ importers:
       vue-typegen: ^0.2.0
     dependencies:
       '@emoji-mart/data': 1.1.2
-      '@halo-dev/api-client': 0.0.60
-      '@halo-dev/components': 1.1.0
+      '@halo-dev/api-client': 2.3.0
+      '@halo-dev/components': 1.2.0
       '@vueuse/components': 8.9.4
       '@vueuse/core': 8.9.4
       axios: 0.27.2
@@ -505,12 +505,12 @@ packages:
       - supports-color
     dev: true
 
-  /@halo-dev/api-client/0.0.60:
-    resolution: {integrity: sha512-HAmJ1BDZxHj2Xp41oNOqZG/1vaR6r4EbBAUQ7ayvUY8SGJMHtJD9dyhCn7k23q6G7FmzFKFNGxajovsjBEM+yg==}
+  /@halo-dev/api-client/2.3.0:
+    resolution: {integrity: sha512-llu60ioQEp/sGUduTos5SLXVXEJ0fl5dLionr6oS9Ykwu1xbuFFpIcNmlCJZX/qZb/ZRfM9WOAxPA1EL0sn64w==}
     dev: false
 
-  /@halo-dev/components/1.1.0:
-    resolution: {integrity: sha512-4vx9kZ3CK5gvh349ivb7EVwTeUCfaWxsHDUoVPFjGnU2SuokiKEht1u2Z00jPyFmQOY6R64nkd7q6G+A1Xmsfw==}
+  /@halo-dev/components/1.2.0:
+    resolution: {integrity: sha512-GoQvGVnpYvaJxoZrSavVYaz+rvKQ+xmT8UHM2P9urau1xF7CZqn79lMGn/7Mv5nl1ieezOFG4zFF6LC78vHH5g==}
     peerDependencies:
       vue: ^3.2.37
       vue-router: ^4.0.16
