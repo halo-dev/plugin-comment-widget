@@ -55,7 +55,7 @@ const handleFetchLoginedUser = async () => {
   try {
     const { data } = await apiClient.user.getCurrentUserDetail();
     currentUser.value =
-      data.metadata.name === "anonymousUser" ? undefined : data;
+      data.user.metadata.name === "anonymousUser" ? undefined : data.user;
   } catch (error) {
     console.error("Fetch logined user failed", error);
   }

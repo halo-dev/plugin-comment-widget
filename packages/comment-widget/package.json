@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
-    "@halo-dev/api-client": "^0.0.60",
-    "@halo-dev/components": "^1.1.0",
+    "@halo-dev/api-client": "^2.3.0",
+    "@halo-dev/components": "^1.2.0",
     "@vueuse/components": "8.9.4",
     "@vueuse/core": "8.9.4",
     "axios": "^0.27.2",
