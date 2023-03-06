@@ -81,6 +81,8 @@ const handleUpvote = async () => {
   });
 
   upvotedReplies.value.push(props.reply.metadata.name);
+
+  emit("reload");
 };
 </script>
 

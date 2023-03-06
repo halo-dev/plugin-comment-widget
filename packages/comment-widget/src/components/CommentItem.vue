@@ -27,6 +27,10 @@ const props = withDefaults(
   }
 );
 
+const emit = defineEmits<{
+  (event: "reload"): void;
+}>();
+
 const showReplies = ref(false);
 const showForm = ref(false);
 
@@ -65,9 +69,11 @@ const website = computed(() => {
   return annotations?.website;
 });
 
-const handleFetchReplies = async () => {
+const handleFetchReplies = async (mute?: boolean) => {
   try {
-    loading.value = true;
+    if (!mute) {
+      loading.value = true;
+    }
     const { data } = await apiClient.comment.listCommentReplies({
       name: props.comment?.metadata.name as string,
     });
@@ -116,6 +122,8 @@ const handleUpvote = async () => {
   });
 
   upvotedComments.value.push(props.comment.metadata.name);
+
+  emit("reload");
 };
 </script>
 
@@ -242,7 +250,7 @@ const handleUpvote = async () => {
                 :comment="comment"
                 :reply="reply"
                 :replies="replies"
-                @reload="handleFetchReplies"
+                @reload="handleFetchReplies(true)"
               ></ReplyItem>
             </TransitionGroup>
           </div>

@@ -61,9 +61,11 @@ const handleFetchLoginedUser = async () => {
   }
 };
 
-const handleFetchComments = async () => {
+const handleFetchComments = async (mute?: boolean) => {
   try {
-    loading.value = true;
+    if (!mute) {
+      loading.value = true;
+    }
     const { data } = await apiClient.comment.listComments1({
       page: comments.value.page,
       size: comments.value.size,
@@ -170,6 +172,7 @@ provide<Ref<string[]>>("upvotedReplies", upvotedReplies);
             v-for="(comment, index) in comments.items"
             :key="index"
             :comment="comment"
+            @reload="handleFetchComments(true)"
           ></CommentItem>
         </TransitionGroup>
       </div>
