@@ -13,6 +13,7 @@ import type { CommentVoList, User } from "@halo-dev/api-client";
 import { apiClient } from "../utils/api-client";
 import axios from "axios";
 import type { GlobalInfo } from "../types";
+import { useLocalStorage } from "@vueuse/core";
 
 const props = withDefaults(
   defineProps<{
@@ -60,9 +61,11 @@ const handleFetchLoginedUser = async () => {
   }
 };
 
-const handleFetchComments = async () => {
+const handleFetchComments = async (mute?: boolean) => {
   try {
-    loading.value = true;
+    if (!mute) {
+      loading.value = true;
+    }
     const { data } = await apiClient.comment.listComments1({
       page: comments.value.page,
       size: comments.value.size,
@@ -126,6 +129,13 @@ const handleFetchValueOfAllowAnonymousComments = async () => {
 };
 
 onMounted(handleFetchValueOfAllowAnonymousComments);
+
+// upvote
+
+const upvotedComments = useLocalStorage<string[]>("halo.upvoted.comments", []);
+const upvotedReplies = useLocalStorage<string[]>("halo.upvoted.replies", []);
+provide<Ref<string[]>>("upvotedComments", upvotedComments);
+provide<Ref<string[]>>("upvotedReplies", upvotedReplies);
 </script>
 <template>
   <div class="halo-comment-widget" :class="getColorScheme">
@@ -162,6 +172,7 @@ onMounted(handleFetchValueOfAllowAnonymousComments);
             v-for="(comment, index) in comments.items"
             :key="index"
             :comment="comment"
+            @reload="handleFetchComments(true)"
           ></CommentItem>
         </TransitionGroup>
       </div>

@@ -10,9 +10,13 @@ import {
 } from "@halo-dev/components";
 import Form from "./Form.vue";
 import type { CommentVo, ReplyVo } from "@halo-dev/api-client";
-import { computed, provide, ref, watch, type Ref } from "vue";
+import { computed, provide, ref, watch, inject, type Ref } from "vue";
 import { apiClient } from "@/utils/api-client";
 import { useTimeAgo } from "@vueuse/core";
+import MdiCardsHeart from "~icons/mdi/cards-heart";
+import MdiCardsHeartOutline from "~icons/mdi/cards-heart-outline";
+import MdiCommentQuoteOutline from "~icons/mdi/comment-quote-outline";
+import MdiCommentQuote from "~icons/mdi/comment-quote";
 
 const props = withDefaults(
   defineProps<{
@@ -22,6 +26,10 @@ const props = withDefaults(
     comment: undefined,
   }
 );
+
+const emit = defineEmits<{
+  (event: "reload"): void;
+}>();
 
 const showReplies = ref(false);
 const showForm = ref(false);
@@ -61,9 +69,11 @@ const website = computed(() => {
   return annotations?.website;
 });
 
-const handleFetchReplies = async () => {
+const handleFetchReplies = async (mute?: boolean) => {
   try {
-    loading.value = true;
+    if (!mute) {
+      loading.value = true;
+    }
     const { data } = await apiClient.comment.listCommentReplies({
       name: props.comment?.metadata.name as string,
     });
@@ -90,6 +100,30 @@ const onReplyCreated = () => {
   showForm.value = false;
   showReplies.value = true;
   handleFetchReplies();
+};
+
+// upvote
+const upvotedComments = inject<Ref<string[]>>("upvotedComments", ref([]));
+const handleUpvote = async () => {
+  if (!props.comment) {
+    return;
+  }
+
+  if (upvotedComments.value.includes(props.comment.metadata.name)) {
+    return;
+  }
+
+  await apiClient.tracker.upvote({
+    voteRequest: {
+      name: props.comment.metadata.name,
+      plural: "comments",
+      group: "content.halo.run",
+    },
+  });
+
+  upvotedComments.value.push(props.comment.metadata.name);
+
+  emit("reload");
 };
 </script>
 
@@ -140,13 +174,32 @@ const onReplyCreated = () => {
             {{ comment?.spec.content }}
           </p>
         </div>
-        <div class="comment-actions mt-2 flex flex-auto items-center gap-1">
-          <span
-            class="cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+        <div class="comment-actions mt-2 flex flex-auto items-center gap-1.5">
+          <div
+            class="inline-flex cursor-pointer select-none items-center gap-1 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+            @click="handleUpvote()"
+          >
+            <MdiCardsHeartOutline
+              v-if="!upvotedComments.includes(comment?.metadata.name as string)"
+              class="h-3.5 w-3.5 hover:text-red-600 hover:dark:text-red-400"
+            />
+            <MdiCardsHeart
+              v-else
+              class="h-3.5 w-3.5 text-red-600 dark:text-red-400"
+            />
+            <span>
+              {{ comment?.stats.upvote }}
+            </span>
+          </div>
+          <span class="text-gray-600">·</span>
+          <div
+            class="inline-flex cursor-pointer select-none items-center gap-1 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
             @click="showReplies = !showReplies"
           >
-            {{ comment?.status?.replyCount || 0 }} 条回复
-          </span>
+            <MdiCommentQuoteOutline v-if="!showReplies" class="h-3.5 w-3.5" />
+            <MdiCommentQuote v-else class="h-3.5 w-3.5" />
+            <span> {{ comment?.status?.replyCount || 0 }} </span>
+          </div>
           <span class="text-gray-600">·</span>
           <span
             class="cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
@@ -197,7 +250,7 @@ const onReplyCreated = () => {
                 :comment="comment"
                 :reply="reply"
                 :replies="replies"
-                @reload="handleFetchReplies"
+                @reload="handleFetchReplies(true)"
               ></ReplyItem>
             </TransitionGroup>
           </div>

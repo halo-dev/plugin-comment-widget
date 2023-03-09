@@ -5,6 +5,9 @@ import type { CommentVo, ReplyVo } from "@halo-dev/api-client";
 import { computed, inject, ref, type Ref } from "vue";
 import { useTimeAgo } from "@vueuse/core";
 import MdiReply from "~icons/mdi/reply";
+import { apiClient } from "@/utils/api-client";
+import MdiCardsHeart from "~icons/mdi/cards-heart";
+import MdiCardsHeartOutline from "~icons/mdi/cards-heart-outline";
 
 const props = defineProps<{
   comment?: CommentVo;
@@ -57,6 +60,30 @@ const handleShowQuoteReply = (show: boolean) => {
 const isHoveredReply = computed(() => {
   return hoveredReply?.value?.metadata.name === props.reply.metadata.name;
 });
+
+// upvote
+const upvotedReplies = inject<Ref<string[]>>("upvotedReplies", ref([]));
+const handleUpvote = async () => {
+  if (!props.reply) {
+    return;
+  }
+
+  if (upvotedReplies.value.includes(props.reply.metadata.name)) {
+    return;
+  }
+
+  await apiClient.tracker.upvote({
+    voteRequest: {
+      name: props.reply.metadata.name,
+      plural: "replies",
+      group: "content.halo.run",
+    },
+  });
+
+  upvotedReplies.value.push(props.reply.metadata.name);
+
+  emit("reload");
+};
 </script>
 
 <template>
@@ -122,6 +149,23 @@ const isHoveredReply = computed(() => {
           </p>
         </div>
         <div class="reply-actions mt-2 flex flex-auto items-center gap-1">
+          <div
+            class="inline-flex cursor-pointer select-none items-center gap-1 text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
+            @click="handleUpvote()"
+          >
+            <MdiCardsHeartOutline
+              v-if="!upvotedReplies.includes(reply?.metadata.name as string)"
+              class="h-3.5 w-3.5 hover:text-red-600 hover:dark:text-red-400"
+            />
+            <MdiCardsHeart
+              v-else
+              class="h-3.5 w-3.5 text-red-600 dark:text-red-400"
+            />
+            <span>
+              {{ reply.stats.upvote }}
+            </span>
+          </div>
+          <span class="text-gray-600">·</span>
           <span
             class="cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900 dark:text-slate-500 dark:hover:text-slate-400"
             @click="showForm = !showForm"
