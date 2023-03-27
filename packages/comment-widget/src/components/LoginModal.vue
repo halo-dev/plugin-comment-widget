@@ -4,6 +4,8 @@ import { ref, watch } from "vue";
 import { v4 as uuid } from "uuid";
 import qs from "qs";
 import axios from "axios";
+import { apiClient } from "@/utils/api-client";
+import { JSEncrypt } from "jsencrypt";
 
 const props = withDefaults(
   defineProps<{
@@ -44,9 +46,17 @@ const handleLogin = async () => {
   try {
     loading.value = true;
 
+    const { data: publicKey } = await apiClient.login.getPublicKey();
+
+    const encrypt = new JSEncrypt();
+    encrypt.setPublicKey(publicKey.base64Format as string);
+
     await axios.post(
       `${import.meta.env.VITE_API_URL}/login`,
-      qs.stringify(formState.value),
+      qs.stringify({
+        ...formState.value,
+        password: encrypt.encrypt(formState.value.password),
+      }),
       {
         withCredentials: true,
         headers: {
@@ -59,6 +69,7 @@ const handleLogin = async () => {
   } catch (e) {
     console.error("Failed to login", e);
     alert("登录失败，用户名或密码错误");
+    handleGenerateToken();
   } finally {
     loading.value = false;
   }

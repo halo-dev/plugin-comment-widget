@@ -64,6 +64,7 @@ importers:
       autoprefixer: ^10.4.13
       axios: ^0.27.2
       emoji-mart: ^5.5.2
+      jsencrypt: ^3.3.2
       lodash.clonedeep: ^4.5.0
       postcss: ^8.4.21
       prettier-plugin-tailwindcss: ^0.1.13
@@ -83,6 +84,7 @@ importers:
       '@vueuse/core': 8.9.4
       axios: 0.27.2
       emoji-mart: 5.5.2
+      jsencrypt: 3.3.2
       lodash.clonedeep: 4.5.0
       qs: 6.11.0
       uuid: 9.0.0
@@ -3553,6 +3555,10 @@ packages:
       - supports-color
       - utf-8-validate
     dev: true
+
+  /jsencrypt/3.3.2:
+    resolution: {integrity: sha512-arQR1R1ESGdAxY7ZheWr12wCaF2yF47v5qpB76TtV64H1pyGudk9Hvw8Y9tb/FiTIaaTRUyaSnm5T/Y53Ghm/A==}
+    dev: false
 
   /json-buffer/3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
