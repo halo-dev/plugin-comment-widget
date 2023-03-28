@@ -64,6 +64,7 @@ importers:
       autoprefixer: ^10.4.13
       axios: ^0.27.2
       emoji-mart: ^5.5.2
+      emoji-mart-vue-fast: ^12.0.1
       lodash.clonedeep: ^4.5.0
       postcss: ^8.4.21
       prettier-plugin-tailwindcss: ^0.1.13
@@ -83,6 +84,7 @@ importers:
       '@vueuse/core': 8.9.4
       axios: 0.27.2
       emoji-mart: 5.5.2
+      emoji-mart-vue-fast: 12.0.1
       lodash.clonedeep: 4.5.0
       qs: 6.11.0
       uuid: 9.0.0
@@ -157,6 +159,13 @@ packages:
     hasBin: true
     dependencies:
       '@babel/types': 7.21.0
+
+  /@babel/runtime/7.21.0:
+    resolution: {integrity: sha512-xwII0//EObnq89Ji5AKYQaRYiW/nZ3llSv29d49IuxPhKbtJoLP+9QUUZ4nVragQVtaVGeZrpB+ZtG/Pdy/POw==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.13.11
+    dev: false
 
   /@babel/types/7.21.0:
     resolution: {integrity: sha512-uR7NWq2VNFnDi7EYqiRz2Jv/VQIu38tu64Zy8TX2nQFQ6etJ9V/Rr2msW8BS132mum2rL645qpDrLtAJtVpuow==}
@@ -1787,6 +1796,11 @@ packages:
       xdg-basedir: 5.1.0
     dev: true
 
+  /core-js/3.29.1:
+    resolution: {integrity: sha512-+jwgnhg6cQxKYIIjGtAHq2nwUOolo9eoFZ4sHfUH09BLXBgxnH4gA0zEd+t+BO2cNB8idaBtZFcFTRjQJRJmAw==}
+    requiresBuild: true
+    dev: false
+
   /core-util-is/1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: true
@@ -2037,6 +2051,15 @@ packages:
   /electron-to-chromium/1.4.304:
     resolution: {integrity: sha512-6c8M+ojPgDIXN2NyfGn8oHASXYnayj+gSEnGeLMKb9zjsySeVB/j7KkNAAG9yDcv8gNlhvFg5REa1N/kQU6pgA==}
     dev: true
+
+  /emoji-mart-vue-fast/12.0.1:
+    resolution: {integrity: sha512-qO8F9aduHwPGEU2U1YobOH3lRXEMvrjej6KdhGMnSoMJ+OFSmNf+pUal/MbrEn0RUy+Uqc7U9sPopA+3ipK4+g==}
+    peerDependencies:
+      vue: '>2.0.0'
+    dependencies:
+      '@babel/runtime': 7.21.0
+      core-js: 3.29.1
+    dev: false
 
   /emoji-mart/5.5.2:
     resolution: {integrity: sha512-Sqc/nso4cjxhOwWJsp9xkVm8OF5c+mJLZJFoFfzRuKO+yWiN7K8c96xmtughYb0d/fZ8UC6cLIQ/p4BR6Pv3/A==}
@@ -4537,6 +4560,10 @@ packages:
     dependencies:
       resolve: 1.22.1
     dev: true
+
+  /regenerator-runtime/0.13.11:
+    resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+    dev: false
 
   /regexp.prototype.flags/1.4.3:
     resolution: {integrity: sha512-fjggEOO3slI6Wvgjwflkc4NFRCTZAu5CnNfBd5qOMYhWdn67nJBBu34/TkD++eeFmd8C9r9jfXJ27+nSiRkSUA==}
