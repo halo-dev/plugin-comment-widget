@@ -1,56 +1,68 @@
 # plugin-comment-widget
 
-Halo 2.0 的评论模块插件，为前台提供完整的评论解决方案（WIP）
+Halo 2.0 的通用评论组件插件，为前台提供完整的评论解决方案。
 
-## 说明
-
-使用 Vue 构建评论组件，最终产物（`comment-widget.iife.js` `style.css`）会被放置于 `src/main/resources/static`，插件需要配置 `ReverseProxy` 资源，如：
-
-```yaml
-apiVersion: plugin.halo.run/v1alpha1
-kind: ReverseProxy
-metadata:
-  name: reverse-proxy-comment-widget
-rules:
-  - path: /static/**
-    file:
-      directory: static
-```
-
-最终可通过 `/assets/PluginCommentWidget/static/comment-widget.iife.js` 访问到评论组件的 JavaScript 资源。
-
-根据 [RFC](https://github.com/halo-dev/rfcs/tree/main/theme#%E4%B8%BB%E9%A2%98%E5%85%AC%E5%85%B1%E6%A8%A1%E6%9D%BF%E6%89%A9%E5%B1%95)，最终主题使用该插件需要在对应扩展点插入以下代码：
-
-```html
-<div id="comment"></div>
-<script src="/assets/PluginCommentWidget/static/comment-widget.iife.js"></script>
-<script>
-  CommentWidget.init(
-    "#comment",
-    "/assets/PluginCommentWidget/static/style.css",
-    {
-      group: "content.halo.run",
-      version: "v1alpha1",
-      kind: "Post",
-      name: "<replace-post-name>",
-    }
-  );
-</script>
-```
-
-如果使用 Vue 构建 SPA 应用，也可以使用以下方式引入评论组件：
+## 开发环境
 
 ```bash
-pnpm install @halo-dev/comment-widget
+git clone git@github.com:halo-sigs/plugin-comment-widget.git
+
+# 或者当你 fork 之后
+
+git clone git@github.com:{your_github_id}/plugin-comment-widget.git
 ```
 
-```vue
-<script lang="ts" setup>
-import { Comment } from "@halo-dev/comment-widget";
-import "@halo-dev/comment-widget/dist/style.css";
-</script>
-
-<template>
-  <Comment postId="0"></Comment>
-</template>
+```bash
+cd path/to/plugin-comment-widget
 ```
+
+```bash
+./gradlew pnpmInstall
+
+./gradlew build
+```
+
+修改 Halo 配置文件：
+
+```yaml
+halo:
+  plugin:
+    runtime-mode: development
+    classes-directories:
+      - "build/classes"
+      - "build/resources"
+    lib-directories:
+      - "libs"
+    fixedPluginPath:
+      - "/path/to/plugin-comment-widget"
+```
+
+## 使用方式
+
+1. 在 [Releases](https://github.com/halo-sigs/plugin-comment-widget/releases) 下载最新的 JAR 文件。
+2. 在 Halo 后台的插件管理上传 JAR 文件进行安装。
+
+> 需要注意的是，此插件需要主题进行适配，不会主动在内容页加载评论组件。
+
+## 主题适配
+
+此插件是一个通用的评论组件插件，主题需要针对此类型插件做适配。Halo 为模板引擎提供了专门的标签（<halo:comment />），只需要在必要的位置添加此标签即可。
+
+以下是代码示例：
+
+```html
+<!-- /templates/post.html -->
+<halo:comment
+  group="content.halo.run"
+  kind="Post"
+  th:attr="name=${post.metadata.name}"
+  colorScheme="'light'"
+/>
+```
+
+参数解释：
+
+- `group`：自定义模型的 group，目前文章和自定义页面的分组均为 `content.halo.run`。
+- `kind`：目前支持 Post（文章） 和 SinglePage（自定义页面） 两种类型，分别可用于 `post.html` 和 `page.html` 模板。
+- `name`：文章或者自定义页面的唯一标识，可通过 `post.metadata.name` 或者 `singlePage.metadata.name` 获取。
+- `colorScheme`：评论组件的颜色方案，支持 `light` 和 `dark` 两种，支持固定或者 JavaScript 变量。需要注意的是，如果需要固定一个值，那么需要添加单引号，如 `'dark'`。使用 JavaScript 变量时不需要。

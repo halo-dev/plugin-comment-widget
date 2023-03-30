@@ -1,8 +1,11 @@
 package run.halo.comment.widget;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.Assert;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.thymeleaf.context.ITemplateContext;
@@ -21,8 +24,11 @@ import java.util.Properties;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class DefaultCommentWidget implements CommentWidget {
-    private final PropertyPlaceholderHelper placeholderHelper = new PropertyPlaceholderHelper("${", "}");
+    static final PropertyPlaceholderHelper PROPERTY_PLACEHOLDER_HELPER = new PropertyPlaceholderHelper("${", "}");
+
+    private final PluginWrapper pluginWrapper;
 
     @Override
     public void render(ITemplateContext context,
@@ -50,19 +56,22 @@ public class DefaultCommentWidget implements CommentWidget {
 
         String group = getGroup(groupAttribute);
 
-        Properties properties = new Properties();
-        properties.put("group", group);
-        properties.put("kind", kindAttribute.getValue());
-        properties.put("name", nameAttribute.getValue());
-        properties.put("colorScheme", getColorScheme(colorSchemeAttribute));
-        properties.put("domId", domIdFrom(group, kindAttribute.getValue(), nameAttribute.getValue()));
-        return placeholderHelper.replacePlaceholders("""
+        final Properties properties = new Properties();
+
+        properties.setProperty("version", pluginWrapper.getDescriptor().getVersion());
+        properties.setProperty("group", group);
+        properties.setProperty("kind", kindAttribute.getValue());
+        properties.setProperty("name", nameAttribute.getValue());
+        properties.setProperty("colorScheme", getColorScheme(colorSchemeAttribute));
+        properties.setProperty("domId", domIdFrom(group, kindAttribute.getValue(), nameAttribute.getValue()));
+
+        return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
                 <div id="${domId}"></div>
-                <script src="/plugins/PluginCommentWidget/assets/static/comment-widget.iife.js"></script>
+                <script src="/plugins/PluginCommentWidget/assets/static/comment-widget.iife.js?version=${version}"></script>
                 <script>
                   CommentWidget.init(
                     "#${domId}",
-                    "/plugins/PluginCommentWidget/assets/static/style.css",
+                    "/plugins/PluginCommentWidget/assets/static/style.css?version=${version}",
                     {
                       group: "${group}",
                       kind: "${kind}",
@@ -79,7 +88,7 @@ public class DefaultCommentWidget implements CommentWidget {
         Assert.notNull(kind, "The kind must not be null.");
         String groupKindNameAsDomId = String.join("-", group, kind, name);
         return "comment-" + groupKindNameAsDomId.replaceAll("[^\\-_a-zA-Z0-9\\s]", "-")
-                .replaceAll("(-)+", "-");
+            .replaceAll("(-)+", "-");
     }
 
     private String getGroup(IAttribute groupAttribute) {
