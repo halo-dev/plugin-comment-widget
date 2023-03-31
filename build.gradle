@@ -44,12 +44,12 @@ node {
 }
 
 task buildFrontend(type: NpxTask) {
-    command = 'pnpm'
+    command = 'pnpm@7'
     args = ['build:packages']
 }
 
 task pnpmInstall(type: NpxTask) {
-    command = "pnpm"
+    command = "pnpm@7"
     args = ["install"]
 }
 
