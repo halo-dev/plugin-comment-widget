@@ -52,7 +52,7 @@ importers:
   packages/comment-widget:
     specifiers:
       '@emoji-mart/data': ^1.1.2
-      '@halo-dev/api-client': ^2.4.0-rc.1
+      '@halo-dev/api-client': ^2.4.0
       '@halo-dev/components': ^1.2.0
       '@iconify-json/mdi': ^1.1.47
       '@tailwindcss/forms': ^0.5.3
@@ -78,7 +78,7 @@ importers:
       vue-typegen: ^0.2.0
     dependencies:
       '@emoji-mart/data': 1.1.2
-      '@halo-dev/api-client': 2.4.0-rc.1
+      '@halo-dev/api-client': 2.4.0
       '@halo-dev/components': 1.2.0
       '@vueuse/components': 8.9.4
       '@vueuse/core': 8.9.4
@@ -507,8 +507,8 @@ packages:
       - supports-color
     dev: true
 
-  /@halo-dev/api-client/2.4.0-rc.1:
-    resolution: {integrity: sha512-fDIdR79BgwOxOBBfUEF+52BeZngN5tu2oJkN/GEz5lAILfxWVI3pC3OlbmueHD48TBhNy48u+Zwr8QJnQf8lWA==}
+  /@halo-dev/api-client/2.4.0:
+    resolution: {integrity: sha512-QhA2+oLkiWBHVn/SRXla/Db38LSA7XJUwDM6PfGHxlwj7v48FP1T1yfTnxAmQ07/ZDfR/8IH6wZxU//OMFCTog==}
     dev: false
 
   /@halo-dev/components/1.2.0:
