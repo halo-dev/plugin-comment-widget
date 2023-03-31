@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.pf4j.PluginWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.Assert;
+import org.springframework.util.PropertyPlaceholderHelper;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -61,13 +63,14 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("kind", kindAttribute.getValue());
         properties.setProperty("name", nameAttribute.getValue());
         properties.setProperty("colorScheme", getColorScheme(colorSchemeAttribute));
+        properties.setProperty("domId", domIdFrom(group, kindAttribute.getValue(), nameAttribute.getValue()));
 
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
-                <div id="comment"></div>
+                <div id="${domId}"></div>
                 <script src="/plugins/PluginCommentWidget/assets/static/comment-widget.iife.js?version=${version}"></script>
                 <script>
                   CommentWidget.init(
-                    "#comment",
+                    "#${domId}",
                     "/plugins/PluginCommentWidget/assets/static/style.css?version=${version}",
                     {
                       group: "${group}",
@@ -78,6 +81,14 @@ public class DefaultCommentWidget implements CommentWidget {
                   );
                 </script>
                 """, properties);
+    }
+
+    private String domIdFrom(String group, String kind, String name) {
+        Assert.notNull(name, "The name must not be null.");
+        Assert.notNull(kind, "The kind must not be null.");
+        String groupKindNameAsDomId = String.join("-", group, kind, name);
+        return "comment-" + groupKindNameAsDomId.replaceAll("[^\\-_a-zA-Z0-9\\s]", "-")
+            .replaceAll("(-)+", "-");
     }
 
     private String getGroup(IAttribute groupAttribute) {
