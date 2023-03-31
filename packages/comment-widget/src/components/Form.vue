@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { VButton, VAvatar } from "@halo-dev/components";
 import LoginModal from "./LoginModal.vue";
-import data from "@emoji-mart/data";
-import i18n from "@emoji-mart/data/i18n/zh.json";
 import MdiStickerEmoji from "~icons/mdi/sticker-emoji";
 import MdiSendCircleOutline from "~icons/mdi/send-circle-outline";
 import type {
@@ -13,11 +11,14 @@ import type {
   User,
 } from "@halo-dev/api-client";
 // @ts-ignore
-import { Picker } from "emoji-mart";
-import { computed, inject, ref, watchEffect, type Ref } from "vue";
+import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
+import data from "emoji-mart-vue-fast/data/all.json";
+import "emoji-mart-vue-fast/css/emoji-mart.css";
+import { inject, ref, watchEffect, type Ref } from "vue";
 import { apiClient } from "@/utils/api-client";
 import { useLocalStorage, useMagicKeys } from "@vueuse/core";
 import axios from "axios";
+import { onClickOutside } from "@vueuse/core";
 
 interface CustomAccount {
   displayName: string;
@@ -44,7 +45,6 @@ const currentUser = inject<Ref<User | undefined>>("currentUser");
 const kind = inject<string>("kind");
 const name = inject<string>("name");
 const group = inject<string>("group");
-const colorScheme = inject<string>("colorScheme");
 const allowAnonymousComments = inject<Ref<boolean | undefined>>(
   "allowAnonymousComments"
 );
@@ -193,36 +193,19 @@ const handleLogout = async () => {
 };
 
 // Emoji picker
-const getColorScheme = computed(() => {
-  if (colorScheme === "system") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  }
-  return colorScheme;
-});
+let emojiIndex = new EmojiIndex(data);
 
-const emojiPickerRef = ref<HTMLElement | null>(null);
 const contentInputRef = ref();
 const emojiPickerVisible = ref(false);
-
-const emojiPicker = new Picker({
-  data: data,
-  theme: getColorScheme.value,
-  autoFocus: true,
-  i18n: i18n,
-  onEmojiSelect: onEmojiSelect,
-});
+const emojiPickerRef = ref(null);
 
 function onEmojiSelect(emoji: { native: string }) {
   raw.value += emoji.native;
   contentInputRef.value.focus();
 }
 
-watchEffect(() => {
-  if (emojiPickerRef.value) {
-    emojiPickerRef.value?.appendChild(emojiPicker);
-  }
+onClickOutside(emojiPickerRef, () => {
+  emojiPickerVisible.value = false;
 });
 
 // KeyBoard shortcuts
@@ -297,7 +280,7 @@ watchEffect(() => {
           </template>
         </div>
         <div class="flex flex-row items-center gap-3">
-          <div class="relative">
+          <div ref="emojiPickerRef" class="relative">
             <MdiStickerEmoji
               class="h-5 w-5 cursor-pointer text-gray-500 transition-all hover:text-gray-900 dark:text-slate-300 dark:hover:text-slate-50"
               @click="emojiPickerVisible = !emojiPickerVisible"
@@ -314,7 +297,11 @@ watchEffect(() => {
                 v-show="emojiPickerVisible"
                 class="absolute right-0 z-10 mt-3 transform px-4 sm:px-0"
               >
-                <div ref="emojiPickerRef"></div>
+                <Picker
+                  :data="emojiIndex"
+                  :native="true"
+                  @select="onEmojiSelect"
+                />
               </div>
             </transition>
           </div>
