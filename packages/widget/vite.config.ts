@@ -3,9 +3,23 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import path from "path";
+import copy from "rollup-plugin-copy-merge";
 
 export default defineConfig({
-  plugins: [Vue()],
+  plugins: [
+    Vue(),
+    copy({
+      targets: [
+        {
+          src: "./node_modules/@halo-dev/comment-widget/dist/emoji/all.json",
+          dest: fileURLToPath(
+            new URL("../../src/main/resources/static/emoji", import.meta.url)
+          ),
+        },
+      ],
+      verbose: true,
+    }),
+  ],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -16,7 +30,7 @@ export default defineConfig({
     outDir: fileURLToPath(
       new URL("../../src/main/resources/static", import.meta.url)
     ),
-    emptyOutDir: true,
+    emptyOutDir: false,
     cssCodeSplit: false,
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),

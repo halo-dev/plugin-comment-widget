@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import { Comment } from "@halo-dev/comment-widget";
 import "./styles/style.css";
 import "@halo-dev/comment-widget/dist/style.css";
+import axios from "axios";
 
 export function init(
   el: string,
@@ -25,7 +26,15 @@ export function init(
   parent?.appendChild(container);
 
   styleEl.addEventListener("load", function () {
-    const app = createApp(Comment, props);
+    const app = createApp(Comment, {
+      ...props,
+      emojiData: async () => {
+        const { data } = await axios.get(
+          "/plugins/PluginCommentWidget/assets/static/emoji/all.json"
+        );
+        return data;
+      },
+    });
     app.mount(root);
   });
 }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { VButton, VAvatar } from "@halo-dev/components";
+import { VButton, VAvatar, VLoading } from "@halo-dev/components";
 import LoginModal from "./LoginModal.vue";
 import MdiStickerEmoji from "~icons/mdi/sticker-emoji";
 import MdiSendCircleOutline from "~icons/mdi/send-circle-outline";
@@ -12,7 +12,6 @@ import type {
 } from "@halo-dev/api-client";
 // @ts-ignore
 import { Picker, EmojiIndex } from "emoji-mart-vue-fast/src";
-import data from "emoji-mart-vue-fast/data/all.json";
 import "emoji-mart-vue-fast/css/emoji-mart.css";
 import { inject, ref, watchEffect, type Ref } from "vue";
 import { apiClient } from "@/utils/api-client";
@@ -45,6 +44,9 @@ const currentUser = inject<Ref<User | undefined>>("currentUser");
 const kind = inject<string>("kind");
 const name = inject<string>("name");
 const group = inject<string>("group");
+const emojiData = inject<() => Promise<any>>("emojiData", () =>
+  Promise.resolve()
+);
 const allowAnonymousComments = inject<Ref<boolean | undefined>>(
   "allowAnonymousComments"
 );
@@ -193,11 +195,36 @@ const handleLogout = async () => {
 };
 
 // Emoji picker
-let emojiIndex = new EmojiIndex(data);
-
 const contentInputRef = ref();
 const emojiPickerVisible = ref(false);
 const emojiPickerRef = ref(null);
+const emojiIndex = ref();
+const emojiLoading = ref(false);
+
+async function handleOpenEmojiPicker() {
+  if (emojiPickerVisible.value) {
+    emojiPickerVisible.value = false;
+    return;
+  }
+
+  if (emojiIndex.value) {
+    emojiPickerVisible.value = true;
+    return;
+  }
+
+  emojiLoading.value = true;
+  const data = await emojiData();
+
+  if (!data) {
+    alert("加载 Emoji 数据失败");
+    emojiLoading.value = false;
+  }
+
+  emojiIndex.value = new EmojiIndex(data);
+  emojiLoading.value = false;
+
+  emojiPickerVisible.value = true;
+}
 
 function onEmojiSelect(emoji: { native: string }) {
   raw.value += emoji.native;
@@ -281,9 +308,11 @@ watchEffect(() => {
         </div>
         <div class="flex flex-row items-center gap-3">
           <div ref="emojiPickerRef" class="relative">
+            <VLoading v-if="emojiLoading" class="!p-0" />
             <MdiStickerEmoji
+              v-else
               class="h-5 w-5 cursor-pointer text-gray-500 transition-all hover:text-gray-900 dark:text-slate-300 dark:hover:text-slate-50"
-              @click="emojiPickerVisible = !emojiPickerVisible"
+              @click="handleOpenEmojiPicker"
             />
             <transition
               enter-active-class="transition duration-200 ease-out"
@@ -298,6 +327,7 @@ watchEffect(() => {
                 class="absolute right-0 z-10 mt-3 transform px-4 sm:px-0"
               >
                 <Picker
+                  v-if="emojiIndex"
                   :data="emojiIndex"
                   :native="true"
                   @select="onEmojiSelect"
