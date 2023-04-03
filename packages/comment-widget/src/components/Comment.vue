@@ -21,6 +21,7 @@ const props = withDefaults(
     name: string;
     group: string;
     colorScheme?: "system" | "dark" | "light";
+    emojiData: () => Promise<any>;
   }>(),
   {
     kind: undefined,
@@ -34,6 +35,7 @@ provide<string>("kind", props.kind);
 provide<string>("name", props.name);
 provide<string>("group", props.group);
 provide<string>("colorScheme", props.colorScheme);
+provide<() => Promise<any>>("emojiData", props.emojiData);
 
 const currentUser = ref<User>();
 const comments = ref<CommentVoList>({
@@ -51,7 +53,7 @@ const loading = ref(false);
 
 provide<Ref<User | undefined>>("currentUser", currentUser);
 
-const handleFetchLoginedUser = async () => {
+const handleFetchLoggedUser = async () => {
   try {
     const { data } = await apiClient.user.getCurrentUserDetail();
     currentUser.value =
@@ -95,7 +97,7 @@ const handlePaginationChange = ({
 };
 
 onMounted(() => {
-  handleFetchLoginedUser();
+  handleFetchLoggedUser();
   handleFetchComments();
 });
 
