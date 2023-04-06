@@ -198,7 +198,7 @@ const handleUpvote = async () => {
           >
             <MdiCommentQuoteOutline v-if="!showReplies" class="h-3.5 w-3.5" />
             <MdiCommentQuote v-else class="h-3.5 w-3.5" />
-            <span> {{ comment?.status?.replyCount || 0 }} </span>
+            <span> {{ comment?.status?.visibleReplyCount || 0 }} </span>
           </div>
           <span class="text-gray-600">·</span>
           <span
