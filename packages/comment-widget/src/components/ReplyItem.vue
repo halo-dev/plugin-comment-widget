@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const showForm = ref(false);
 
 const timeAgo = useTimeAgo(
-  new Date(props.reply.spec.approvedTime || new Date())
+  new Date(props.reply.spec.creationTime || new Date())
 );
 
 const website = computed(() => {
