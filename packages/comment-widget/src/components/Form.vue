@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { VButton, VAvatar, VLoading } from "@halo-dev/components";
-import LoginModal from "./LoginModal.vue";
 import MdiStickerEmoji from "~icons/mdi/sticker-emoji";
 import MdiSendCircleOutline from "~icons/mdi/send-circle-outline";
 import type {
@@ -50,8 +49,6 @@ const emojiData = inject<() => Promise<any>>("emojiData", () =>
 const allowAnonymousComments = inject<Ref<boolean | undefined>>(
   "allowAnonymousComments"
 );
-
-const loginModal = ref(false);
 
 const raw = ref("");
 const allowNotification = ref(true);
@@ -243,6 +240,15 @@ watchEffect(() => {
     handleSubmit();
   }
 });
+
+// login
+const loginUrl = `/console/login?redirect_uri=${encodeURIComponent(
+  window.location.href
+)}`;
+
+function handleOpenLoginPage() {
+  window.location.href = loginUrl;
+}
 </script>
 
 <template>
@@ -280,12 +286,12 @@ watchEffect(() => {
           placeholder="网站"
         />
 
-        <div
-          class="cursor-pointer select-none text-xs text-gray-600 transition-all hover:text-gray-900 dark:text-slate-200 dark:hover:text-slate-400"
-          @click="loginModal = true"
+        <a
+          class="select-none text-xs text-gray-600 transition-all hover:text-gray-900 dark:text-slate-200 dark:hover:text-slate-400"
+          :href="loginUrl"
         >
           （已有该站点的账号）
-        </div>
+        </a>
       </div>
 
       <div class="flex items-center justify-between">
@@ -303,7 +309,7 @@ watchEffect(() => {
             <VButton size="sm" @click="handleLogout">注销</VButton>
           </template>
           <template v-if="!currentUser && !allowAnonymousComments">
-            <VButton size="sm" @click="loginModal = true">登录</VButton>
+            <VButton size="sm" @click="handleOpenLoginPage">登录</VButton>
           </template>
         </div>
         <div class="flex flex-row items-center gap-3">
@@ -349,6 +355,5 @@ watchEffect(() => {
         </div>
       </div>
     </div>
-    <LoginModal v-model:visible="loginModal" />
   </div>
 </template>
