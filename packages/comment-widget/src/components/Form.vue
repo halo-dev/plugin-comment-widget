@@ -242,8 +242,13 @@ watchEffect(() => {
 });
 
 // login
+
+const parentDomId = `#comment-${[group?.replaceAll(".", "-"), kind, name]
+  .join("-")
+  .replaceAll(/-+/g, "-")}`;
+
 const loginUrl = `/console/login?redirect_uri=${encodeURIComponent(
-  window.location.href
+  window.location.href + parentDomId
 )}`;
 
 function handleOpenLoginPage() {
