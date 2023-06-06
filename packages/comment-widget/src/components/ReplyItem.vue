@@ -3,7 +3,7 @@ import { VTag, VAvatar } from "@halo-dev/components";
 import Form from "./Form.vue";
 import type { CommentVo, ReplyVo } from "@halo-dev/api-client";
 import { computed, inject, ref, type Ref } from "vue";
-import { useTimeAgo } from "@vueuse/core";
+import { formatDatetime, timeAgo } from "@/utils/date";
 import MdiReply from "~icons/mdi/reply";
 import { apiClient } from "@/utils/api-client";
 import MdiCardsHeart from "~icons/mdi/cards-heart";
@@ -20,10 +20,6 @@ const emit = defineEmits<{
 }>();
 
 const showForm = ref(false);
-
-const timeAgo = useTimeAgo(
-  new Date(props.reply.spec.creationTime || new Date())
-);
 
 const website = computed(() => {
   if (!props.reply) {
@@ -117,12 +113,12 @@ const handleUpvote = async () => {
                 {{ reply?.owner.displayName }}
               </span>
             </div>
-            <a
-              :href="`#reply-${reply.metadata.name}`"
-              class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 hover:underline dark:text-slate-400 dark:hover:text-slate-300"
+            <span
+              class="text-xs text-gray-500 dark:text-slate-400"
+              :title="formatDatetime(reply.spec.creationTime)"
             >
-              {{ timeAgo }}
-            </a>
+              {{ timeAgo(reply.spec.creationTime) }}
+            </span>
             <VTag
               v-if="false"
               rounded

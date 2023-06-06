@@ -12,7 +12,7 @@ import Form from "./Form.vue";
 import type { CommentVo, ReplyVo } from "@halo-dev/api-client";
 import { computed, provide, ref, watch, inject, type Ref } from "vue";
 import { apiClient } from "@/utils/api-client";
-import { useTimeAgo } from "@vueuse/core";
+import { formatDatetime, timeAgo } from "@/utils/date";
 import MdiCardsHeart from "~icons/mdi/cards-heart";
 import MdiCardsHeartOutline from "~icons/mdi/cards-heart-outline";
 import MdiCommentQuoteOutline from "~icons/mdi/comment-quote-outline";
@@ -39,10 +39,6 @@ const loading = ref(false);
 const hoveredReply = ref<ReplyVo>();
 
 provide<Ref<ReplyVo | undefined>>("hoveredReply", hoveredReply);
-
-const timeAgo = useTimeAgo(
-  new Date(props.comment?.spec.creationTime || new Date())
-);
 
 const isAuthor = computed(() => {
   if (!props.comment) {
@@ -154,12 +150,12 @@ const handleUpvote = async () => {
                 {{ comment?.owner.displayName }}
               </span>
             </div>
-            <a
-              :href="`#comment-${comment?.metadata.name}`"
-              class="cursor-pointer text-xs text-gray-500 hover:text-blue-600 hover:underline dark:text-slate-400 dark:hover:text-slate-300"
+            <span
+              class="text-xs text-gray-500 dark:text-slate-400"
+              :title="formatDatetime(comment?.spec.creationTime)"
             >
-              {{ timeAgo }}
-            </a>
+              {{ timeAgo(comment?.spec.creationTime) }}
+            </span>
             <VTag
               v-if="isAuthor"
               rounded

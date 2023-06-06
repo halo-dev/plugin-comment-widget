@@ -89,9 +89,15 @@ importers:
       '@vueuse/core':
         specifier: 8.9.4
         version: 8.9.4(vue@3.3.4)
+      dayjs:
+        specifier: ^1.11.8
+        version: 1.11.8
       emoji-mart-vue-fast:
         specifier: ^12.0.4
         version: 12.0.4(vue@3.3.4)
+      javascript-time-ago:
+        specifier: ^2.5.9
+        version: 2.5.9
       lodash.clonedeep:
         specifier: ^4.5.0
         version: 4.5.0
@@ -1873,6 +1879,10 @@ packages:
       whatwg-url: 11.0.0
     dev: true
 
+  /dayjs@1.11.8:
+    resolution: {integrity: sha512-LcgxzFoWMEPO7ggRv1Y2N31hUf2R0Vj7fuy/m+Bg1K8rr+KAs1AEy4y9jd5DXe8pbHgX+srkHNS7TH6Q6ZhYeQ==}
+    dev: false
+
   /de-indent@1.0.2:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==}
     dev: true
@@ -3313,6 +3323,12 @@ packages:
       iterate-iterator: 1.0.2
     dev: true
 
+  /javascript-time-ago@2.5.9:
+    resolution: {integrity: sha512-pQ8mNco/9g9TqWXWWjP0EWl6i/lAQScOyEeXy5AB+f7MfLSdgyV9BJhiOD1zrIac/lrxPYOWNbyl/IW8CW5n0A==}
+    dependencies:
+      relative-time-format: 1.1.6
+    dev: false
+
   /jiti@1.18.2:
     resolution: {integrity: sha512-QAdOptna2NYiSSpv0O/BwoHBSmz4YhpzJHyi+fnMRTXFjp7B8i/YG5Z8IfusxB1ufjcD2Sre1F3R+nX3fvy7gg==}
     hasBin: true
@@ -4445,6 +4461,10 @@ packages:
     dependencies:
       rc: 1.2.8
     dev: true
+
+  /relative-time-format@1.1.6:
+    resolution: {integrity: sha512-aCv3juQw4hT1/P/OrVltKWLlp15eW1GRcwP1XdxHrPdZE9MtgqFpegjnTjLhi2m2WI9MT/hQQtE+tjEWG1hgkQ==}
+    dev: false
 
   /release-it@15.11.0:
     resolution: {integrity: sha512-lZwoGEnKYKwGnfxxlA7vtR7vvozPrOSsIgQaHO4bgQ5ARbG3IA6Dmo0IVusv6nR1KmnjH70QIeNAgsWs6Ji/tw==}
