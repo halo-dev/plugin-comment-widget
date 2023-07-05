@@ -35,8 +35,9 @@
     "@halo-dev/components": "^1.5.0",
     "@vueuse/components": "8.9.4",
     "@vueuse/core": "8.9.4",
-    "emoji-mart-vue-fast": "^12.0.4",
+    "autosize": "^6.0.1",
     "dayjs": "^1.11.8",
+    "emoji-mart-vue-fast": "^12.0.4",
     "javascript-time-ago": "^2.5.9",
     "lodash.clonedeep": "^4.5.0"
   },
