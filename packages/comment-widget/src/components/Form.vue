@@ -17,6 +17,7 @@ import { apiClient } from "@/utils/api-client";
 import { useLocalStorage, useMagicKeys } from "@vueuse/core";
 import axios from "axios";
 import { onClickOutside } from "@vueuse/core";
+import autosize from "autosize";
 
 interface CustomAccount {
   displayName: string;
@@ -53,6 +54,12 @@ const allowAnonymousComments = inject<Ref<boolean | undefined>>(
 const raw = ref("");
 const allowNotification = ref(true);
 const saving = ref(false);
+
+const vAutosize = {
+  mounted: (el: HTMLElement) => {
+    autosize(el);
+  },
+};
 
 const customAccount = useLocalStorage<CustomAccount>(
   "halo-comment-custom-account",
@@ -262,9 +269,10 @@ function handleOpenLoginPage() {
       <textarea
         ref="contentInputRef"
         v-model="raw"
+        v-autosize
         required
         rows="4"
-        class="rounded-base block h-full w-full resize-y appearance-none bg-white px-3 py-2 text-sm text-black antialiased outline-0 ring-1 ring-gray-300 transition-all dark:bg-slate-700 dark:text-slate-50 dark:ring-slate-600"
+        class="rounded-base block w-full resize-y appearance-none bg-white px-3 py-2 text-sm text-black antialiased outline-0 ring-1 ring-gray-300 dark:bg-slate-700 dark:text-slate-50 dark:ring-slate-600"
         placeholder="编写评论"
       ></textarea>
 
