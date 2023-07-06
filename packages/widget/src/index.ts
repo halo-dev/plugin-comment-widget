@@ -17,7 +17,6 @@ export function init(
 
   const container = document.createElement("div");
   const root = document.createElement("div");
-  // parent 增加 loading 效果，直至 style 加载完成
   const loadingHtml = `
   <div>
     <style>
@@ -61,7 +60,6 @@ export function init(
   shadowDOM.appendChild(styleEl);
   shadowDOM.appendChild(root);
 
-  // 当 parent 可视时，再加入 shadowDOM
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting && parent.childElementCount === 0) {
