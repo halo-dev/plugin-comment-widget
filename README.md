@@ -2,6 +2,15 @@
 
 Halo 2.0 的通用评论组件插件，为前台提供完整的评论解决方案。
 
+## 使用方式
+
+1. 下载，目前提供以下两个下载方式：
+    - GitHub Releases：访问 [Releases](https://github.com/halo-sigs/plugin-comment-widget/releases) 下载 Assets 中的 JAR 文件。
+    - Halo 应用市场：<https://halo.run/store/apps/app-YXyaD>。
+2. 安装，插件安装和更新方式可参考：<https://docs.halo.run/user-guide/plugins>。
+
+> 需要注意的是，此插件需要主题进行适配，不会主动在内容页加载评论组件。
+
 ## 开发环境
 
 ```bash
@@ -36,13 +45,6 @@ halo:
     fixedPluginPath:
       - "/path/to/plugin-comment-widget"
 ```
-
-## 使用方式
-
-1. 在 [Releases](https://github.com/halo-sigs/plugin-comment-widget/releases) 下载最新的 JAR 文件。
-2. 在 Halo 后台的插件管理上传 JAR 文件进行安装。
-
-> 需要注意的是，此插件需要主题进行适配，不会主动在内容页加载评论组件。
 
 ## 主题适配
 
