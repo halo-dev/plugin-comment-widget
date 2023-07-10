@@ -168,7 +168,7 @@ const handleUpvote = async () => {
         <div class="comment-content mt-2">
           <pre class="text-sm text-gray-800 dark:text-slate-200">{{
             comment?.spec.content
-            }}</pre>
+          }}</pre>
         </div>
         <div class="comment-actions mt-2 flex flex-auto items-center gap-1.5">
           <div
