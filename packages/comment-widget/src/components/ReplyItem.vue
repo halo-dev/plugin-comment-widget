@@ -129,8 +129,7 @@ const handleUpvote = async () => {
           </div>
         </div>
         <div class="reply-content mt-2">
-          <p class="text-sm text-gray-800 dark:text-slate-200">
-            <a
+          <pre class="text-sm text-gray-800 dark:text-slate-200"><a
               v-if="quoteReply"
               class="mr-1 inline-flex flex-row items-center gap-1 rounded bg-gray-200 py-0.5 px-1 text-xs font-medium text-gray-600 hover:text-blue-500 hover:underline dark:bg-slate-700 dark:text-slate-200 dark:hover:text-slate-100"
               :href="`#reply-${quoteReply.metadata.name}`"
@@ -139,10 +138,9 @@ const handleUpvote = async () => {
             >
               <MdiReply />
               <span>{{ quoteReply.owner.displayName }}</span>
-            </a>
-            <br v-if="quoteReply" />
-            {{ reply.spec.content }}
-          </p>
+            </a><br v-if="quoteReply" />{{
+              reply.spec.content
+            }}</pre>
         </div>
         <div class="reply-actions mt-2 flex flex-auto items-center gap-1">
           <div
