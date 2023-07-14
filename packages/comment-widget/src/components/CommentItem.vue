@@ -156,6 +156,12 @@ const handleUpvote = async () => {
             >
               {{ timeAgo(comment?.spec.creationTime) }}
             </span>
+            <span
+              v-if="!comment?.spec.approved"
+              class="text-xs text-gray-500 dark:text-slate-400"
+            >
+              审核中
+            </span>
             <VTag
               v-if="isAuthor"
               rounded
@@ -166,9 +172,10 @@ const handleUpvote = async () => {
           </div>
         </div>
         <div class="comment-content mt-2">
-          <pre class="text-sm text-gray-800 dark:text-slate-200">{{
-            comment?.spec.content
-          }}</pre>
+          <pre
+            class="whitespace-pre-wrap break-words text-sm text-gray-800 dark:text-slate-200"
+            >{{ comment?.spec.content }}</pre
+          >
         </div>
         <div class="comment-actions mt-2 flex flex-auto items-center gap-1.5">
           <div

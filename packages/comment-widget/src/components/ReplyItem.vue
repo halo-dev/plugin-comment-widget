@@ -119,6 +119,12 @@ const handleUpvote = async () => {
             >
               {{ timeAgo(reply.spec.creationTime) }}
             </span>
+            <span
+              v-if="!reply?.spec.approved"
+              class="text-xs text-gray-500 dark:text-slate-400"
+            >
+              审核中
+            </span>
             <VTag
               v-if="false"
               rounded
@@ -129,7 +135,9 @@ const handleUpvote = async () => {
           </div>
         </div>
         <div class="reply-content mt-2">
-          <pre class="text-sm text-gray-800 dark:text-slate-200"><a
+          <pre
+            class="whitespace-pre-wrap break-words text-sm text-gray-800 dark:text-slate-200"
+          ><a
               v-if="quoteReply"
               class="mr-1 inline-flex flex-row items-center gap-1 rounded bg-gray-200 py-0.5 px-1 text-xs font-medium text-gray-600 hover:text-blue-500 hover:underline dark:bg-slate-700 dark:text-slate-200 dark:hover:text-slate-100"
               :href="`#reply-${quoteReply.metadata.name}`"
