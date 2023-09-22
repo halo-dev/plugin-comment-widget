@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id "io.freefair.lombok" version "8.0.1"
     id "com.github.node-gradle.node" version "5.0.0"
-    id "run.halo.plugin.devtools" version "0.0.6"
+    id "run.halo.plugin.devtools" version "0.0.7"
 }
 
 group 'run.halo.comment.widget'
