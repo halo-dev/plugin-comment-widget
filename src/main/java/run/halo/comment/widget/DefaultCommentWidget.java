@@ -37,14 +37,13 @@ public class DefaultCommentWidget implements CommentWidget {
         IAttribute groupAttribute = tag.getAttribute("group");
         IAttribute kindAttribute = tag.getAttribute("kind");
         IAttribute nameAttribute = tag.getAttribute("name");
-        IAttribute colorSchemeAttribute = tag.getAttribute("colorScheme");
 
-        structureHandler.replaceWith(commentHtml(groupAttribute, kindAttribute, nameAttribute, colorSchemeAttribute),
+        structureHandler.replaceWith(commentHtml(groupAttribute, kindAttribute, nameAttribute),
                 false);
     }
 
     private String commentHtml(IAttribute groupAttribute, IAttribute kindAttribute,
-                               IAttribute nameAttribute, IAttribute colorSchemeAttribute) {
+                               IAttribute nameAttribute) {
         if (kindAttribute == null || StringUtils.isBlank(kindAttribute.getValue())) {
             log.warn("Comment widget tag attributes 'kind' is missing.");
             return "<p style=\"color:red\">Comment widget attributes 'kind' is required but missing found.</p>";
@@ -62,7 +61,6 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("group", group);
         properties.setProperty("kind", kindAttribute.getValue());
         properties.setProperty("name", nameAttribute.getValue());
-        properties.setProperty("colorScheme", getColorScheme(colorSchemeAttribute));
         properties.setProperty("domId", domIdFrom(group, kindAttribute.getValue(), nameAttribute.getValue()));
 
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
@@ -71,12 +69,10 @@ public class DefaultCommentWidget implements CommentWidget {
                 <script>
                   CommentWidget.init(
                     "#${domId}",
-                    "/plugins/PluginCommentWidget/assets/static/style.css?version=${version}",
                     {
                       group: "${group}",
                       kind: "${kind}",
-                      name: "${name}",
-                      colorScheme: ${colorScheme}
+                      name: "${name}"
                     }
                   );
                 </script>
@@ -94,10 +90,5 @@ public class DefaultCommentWidget implements CommentWidget {
     private String getGroup(IAttribute groupAttribute) {
         return groupAttribute.getValue() == null ? ""
                 : StringUtils.defaultString(groupAttribute.getValue());
-    }
-
-    private String getColorScheme(IAttribute colorSchemeAttribute) {
-        return colorSchemeAttribute == null ? "'light'"
-                : StringUtils.defaultString(colorSchemeAttribute.getValue(), "'light'");
     }
 }

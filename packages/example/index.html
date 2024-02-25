@@ -5,9 +5,22 @@
     <link href="/favicon.ico" rel="icon" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>@halo-dev/comment-widget - example</title>
-  </head>
-  <body class="bg-slate-50 dark:bg-slate-900">
-    <div id="app"></div>
     <script src="/src/main.ts" type="module"></script>
+
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <comment-widget
+      baseUrl="https://ryanc.cc"
+      group="content.halo.run"
+      kind="SinglePage"
+      version="v1alpha1"
+      name="28"
+    ></comment-widget>
   </body>
 </html>
