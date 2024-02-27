@@ -15,11 +15,16 @@ export class BaseCommentItem extends LitElement {
   @property({ type: String })
   creationTime: string | undefined;
 
+  @property({ type: Boolean })
+  breath: boolean | undefined;
+
   @property({ type: String })
   content = '';
 
   override render() {
-    return html`<div class="base-comment-item">
+    return html`<div
+      class="base-comment-item ${this.breath ? 'animate-breath' : ''}"
+    >
       <div class="base-comment-item-avatar">
         <user-avatar
           src="${this.userAvatar || ''}"
@@ -35,7 +40,8 @@ export class BaseCommentItem extends LitElement {
         </div>
 
         <div class="base-comment-item-content">
-          <pre>${this.content}</pre>
+          <pre><slot name="pre-content"></slot>${this.content}
+          </pre>
         </div>
 
         <div class="base-comment-item-actions">
@@ -94,6 +100,22 @@ export class BaseCommentItem extends LitElement {
         margin-top: 0.5rem;
         display: flex;
         align-items: center;
+      }
+
+      .animate-breath {
+        animation: breath 1s ease-in-out infinite;
+      }
+
+      @keyframes breath {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
     `,
   ];

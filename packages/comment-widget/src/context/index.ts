@@ -15,4 +15,6 @@ export const currentUserContext = createContext<DetailedUser | undefined>(
   Symbol('currentUser')
 );
 
-export const emojiDataUrlContext = createContext<string>(Symbol('emojiDataUrl'));
+export const emojiDataUrlContext = createContext<string>(
+  Symbol('emojiDataUrl')
+);

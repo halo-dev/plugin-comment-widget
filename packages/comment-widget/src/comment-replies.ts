@@ -23,6 +23,9 @@ export class CommentReplies extends LitElement {
   @state()
   loading = false;
 
+  @state()
+  activeQuoteReply: ReplyVo | undefined = undefined;
+
   override render() {
     return html`<div class="comment-replies">
       <reply-form .comment=${this.comment}></reply-form>
@@ -36,10 +39,17 @@ export class CommentReplies extends LitElement {
                 html`<reply-item
                   .comment=${this.comment}
                   .reply="${item}"
+                  .replies=${this.replies}
+                  .activeQuoteReply=${this.activeQuoteReply}
+                  @set-active-quote-reply=${this.onSetActiveQuoteReply}
                 ></reply-item>`
             )}
           `}
     </div>`;
+  }
+
+  onSetActiveQuoteReply(event: CustomEvent) {
+    this.activeQuoteReply = event.detail.quoteReply;
   }
 
   async fetchReplies() {

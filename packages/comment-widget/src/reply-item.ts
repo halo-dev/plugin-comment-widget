@@ -22,6 +22,12 @@ export class ReplyItem extends LitElement {
   @property({ type: Object })
   reply: ReplyVo | undefined;
 
+  @property({ type: Object })
+  activeQuoteReply: ReplyVo | undefined = undefined;
+
+  @property({ type: Array })
+  replies: ReplyVo[] = [];
+
   @state()
   showReplyForm = false;
 
@@ -30,6 +36,28 @@ export class ReplyItem extends LitElement {
 
   @state()
   upvoteCount = 0;
+
+  get quoteReply() {
+    const { quoteReply: quoteReplyName } = this.reply?.spec || {};
+    if (!quoteReplyName) {
+      return undefined;
+    }
+    return this.replies.find((reply) => reply.metadata.name === quoteReplyName);
+  }
+
+  get isQuoteReplyHovered() {
+    return this.activeQuoteReply?.metadata.name === this.reply?.metadata.name;
+  }
+
+  handleSetActiveQuoteReply(quoteReply?: ReplyVo) {
+    this.dispatchEvent(
+      new CustomEvent('set-active-quote-reply', {
+        detail: { quoteReply },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -89,6 +117,7 @@ export class ReplyItem extends LitElement {
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
         .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
+        .breath=${this.isQuoteReplyHovered}
       >
         <base-comment-item-action
           slot="action"
@@ -167,6 +196,27 @@ export class ReplyItem extends LitElement {
               </div>
             `
           : ``}
+        ${this.quoteReply
+          ? html`<span
+                slot="pre-content"
+                @mouseenter=${() =>
+                  this.handleSetActiveQuoteReply(this.quoteReply)}
+                @mouseleave=${() => this.handleSetActiveQuoteReply()}
+                class="reply-quote-badge"
+                ><svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M10 9V5l-7 7l7 7v-4.1c5 0 8.5 1.6 11 5.1c-1-5-4-10-11-11"
+                  /></svg
+                ><span>${this.quoteReply?.owner.displayName}</span>
+              </span>
+              <br slot="pre-content" />`
+          : ''}
       </base-comment-item>
     `;
   }
@@ -180,6 +230,29 @@ export class ReplyItem extends LitElement {
 
       .reply-form-wrapper {
         margin-top: 0.5rem;
+      }
+
+      .reply-quote-badge {
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.25rem;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+        padding-top: 0.125rem;
+        padding-bottom: 0.125rem;
+        font-weight: 500;
+        font-size: 0.75rem;
+        line-height: 1rem;
+        border-radius: 0.25rem;
+        background-color: #e5e7eb;
+        color: #4b5563;
+        cursor: pointer;
+      }
+
+      .reply-quote-badge:hover {
+        text-decoration: underline;
+        color: #3b82f6;
       }
     `,
   ];
