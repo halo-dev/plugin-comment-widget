@@ -42,7 +42,7 @@ export class CommentWidget extends LitElement {
 
   @provide({ context: emojiDataUrlContext })
   @property({ type: String })
-  emojiDataUrl = '';
+  emojiDataUrl = 'https://unpkg.com/@emoji-mart/data';
 
   @provide({ context: currentUserContext })
   @state()
@@ -55,7 +55,8 @@ export class CommentWidget extends LitElement {
   @state()
   comments: CommentVoList = {
     page: 1,
-    size: 20,
+    // TODO: change to 20
+    size: 5,
     total: 0,
     items: [],
     first: true,
