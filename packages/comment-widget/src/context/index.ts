@@ -1,4 +1,4 @@
-import { DetailedUser } from '@halo-dev/api-client';
+import { User } from '@halo-dev/api-client';
 import { createContext } from '@lit/context';
 
 export const baseUrlContext = createContext<string>(Symbol('baseUrl'));
@@ -11,7 +11,7 @@ export const allowAnonymousCommentsContext = createContext<boolean>(
   Symbol('allowAnonymousComments')
 );
 
-export const currentUserContext = createContext<DetailedUser | undefined>(
+export const currentUserContext = createContext<User | undefined>(
   Symbol('currentUser')
 );
 

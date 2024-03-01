@@ -36,7 +36,7 @@ export class CommentForm extends LitElement {
   @state()
   version = 'v1alpha1';
 
-  @consume({ context: allowAnonymousCommentsContext })
+  @consume({ context: allowAnonymousCommentsContext, subscribe: true })
   @state()
   allowAnonymousComments = false;
 

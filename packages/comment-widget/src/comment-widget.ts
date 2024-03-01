@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { CommentVoList, DetailedUser } from '@halo-dev/api-client';
+import { CommentVoList, User } from '@halo-dev/api-client';
 import { repeat } from 'lit/directives/repeat.js';
 import resetStyles from './styles/reset';
 import { provide } from '@lit/context';
@@ -46,7 +46,7 @@ export class CommentWidget extends LitElement {
 
   @provide({ context: currentUserContext })
   @state()
-  currentUser: DetailedUser | undefined;
+  currentUser: User | undefined;
 
   @provide({ context: allowAnonymousCommentsContext })
   @state()
