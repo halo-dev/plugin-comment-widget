@@ -205,3 +205,53 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
    1. `auto`：自动模式，根据系统的暗黑模式自动切换。
    2. `dark`：强制暗黑模式。
    3. `light`：强制明亮模式。
+
+## 作为组件使用
+
+此插件的 UI 部分采用 [Lit Element](https://lit.dev/) 编写，并最终编译为 Web Component，所以理论上可以在任何 JS 框架中使用。这非常适用于将 Halo 作为 Headless CMS 使用的场景。例如使用 Vue、React、Astro 等框架编写网站，并调用 Halo 的 API 来渲染网页，这个时候文章评论的解决方案就可以直接使用此组件。
+
+安装：
+
+```bash
+pnpm install @halo-dev/comment-widget
+```
+
+### Vue
+
+在 Vue 组件中使用时，需要在 Vue 的编译选项中设置将此组件标记为非 Vue 组件，以下是 Vite 的配置示例：
+
+```js
+import vue from '@vitejs/plugin-vue'
+
+export default {
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag === 'comment-widget'
+        }
+      }
+    })
+  ]
+}
+```
+
+然后在 SFC 中使用即可：
+
+```vue
+<script setup>
+import '@halo-dev/comment-widget'
+</script>
+
+<template>
+  <comment-widget />
+</template>
+```
+
+## React
+
+TODO
+
+## Astro
+
+TODO
