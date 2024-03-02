@@ -8,24 +8,24 @@ export class BaseCommentItemAction extends LitElement {
 
   override render() {
     return html`
-      <div slot="action" class="base-comment-item-action">
-        <div class="base-comment-item-action-icon">
+      <div slot="action" class="item-action">
+        <div class="item-action__icon">
           <slot name="icon"></slot>
         </div>
-        <span class="base-comment-item-action-text"> ${this.text} </span>
+        <span class="item-action__text"> ${this.text} </span>
       </div>
     `;
   }
 
   static override styles = css`
-    .base-comment-item-action {
+    .item-action {
       display: inline-flex;
       align-items: center;
       cursor: pointer;
       margin-right: 0.5rem;
     }
 
-    .base-comment-item-action-icon {
+    .item-action__icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -36,26 +36,26 @@ export class BaseCommentItemAction extends LitElement {
       padding: 0.45rem;
     }
 
-    .base-comment-item-action-icon ::slotted(svg) {
+    .item-action__icon ::slotted(svg) {
       color: var(--component-comment-item-action-color);
       width: 1rem;
       height: 1rem;
     }
 
-    .base-comment-item-action-text {
+    .item-action__text {
       color: var(--component-comment-item-action-color);
       user-select: none;
     }
 
-    .base-comment-item-action:hover .base-comment-item-action-icon {
+    .item-action:hover .item-action__icon {
       background-color: var(--component-comment-item-action-bg-color-hover);
     }
 
-    .base-comment-item-action:hover .base-comment-item-action-text {
+    .item-action:hover .item-action__text {
       color: var(--component-comment-item-action-color-hover);
     }
 
-    .base-comment-item-action:hover .base-comment-item-action-icon ::slotted(svg) {
+    .item-action:hover .item-action__icon ::slotted(svg) {
       color: var(--component-comment-item-action-color-hover);
     }
   `;

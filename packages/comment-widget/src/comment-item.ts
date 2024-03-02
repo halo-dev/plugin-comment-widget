@@ -83,7 +83,7 @@ export class CommentItem extends LitElement {
     >
       <base-comment-item-action
         slot="action"
-        class="comment-item-action-upvote"
+        class="item__action--upvote"
         .text="${this.upvoteCount + ''}"
         @click="${this.handleUpvote}"
       >
@@ -156,7 +156,7 @@ export class CommentItem extends LitElement {
     varStyles,
     baseStyles,
     css`
-      .comment-item-action-upvote {
+      .item__action--upvote {
         margin-left: -0.5rem;
       }
     `,

@@ -132,10 +132,10 @@ export class BaseForm extends LitElement {
   }
 
   renderAccountInfo() {
-    return html`<div class="base-form-account-info">
+    return html`<div class="form__account-info">
       ${this.currentUser?.spec.avatar ? html`<img src=${this.currentUser.spec.avatar} />` : ''}
       <span> ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name} </span>
-      <button @click=${this.handleLogout} type="button" class="base-form-account-btn-logout">
+      <button @click=${this.handleLogout} type="button" class="form__button--logout">
         退出登录
       </button>
     </div>`;
@@ -150,9 +150,9 @@ export class BaseForm extends LitElement {
 
   override render() {
     return html`
-      <form class="base-form" @submit="${this.onSubmit}">
+      <form class="form" @submit="${this.onSubmit}">
         <textarea
-          class="base-form-editor"
+          class="form__editor"
           ${ref(this.textareaRef)}
           placeholder="编写评论"
           rows="4"
@@ -162,7 +162,7 @@ export class BaseForm extends LitElement {
         ></textarea>
 
         ${!this.currentUser && this.allowAnonymousComments
-          ? html`<div class="base-form-anonymous-inputs">
+          ? html`<div class="form__anonymous-inputs">
               <input
                 name="displayName"
                 value=${this.customAccount.displayName}
@@ -187,32 +187,32 @@ export class BaseForm extends LitElement {
             </div>`
           : ''}
 
-        <div class="base-form-footer">
-          <div class="base-form-account">
+        <div class="form__footer">
+          <div class="form-account">
             ${this.currentUser ? this.renderAccountInfo() : ''}
             ${!this.currentUser && !this.allowAnonymousComments
               ? html`<button
                   @click=${this.handleOpenLoginPage}
-                  class="base-form-account-btn-login"
+                  class="form__button--login"
                   type="button"
                 >
                   登录
                 </button> `
               : ''}
           </div>
-          <div class="base-form-actions">
-            <button class="base-form-btn-emoji" type="button">
+          <div class="form__actions">
+            <button class="form__button--emoji" type="button">
               ${this.emojiLoading
                 ? html`<icon-loading></icon-loading>`
                 : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`}
 
               <div
-                class="base-form-emoji-panel"
+                class="form__emoji-panel"
                 style="display: ${this.emojiPickerVisible ? 'block' : 'none'}"
                 ${ref(this.emojiPickerWrapperRef)}
               ></div>
             </button>
-            <button type="submit" class="base-form-btn-submit">
+            <button type="submit" class="form__button--submit">
               <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="h-full w-full">
                 <path
                   fill="currentColor"
@@ -267,18 +267,18 @@ export class BaseForm extends LitElement {
         --color-border-over: var(--component-emoji-picker-color-border-over);
       }
 
-      .base-form {
+      .form {
         width: 100%;
         display: flex;
         flex-direction: column;
         gap: 1rem;
       }
 
-      .base-form-editor {
+      .form__editor {
         height: auto;
       }
 
-      .base-form-anonymous-inputs {
+      .form__anonymous-inputs {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 0.5rem;
@@ -286,12 +286,12 @@ export class BaseForm extends LitElement {
       }
 
       @media (max-width: 640px) {
-        .base-form-anonymous-inputs {
+        .form__anonymous-inputs {
           grid-template-columns: 1fr;
         }
       }
 
-      .base-form-anonymous-inputs a {
+      .form__anonymous-inputs a {
         font-size: 0.75rem;
         line-height: 1rem;
         color: darkcyan;
@@ -301,7 +301,7 @@ export class BaseForm extends LitElement {
         user-select: none;
       }
 
-      .base-form-anonymous-inputs a:hover {
+      .form__anonymous-inputs a:hover {
         color: inherit;
       }
 
@@ -326,24 +326,24 @@ export class BaseForm extends LitElement {
         box-shadow: var(--component-form-input-box-shadow-focus);
       }
 
-      .base-form-account-info {
+      .form__account-info {
         display: flex;
         align-items: center;
         gap: 0.75rem;
       }
 
-      .base-form-account-info img {
+      .form__account-info img {
         height: 2rem;
         width: 2rem;
         border-radius: 9999px;
       }
 
-      .base-form-account-info span {
+      .form__account-info span {
         font-weight: 500;
       }
 
-      .base-form-account-btn-logout,
-      .base-form-account-btn-login {
+      .form__button--logout,
+      .form__button--login {
         border-radius: var(--base-border-radius);
         background: var(--component-form-button-login-bg-color);
         border: 1px solid var(--component-form-button-login-border-color);
@@ -354,34 +354,34 @@ export class BaseForm extends LitElement {
         user-select: none;
       }
 
-      .base-form-account-btn-logout:hover,
-      .base-form-account-btn-login:hover {
+      .form__button--logout:hover,
+      .form__button--login:hover {
         background: var(--component-form-button-login-bg-color-hover);
       }
 
-      .base-form-footer {
+      .form__footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
       }
 
-      .base-form-actions {
+      .form__actions {
         display: flex;
         align-items: center;
         gap: 0.75rem;
       }
 
-      .base-form-btn-emoji {
+      .form__button--emoji {
         color: var(--component-form-button-emoji-color);
         display: inline-flex;
         position: relative;
       }
 
-      .base-form-btn-emoji:hover {
+      .form__button--emoji:hover {
         color: inherit;
       }
 
-      .base-form-emoji-panel {
+      .form__emoji-panel {
         position: absolute;
         top: 2rem;
         right: 0;
@@ -391,12 +391,12 @@ export class BaseForm extends LitElement {
       }
 
       @media (max-width: 640px) {
-        .base-form-emoji-panel {
+        .form__emoji-panel {
           right: -7.8rem;
         }
       }
 
-      .base-form-btn-submit {
+      .form__button--submit {
         border-radius: var(--base-border-radius);
         background-color: var(--component-form-button-submit-bg-color);
         color: var(--component-form-button-submit-color);
@@ -419,16 +419,16 @@ export class BaseForm extends LitElement {
         gap: 0.5rem;
       }
 
-      .base-form-btn-submit:hover {
+      .form__button--submit:hover {
         opacity: 0.8;
         border-color: var(--component-form-button-submit-border-color-hover);
       }
 
-      .base-form-btn-submit:active {
+      .form__button--submit:active {
         opacity: 0.7;
       }
 
-      .base-form-btn-submit:disabled {
+      .form__button--submit:disabled {
         cursor: not-allowed;
         opacity: 0.5;
       }

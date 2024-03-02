@@ -116,7 +116,7 @@ export class ReplyItem extends LitElement {
       >
         <base-comment-item-action
           slot="action"
-          class="reply-item-action-upvote"
+          class="item-action__upvote"
           .text="${this.upvoteCount + ''}"
           @click="${this.handleUpvote}"
         >
@@ -178,7 +178,7 @@ export class ReplyItem extends LitElement {
 
         ${this.showReplyForm
           ? html`
-              <div class="reply-form-wrapper" slot="footer">
+              <div class="form__wrapper" slot="footer">
                 <reply-form
                   .comment=${this.comment}
                   .quoteReply=${this.reply}
@@ -192,7 +192,7 @@ export class ReplyItem extends LitElement {
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
-                class="reply-quote-badge"
+                class="item__quote-badge"
                 ><svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="1em"
@@ -215,15 +215,15 @@ export class ReplyItem extends LitElement {
     varStyles,
     baseStyles,
     css`
-      .reply-item-action-upvote {
+      .item-action__upvote {
         margin-left: -0.5rem;
       }
 
-      .reply-form-wrapper {
+      .form__wrapper {
         margin-top: 0.5rem;
       }
 
-      .reply-quote-badge {
+      .item__quote-badge {
         display: inline-flex;
         flex-direction: row;
         align-items: center;
@@ -241,7 +241,7 @@ export class ReplyItem extends LitElement {
         cursor: pointer;
       }
 
-      .reply-quote-badge:hover {
+      .item__quote-badge:hover {
         text-decoration: underline;
         color: #3b82f6;
       }

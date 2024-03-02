@@ -84,12 +84,12 @@ export class CommentWidget extends LitElement {
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
-            <div class="comments-wrapper">
-              <div class="comment-stats">
+            <div class="comment-widget__wrapper">
+              <div class="comment-widget__stats">
                 <span>${this.comments.total} 条评论</span>
               </div>
 
-              <div class="comments">
+              <div class="comment-widget__list">
                 ${repeat(
                   this.comments.items,
                   (item) => item.metadata.name,
@@ -183,11 +183,11 @@ export class CommentWidget extends LitElement {
         width: 100%;
       }
 
-      .comments-wrapper {
+      .comment-widget__wrapper {
         margin-top: 1.2rem;
       }
 
-      .comment-stats {
+      .comment-widget__stats {
         margin: 0.875rem 0;
         font-weight: 500;
       }

@@ -26,25 +26,25 @@ export class BaseCommentItem extends LitElement {
   content = '';
 
   override render() {
-    return html`<div class="base-comment-item ${this.breath ? 'animate-breath' : ''}">
-      <div class="base-comment-item-avatar">
+    return html`<div class="item ${this.breath ? 'item--animate-breath' : ''}">
+      <div class="item__avatar">
         <user-avatar
           src="${this.userAvatar || ''}"
           alt="${this.userDisplayName || ''}"
         ></user-avatar>
       </div>
-      <div class="base-comment-item-main">
-        <div class="base-comment-item-meta">
-          <div class="base-comment-item-author">${this.userDisplayName}</div>
-          <div class="base-comment-item-meta-info">${timeAgo(this.creationTime)}</div>
-          ${!this.approved ? html`<div class="base-comment-item-meta-info">审核中</div>` : ''}
+      <div class="item__main">
+        <div class="item__meta">
+          <div class="item__author">${this.userDisplayName}</div>
+          <div class="item__meta-info">${timeAgo(this.creationTime)}</div>
+          ${!this.approved ? html`<div class="item__meta-info">审核中</div>` : ''}
         </div>
 
-        <div class="base-comment-item-content">
+        <div class="item__content">
           <pre><slot name="pre-content"></slot>${this.content}</pre>
         </div>
 
-        <div class="base-comment-item-actions">
+        <div class="item__actions">
           <slot name="action"></slot>
         </div>
 
@@ -57,48 +57,48 @@ export class BaseCommentItem extends LitElement {
     varStyles,
     baseStyles,
     css`
-      .base-comment-item {
+      .item {
         display: flex;
         gap: 0.75rem;
         padding: 1rem 0;
       }
 
-      .base-comment-item-main {
+      .item__main {
         flex: 1;
       }
 
-      .base-comment-item-meta {
+      .item__meta {
         display: flex;
         align-items: center;
         gap: 0.75rem;
       }
 
-      .base-comment-item-author {
+      .item__author {
         font-weight: 500;
       }
 
-      .base-comment-item-meta-info {
+      .item__meta-info {
         color: darkcyan;
         font-size: 0.75rem;
         line-height: 1rem;
       }
 
-      .base-comment-item-content {
+      .item__content {
         margin-top: 0.5rem;
       }
 
-      .base-comment-item-content pre {
+      .item__content pre {
         white-space: pre-wrap;
         overflow-wrap: break-word;
       }
 
-      .base-comment-item-actions {
+      .item__actions {
         margin-top: 0.5rem;
         display: flex;
         align-items: center;
       }
 
-      .animate-breath {
+      .item--animate-breath {
         animation: breath 1s ease-in-out infinite;
       }
 

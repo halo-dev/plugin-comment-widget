@@ -29,12 +29,12 @@ export class CommentReplies extends LitElement {
   activeQuoteReply: ReplyVo | undefined = undefined;
 
   override render() {
-    return html`<div class="comment-replies-wrapper">
+    return html`<div class="replies__wrapper">
       <reply-form @reload=${this.fetchReplies} .comment=${this.comment}></reply-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
-            <div class="comment-replies">
+            <div class="replies__list">
               ${repeat(
                 this.replies,
                 (item) => item.metadata.name,
@@ -78,11 +78,11 @@ export class CommentReplies extends LitElement {
     varStyles,
     baseStyles,
     css`
-      .comment-replies-wrapper {
+      .replies__wrapper {
         margin-top: 0.5rem;
       }
 
-      .comment-replies {
+      .replies__list {
         margin-top: 0.875rem;
       }
     `,

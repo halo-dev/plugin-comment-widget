@@ -54,7 +54,7 @@ export class CommentPagination extends LitElement {
 
     return pageNumbers.map((number) => {
       if (number === '...') {
-        return html`<li class="pagination-dot">
+        return html`<li class="pagination__dot">
           <svg
             width="15"
             height="15"
@@ -72,7 +72,7 @@ export class CommentPagination extends LitElement {
           </svg>
         </li>`;
       } else {
-        return html`<li class="pagination-number ${this.page === number ? 'active' : ''}">
+        return html`<li class="pagination__number ${this.page === number ? 'active' : ''}">
           <button @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
             ${number}
           </button>
@@ -96,7 +96,7 @@ export class CommentPagination extends LitElement {
   override render() {
     return html`
       <ul class="pagination">
-        <li class="pagination-button">
+        <li class="pagination__button">
           <button @click=${() => this.gotoPage(this.page - 1)} ?disabled=${this.page === 1}>
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
               <path
@@ -112,7 +112,7 @@ export class CommentPagination extends LitElement {
           </button>
         </li>
         ${this.renderPageNumbers()}
-        <li class="pagination-button">
+        <li class="pagination__button">
           <button
             @click=${() => this.gotoPage(this.page + 1)}
             ?disabled=${this.page === this.totalPages}
@@ -156,8 +156,8 @@ export class CommentPagination extends LitElement {
         user-select: none;
       }
 
-      .pagination-button button,
-      .pagination-number button {
+      .pagination__button button,
+      .pagination__number button {
         border-radius: var(--base-border-radius);
         display: inline-flex;
         align-items: center;
@@ -169,30 +169,30 @@ export class CommentPagination extends LitElement {
         border: 1px solid transparent;
       }
 
-      .pagination-button button {
+      .pagination__button button {
         gap: 0.5rem;
       }
 
-      .pagination-number button {
+      .pagination__number button {
         font-weight: normal;
       }
 
-      .pagination-button button:disabled {
+      .pagination__button button:disabled {
         cursor: not-allowed;
         opacity: 0.5;
       }
 
-      .pagination-button button:hover,
-      .pagination-number button:hover {
+      .pagination__button button:hover,
+      .pagination__number button:hover {
         background-color: var(--component-pagination-button-bg-color-hover);
       }
 
-      .pagination-number.active button {
+      .pagination__number.active button {
         background-color: var(--component-pagination-button-bg-color-active);
         border: 1px solid var(--component-pagination-button-border-color-active);
       }
 
-      .pagination-dot {
+      .pagination__dot {
         padding: 0.4rem 0.875rem;
       }
     `,

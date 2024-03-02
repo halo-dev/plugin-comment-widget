@@ -65,13 +65,13 @@ export class UserAvatar extends LitElement {
   override render() {
     if (this.src) {
       if (this.loading) {
-        return html`<div class="avatar-wrapper avatar-loading">
+        return html`<div class="avatar avatar--loading">
           <icon-loading></icon-loading>
         </div>`;
       }
 
       if (this.error) {
-        return html`<div class="avatar-wrapper avatar-error">
+        return html`<div class="avatar avatar--error">
           <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
               fill="currentColor"
@@ -81,13 +81,13 @@ export class UserAvatar extends LitElement {
         </div>`;
       }
 
-      return html`<div class="avatar-wrapper">
+      return html`<div class="avatar">
         <img src="${this.src}" alt="${this.alt || ''}" loading="lazy" />
       </div>`;
     }
 
-    return html`<div class="avatar-wrapper">
-      <span class="avatar-placeholder">${this.getPlaceholderText()}</span>
+    return html`<div class="avatar">
+      <span class="avatar__placeholder">${this.getPlaceholderText()}</span>
     </div>`;
   }
 
@@ -95,7 +95,7 @@ export class UserAvatar extends LitElement {
     varStyles,
     baseStyles,
     css`
-      .avatar-wrapper {
+      .avatar {
         border-radius: var(--component-avatar-rounded);
         height: var(--component-avatar-size);
         width: var(--component-avatar-size);
@@ -106,19 +106,19 @@ export class UserAvatar extends LitElement {
         background-color: rgb(243 244 246);
       }
 
-      .avatar-wrapper img {
+      .avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
 
-      .avatar-error svg {
+      .avatar--error svg {
         height: 1.15rem;
         width: 1.15rem;
         color: rgb(255 59 48);
       }
 
-      .avatar-placeholder {
+      .avatar__placeholder {
         font-weight: 500;
         color: rgb(31 41 55);
         font-size: 0.75rem;
