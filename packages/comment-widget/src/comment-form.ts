@@ -4,12 +4,13 @@ import { consume } from '@lit/context';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
+  currentUserContext,
   groupContext,
   kindContext,
   nameContext,
   versionContext,
 } from './context';
-import { CommentRequest } from '@halo-dev/api-client';
+import { CommentRequest, User } from '@halo-dev/api-client';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { BaseForm } from './base-form';
 import './base-form';
@@ -19,6 +20,10 @@ export class CommentForm extends LitElement {
   @consume({ context: baseUrlContext })
   @state()
   baseUrl = '';
+
+  @consume({ context: currentUserContext, subscribe: true })
+  @state()
+  currentUser: User | undefined;
 
   @consume({ context: groupContext })
   @state()
@@ -54,22 +59,38 @@ export class CommentForm extends LitElement {
 
     const data = e.detail;
 
+    const { displayName, email, website, content } = data || {};
+
     const commentRequest: CommentRequest = {
-      raw: data.content,
-      content: data.content,
-      allowNotification: false,
+      raw: content,
+      content: content,
+      // TODO: support user input
+      allowNotification: true,
       subjectRef: {
         group: this.group,
         kind: this.kind,
         name: this.name,
         version: this.version,
       },
-      owner: {
-        displayName: data.displayName,
-        email: data.email,
-        website: data.website,
-      },
     };
+
+    if (!this.currentUser && !this.allowAnonymousComments) {
+      alert('请先登录');
+      return;
+    }
+
+    if (!this.currentUser && this.allowAnonymousComments) {
+      if (!displayName || !email) {
+        alert('请先登录或者完善信息');
+        return;
+      } else {
+        commentRequest.owner = {
+          displayName: displayName,
+          email: email,
+          website: website,
+        };
+      }
+    }
 
     await fetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`, {
       method: 'POST',

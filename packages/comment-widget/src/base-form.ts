@@ -4,6 +4,7 @@ import resetStyles from './styles/reset';
 import { Picker } from 'emoji-mart';
 import {
   allowAnonymousCommentsContext,
+  baseUrlContext,
   currentUserContext,
   emojiDataUrlContext,
   groupContext,
@@ -17,6 +18,10 @@ import { User } from '@halo-dev/api-client/index';
 
 @customElement('base-form')
 export class BaseForm extends LitElement {
+  @consume({ context: baseUrlContext })
+  @state()
+  baseUrl = '';
+
   @consume({ context: currentUserContext, subscribe: true })
   @state()
   currentUser: User | undefined;
@@ -78,6 +83,25 @@ export class BaseForm extends LitElement {
     window.location.href = this.loginUrl;
   }
 
+  async handleLogout() {
+    if (window.confirm('确定要退出登录吗？')) {
+      try {
+        const response = await fetch(`${this.baseUrl}/logout`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to logout');
+        }
+
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to logout', error);
+      }
+    }
+  }
+
   async handleOpenEmojiPicker() {
     if (this.emojiPickerVisible) {
       this.emojiPickerVisible = false;
@@ -122,7 +146,11 @@ export class BaseForm extends LitElement {
       <span>
         ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
       </span>
-      <button type="button" class="base-form-account-btn-logout">
+      <button
+        @click=${this.handleLogout}
+        type="button"
+        class="base-form-account-btn-logout"
+      >
         退出登录
       </button>
     </div>`;
@@ -162,7 +190,7 @@ export class BaseForm extends LitElement {
                 type="url"
                 placeholder="网站"
               />
-              <a href=${this.loginUrl}> （已有该站点的账号） </a>
+              <a href=${this.loginUrl} rel="nofollow"> （已有该站点的账号） </a>
             </div>`
           : ''}
 
@@ -334,7 +362,6 @@ export class BaseForm extends LitElement {
       .base-form-account-btn-logout,
       .base-form-account-btn-login {
         appearance: none;
-        background: none;
         border: 1px solid #f2f4f8;
         color: #333;
         font-size: 0.75rem;
@@ -343,6 +370,12 @@ export class BaseForm extends LitElement {
         padding: 0 0.75rem;
         height: 1.75rem;
         user-select: none;
+        background: #fff;
+      }
+
+      .base-form-account-btn-logout:hover,
+      .base-form-account-btn-login:hover {
+        background: #f2f4f8;
       }
 
       .base-form-footer {
