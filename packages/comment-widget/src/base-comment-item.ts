@@ -40,8 +40,7 @@ export class BaseCommentItem extends LitElement {
         </div>
 
         <div class="base-comment-item-content">
-          <pre><slot name="pre-content"></slot>${this.content}
-          </pre>
+          <pre><slot name="pre-content"></slot>${this.content}</pre>
         </div>
 
         <div class="base-comment-item-actions">

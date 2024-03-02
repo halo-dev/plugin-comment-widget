@@ -27,23 +27,25 @@ export class CommentReplies extends LitElement {
   activeQuoteReply: ReplyVo | undefined = undefined;
 
   override render() {
-    return html`<div class="comment-replies">
+    return html`<div class="comment-replies-wrapper">
       <reply-form .comment=${this.comment}></reply-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
-            ${repeat(
-              this.replies,
-              (item) => item.metadata.name,
-              (item) =>
-                html`<reply-item
-                  .comment=${this.comment}
-                  .reply="${item}"
-                  .replies=${this.replies}
-                  .activeQuoteReply=${this.activeQuoteReply}
-                  @set-active-quote-reply=${this.onSetActiveQuoteReply}
-                ></reply-item>`
-            )}
+            <div class="comment-replies">
+              ${repeat(
+                this.replies,
+                (item) => item.metadata.name,
+                (item) =>
+                  html`<reply-item
+                    .comment=${this.comment}
+                    .reply="${item}"
+                    .replies=${this.replies}
+                    .activeQuoteReply=${this.activeQuoteReply}
+                    @set-active-quote-reply=${this.onSetActiveQuoteReply}
+                  ></reply-item>`
+              )}
+            </div>
           `}
     </div>`;
   }
@@ -68,8 +70,12 @@ export class CommentReplies extends LitElement {
   }
 
   static override styles = css`
-    .comment-replies {
+    .comment-replies-wrapper {
       margin-top: 0.5rem;
+    }
+
+    .comment-replies {
+      margin-top: 0.875rem;
     }
   `;
 }

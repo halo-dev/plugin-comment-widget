@@ -82,11 +82,18 @@ export class CommentWidget extends LitElement {
       <comment-form @reload="${this.fetchComments}"></comment-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
-        : html`${repeat(
-            this.comments.items,
-            (item) => item.metadata.name,
-            (item) => html`<comment-item .comment=${item}></comment-item>`
-          )}`}
+        : html`
+            <div class="comment-widget-comments">
+              <div class="comment-widget-stats">
+                <span>${this.comments.total} 条评论</span>
+              </div>
+              ${repeat(
+                this.comments.items,
+                (item) => item.metadata.name,
+                (item) => html`<comment-item .comment=${item}></comment-item>`
+              )}
+            </div>
+          `}
       ${this.shouldDisplayPagination
         ? html`
             <comment-pagination
@@ -172,6 +179,17 @@ export class CommentWidget extends LitElement {
 
       .halo-comment-widget {
         width: 100%;
+      }
+
+      .comment-widget-comments {
+        margin-top: 1.2rem;
+      }
+
+      .comment-widget-stats {
+        margin: 0.875rem 0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #333;
       }
     `,
   ];
