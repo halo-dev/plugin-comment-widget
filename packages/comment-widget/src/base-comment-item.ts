@@ -2,7 +2,8 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './user-avatar';
 import { timeAgo } from './utils/date';
-import resetStyles from './styles/reset';
+import baseStyles from './styles/base';
+import varStyles from './styles/var';
 
 @customElement('base-comment-item')
 export class BaseCommentItem extends LitElement {
@@ -16,15 +17,16 @@ export class BaseCommentItem extends LitElement {
   creationTime: string | undefined;
 
   @property({ type: Boolean })
+  approved: boolean | undefined;
+
+  @property({ type: Boolean })
   breath: boolean | undefined;
 
   @property({ type: String })
   content = '';
 
   override render() {
-    return html`<div
-      class="base-comment-item ${this.breath ? 'animate-breath' : ''}"
-    >
+    return html`<div class="base-comment-item ${this.breath ? 'animate-breath' : ''}">
       <div class="base-comment-item-avatar">
         <user-avatar
           src="${this.userAvatar || ''}"
@@ -34,9 +36,8 @@ export class BaseCommentItem extends LitElement {
       <div class="base-comment-item-main">
         <div class="base-comment-item-meta">
           <div class="base-comment-item-author">${this.userDisplayName}</div>
-          <div class="base-comment-item-date">
-            ${timeAgo(this.creationTime)}
-          </div>
+          <div class="base-comment-item-meta-info">${timeAgo(this.creationTime)}</div>
+          ${!this.approved ? html`<div class="base-comment-item-meta-info">审核中</div>` : ''}
         </div>
 
         <div class="base-comment-item-content">
@@ -53,7 +54,8 @@ export class BaseCommentItem extends LitElement {
   }
 
   static override styles = [
-    resetStyles,
+    varStyles,
+    baseStyles,
     css`
       .base-comment-item {
         display: flex;
@@ -73,11 +75,9 @@ export class BaseCommentItem extends LitElement {
 
       .base-comment-item-author {
         font-weight: 500;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
       }
 
-      .base-comment-item-date {
+      .base-comment-item-meta-info {
         color: rgb(107 114 128);
         font-size: 0.75rem;
         line-height: 1rem;
@@ -90,9 +90,6 @@ export class BaseCommentItem extends LitElement {
       .base-comment-item-content pre {
         white-space: pre-wrap;
         overflow-wrap: break-word;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
-        color: rgb(31 41 55);
       }
 
       .base-comment-item-actions {

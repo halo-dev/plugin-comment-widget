@@ -7,6 +7,8 @@ import { baseUrlContext } from './context';
 import './reply-item';
 import './loading-block';
 import './reply-form';
+import varStyles from './styles/var';
+import baseStyles from './styles/base';
 
 @customElement('comment-replies')
 export class CommentReplies extends LitElement {
@@ -28,10 +30,7 @@ export class CommentReplies extends LitElement {
 
   override render() {
     return html`<div class="comment-replies-wrapper">
-      <reply-form
-        @reload=${this.fetchReplies}
-        .comment=${this.comment}
-      ></reply-form>
+      <reply-form @reload=${this.fetchReplies} .comment=${this.comment}></reply-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
@@ -59,7 +58,9 @@ export class CommentReplies extends LitElement {
   }
 
   async fetchReplies() {
-    this.loading = true;
+    if (this.replies.length === 0) {
+      this.loading = true;
+    }
     const response = await fetch(
       `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`
     );
@@ -73,15 +74,19 @@ export class CommentReplies extends LitElement {
     this.fetchReplies();
   }
 
-  static override styles = css`
-    .comment-replies-wrapper {
-      margin-top: 0.5rem;
-    }
+  static override styles = [
+    varStyles,
+    baseStyles,
+    css`
+      .comment-replies-wrapper {
+        margin-top: 0.5rem;
+      }
 
-    .comment-replies {
-      margin-top: 0.875rem;
-    }
-  `;
+      .comment-replies {
+        margin-top: 0.875rem;
+      }
+    `,
+  ];
 }
 
 declare global {

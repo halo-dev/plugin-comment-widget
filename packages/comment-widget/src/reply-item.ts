@@ -1,7 +1,7 @@
 import { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import resetStyles from './styles/reset';
+import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
 import './base-comment-item-action';
@@ -9,6 +9,7 @@ import './reply-form';
 import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { consume } from '@lit/context';
 import { baseUrlContext } from './context';
+import varStyles from './styles/var';
 
 @customElement('reply-item')
 export class ReplyItem extends LitElement {
@@ -67,9 +68,7 @@ export class ReplyItem extends LitElement {
   }
 
   checkUpvotedStatus() {
-    const upvotedReplies = JSON.parse(
-      localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
-    );
+    const upvotedReplies = JSON.parse(localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]');
 
     if (upvotedReplies.includes(this.reply?.metadata.name)) {
       this.upvoted = true;
@@ -77,9 +76,7 @@ export class ReplyItem extends LitElement {
   }
 
   async handleUpvote() {
-    const upvotedReplies = JSON.parse(
-      localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
-    );
+    const upvotedReplies = JSON.parse(localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]');
 
     if (upvotedReplies.includes(this.reply?.metadata.name)) {
       return;
@@ -100,10 +97,7 @@ export class ReplyItem extends LitElement {
     });
 
     upvotedReplies.push(this.reply?.metadata.name);
-    localStorage.setItem(
-      LS_UPVOTED_REPLIES_KEY,
-      JSON.stringify(upvotedReplies)
-    );
+    localStorage.setItem(LS_UPVOTED_REPLIES_KEY, JSON.stringify(upvotedReplies));
 
     this.upvoteCount += 1;
     this.upvoted = true;
@@ -117,6 +111,7 @@ export class ReplyItem extends LitElement {
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
         .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
+        .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
       >
         <base-comment-item-action
@@ -133,12 +128,7 @@ export class ReplyItem extends LitElement {
                 height="32"
                 viewBox="0 0 24 24"
               >
-                <g
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                >
+                <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                   <path d="M0 0h24v24H0z" />
                   <path
                     fill="red"
@@ -200,8 +190,7 @@ export class ReplyItem extends LitElement {
         ${this.quoteReply
           ? html`<span
                 slot="pre-content"
-                @mouseenter=${() =>
-                  this.handleSetActiveQuoteReply(this.quoteReply)}
+                @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
                 class="reply-quote-badge"
                 ><svg
@@ -223,7 +212,8 @@ export class ReplyItem extends LitElement {
   }
 
   static override styles = [
-    resetStyles,
+    varStyles,
+    baseStyles,
     css`
       .reply-item-action-upvote {
         margin-left: -0.5rem;

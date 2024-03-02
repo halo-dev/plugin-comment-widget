@@ -48,10 +48,7 @@ export class CommentForm extends LitElement {
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
 
   override render() {
-    return html`<base-form
-      ${ref(this.baseFormRef)}
-      @submit="${this.onSubmit}"
-    ></base-form>`;
+    return html`<base-form ${ref(this.baseFormRef)} @submit="${this.onSubmit}"></base-form>`;
   }
 
   async onSubmit(e: CustomEvent) {

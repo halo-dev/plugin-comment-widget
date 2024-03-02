@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import resetStyles from './styles/reset';
+import baseStyles from './styles/base';
+import varStyles from './styles/var';
 
 @customElement('comment-pagination')
 export class CommentPagination extends LitElement {
@@ -71,13 +72,8 @@ export class CommentPagination extends LitElement {
           </svg>
         </li>`;
       } else {
-        return html`<li
-          class="pagination-number ${this.page === number ? 'active' : ''}"
-        >
-          <button
-            @click=${() => this.gotoPage(number)}
-            ?disabled=${number === this.page}
-          >
+        return html`<li class="pagination-number ${this.page === number ? 'active' : ''}">
+          <button @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
             ${number}
           </button>
         </li>`;
@@ -101,16 +97,8 @@ export class CommentPagination extends LitElement {
     return html`
       <ul class="pagination">
         <li class="pagination-button">
-          <button
-            @click=${() => this.gotoPage(this.page - 1)}
-            ?disabled=${this.page === 1}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-            >
+          <button @click=${() => this.gotoPage(this.page - 1)} ?disabled=${this.page === 1}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
               <path
                 fill="none"
                 stroke="#888888"
@@ -130,12 +118,7 @@ export class CommentPagination extends LitElement {
             ?disabled=${this.page === this.totalPages}
           >
             下一页
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
               <path
                 fill="none"
                 stroke="#888888"
@@ -152,7 +135,8 @@ export class CommentPagination extends LitElement {
   }
 
   static override styles = [
-    resetStyles,
+    varStyles,
+    baseStyles,
     css`
       :host {
         display: flex;
@@ -169,16 +153,16 @@ export class CommentPagination extends LitElement {
       .pagination li {
         display: inline-flex;
         align-items: center;
+        user-select: none;
       }
 
       .pagination-button button,
       .pagination-number button {
+        border-radius: var(--base-border-radius);
         display: inline-flex;
         align-items: center;
-        font-size: 0.875rem;
         font-weight: 600;
         padding: 0.4rem 0.875rem;
-        border-radius: 4px;
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 0.15s;
@@ -200,12 +184,12 @@ export class CommentPagination extends LitElement {
 
       .pagination-button button:hover,
       .pagination-number button:hover {
-        background-color: #f5f5f5;
+        background-color: var(--component-pagination-button-bg-color-hover);
       }
 
       .pagination-number.active button {
-        background-color: #fff;
-        border: 1px solid #d1d5db;
+        background-color: var(--component-pagination-button-bg-color-active);
+        border: 1px solid var(--component-pagination-button-border-color-active);
       }
 
       .pagination-dot {

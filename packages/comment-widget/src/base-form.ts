@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import resetStyles from './styles/reset';
+import baseStyles from './styles/base';
 import { Picker } from 'emoji-mart';
 import {
   allowAnonymousCommentsContext,
@@ -16,6 +16,7 @@ import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import './icons/icon-loading';
 import './icons/icon-emoji';
 import type { User } from '@halo-dev/api-client';
+import varStyles from './styles/var';
 
 @customElement('base-form')
 export class BaseForm extends LitElement {
@@ -61,23 +62,15 @@ export class BaseForm extends LitElement {
   emojiPickerVisible = false;
 
   get customAccount() {
-    return JSON.parse(
-      localStorage.getItem('halo-comment-custom-account') || '{}'
-    );
+    return JSON.parse(localStorage.getItem('halo-comment-custom-account') || '{}');
   }
 
   get loginUrl() {
-    const parentDomId = `#comment-${[
-      this.group?.replaceAll('.', '-'),
-      this.kind,
-      this.name,
-    ]
+    const parentDomId = `#comment-${[this.group?.replaceAll('.', '-'), this.kind, this.name]
       .join('-')
       .replaceAll(/-+/g, '-')}`;
 
-    return `/console/login?redirect_uri=${encodeURIComponent(
-      window.location.href + parentDomId
-    )}`;
+    return `/console/login?redirect_uri=${encodeURIComponent(window.location.href + parentDomId)}`;
   }
 
   handleOpenLoginPage() {
@@ -127,13 +120,12 @@ export class BaseForm extends LitElement {
           this.textareaRef.value.focus();
         }
       },
-      theme: 'light',
+      // TODO: support locale
+      // locale: zh,
     });
 
     // TODO: fix this ts error
-    this.emojiPickerWrapperRef.value?.appendChild(
-      emojiPicker as unknown as Node
-    );
+    this.emojiPickerWrapperRef.value?.appendChild(emojiPicker as unknown as Node);
 
     this.emojiPickerVisible = true;
     this.emojiLoading = false;
@@ -141,17 +133,9 @@ export class BaseForm extends LitElement {
 
   renderAccountInfo() {
     return html`<div class="base-form-account-info">
-      ${this.currentUser?.spec.avatar
-        ? html`<img src=${this.currentUser.spec.avatar} />`
-        : ''}
-      <span>
-        ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
-      </span>
-      <button
-        @click=${this.handleLogout}
-        type="button"
-        class="base-form-account-btn-logout"
-      >
+      ${this.currentUser?.spec.avatar ? html`<img src=${this.currentUser.spec.avatar} />` : ''}
+      <span> ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name} </span>
+      <button @click=${this.handleLogout} type="button" class="base-form-account-btn-logout">
         退出登录
       </button>
     </div>`;
@@ -212,9 +196,7 @@ export class BaseForm extends LitElement {
             <button class="base-form-btn-emoji" type="button">
               ${this.emojiLoading
                 ? html`<icon-loading></icon-loading>`
-                : html`<icon-emoji
-                    @click=${this.handleOpenEmojiPicker}
-                  ></icon-emoji>`}
+                : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`}
 
               <div
                 class="base-form-emoji-panel"
@@ -223,12 +205,7 @@ export class BaseForm extends LitElement {
               ></div>
             </button>
             <button type="submit" class="base-form-btn-submit">
-              <svg
-                viewBox="0 0 24 24"
-                width="1.2em"
-                height="1.2em"
-                class="h-full w-full"
-              >
+              <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="h-full w-full">
                 <path
                   fill="currentColor"
                   d="M8 7.71L18 12L8 16.29v-3.34l7.14-.95L8 11.05V7.71M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8Z"
@@ -270,7 +247,8 @@ export class BaseForm extends LitElement {
   }
 
   static override styles = [
-    resetStyles,
+    varStyles,
+    baseStyles,
     css`
       .base-form {
         width: 100%;
@@ -312,15 +290,11 @@ export class BaseForm extends LitElement {
 
       input,
       textarea {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background: #fff;
-        border: 0.05rem solid #bcc3ce;
-        border-radius: 0.3rem;
-        color: #3b4351;
+        border-radius: var(--base-border-radius);
+        background: var(--component-form-input-bg-color);
+        color: var(--component-form-input-color);
+        border: 0.05rem solid var(--component-form-input-border-color);
         display: block;
-        font-size: 0.875rem;
         height: 2.25rem;
         max-width: 100%;
         outline: 0;
@@ -331,8 +305,8 @@ export class BaseForm extends LitElement {
 
       input:focus,
       textarea:focus {
-        border-color: #5755d9;
-        box-shadow: 0 0 0 0.1rem rgba(87, 85, 217, 0.2);
+        border-color: var(--component-form-input-border-color-focus);
+        box-shadow: var(--component-form-input-box-shadow-focus);
       }
 
       .base-form-account-info {
@@ -349,26 +323,23 @@ export class BaseForm extends LitElement {
 
       .base-form-account-info span {
         font-weight: 500;
-        font-size: 0.875rem;
       }
 
       .base-form-account-btn-logout,
       .base-form-account-btn-login {
-        appearance: none;
-        border: 1px solid #f2f4f8;
-        color: #333;
+        border-radius: var(--base-border-radius);
+        background: var(--component-form-button-login-bg-color);
+        border: 1px solid var(--component-form-button-login-border-color);
         font-size: 0.75rem;
-        border-radius: 4px;
         outline: none;
         padding: 0 0.75rem;
         height: 1.75rem;
         user-select: none;
-        background: #fff;
       }
 
       .base-form-account-btn-logout:hover,
       .base-form-account-btn-login:hover {
-        background: #f2f4f8;
+        background: var(--component-form-button-login-bg-color-hover);
       }
 
       .base-form-footer {
@@ -384,13 +355,13 @@ export class BaseForm extends LitElement {
       }
 
       .base-form-btn-emoji {
+        color: var(--component-form-button-emoji-color);
         display: inline-flex;
-        color: #4b5563;
         position: relative;
       }
 
       .base-form-btn-emoji:hover {
-        color: #333;
+        color: inherit;
       }
 
       .base-form-emoji-panel {
@@ -409,38 +380,35 @@ export class BaseForm extends LitElement {
       }
 
       .base-form-btn-submit {
+        border-radius: var(--base-border-radius);
+        background-color: var(--component-form-button-submit-bg-color);
+        color: var(--component-form-button-submit-color);
+        border: 1px solid var(--component-form-button-submit-border-color);
         display: inline-flex;
         height: 2.25rem;
         flex-shrink: 0;
         user-select: none;
-        appearance: none;
-        flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        border-radius: 4px;
-        border-style: none;
         padding-left: 1rem;
         padding-right: 1rem;
         text-align: center;
         vertical-align: middle;
-        font-size: 0.875rem;
-        line-height: 1.25rem;
         text-decoration-line: none;
         outline-width: 0px;
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 0.15s;
-        background-color: #0d1731;
-        color: #fff;
         gap: 0.5rem;
       }
 
       .base-form-btn-submit:hover {
-        opacity: 0.9;
+        opacity: 0.8;
+        border-color: var(--component-form-button-submit-border-color-hover);
       }
 
       .base-form-btn-submit:active {
-        opacity: 0.8;
+        opacity: 0.7;
       }
 
       .base-form-btn-submit:disabled {

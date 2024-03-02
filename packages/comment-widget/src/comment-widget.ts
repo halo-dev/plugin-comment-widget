@@ -2,7 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { CommentVoList, User } from '@halo-dev/api-client';
 import { repeat } from 'lit/directives/repeat.js';
-import resetStyles from './styles/reset';
+import baseStyles from './styles/base';
 import { provide } from '@lit/context';
 import {
   allowAnonymousCommentsContext,
@@ -17,6 +17,7 @@ import {
 import './comment-form';
 import './comment-item';
 import './comment-pagination';
+import varStyles from './styles/var';
 
 @customElement('comment-widget')
 export class CommentWidget extends LitElement {
@@ -78,20 +79,23 @@ export class CommentWidget extends LitElement {
   }
 
   override render() {
-    return html`<div class="halo-comment-widget">
+    return html`<div class="comment-widget">
       <comment-form @reload="${this.fetchComments}"></comment-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
-            <div class="comment-widget-comments">
-              <div class="comment-widget-stats">
+            <div class="comments-wrapper">
+              <div class="comment-stats">
                 <span>${this.comments.total} 条评论</span>
               </div>
-              ${repeat(
-                this.comments.items,
-                (item) => item.metadata.name,
-                (item) => html`<comment-item .comment=${item}></comment-item>`
-              )}
+
+              <div class="comments">
+                ${repeat(
+                  this.comments.items,
+                  (item) => item.metadata.name,
+                  (item) => html`<comment-item .comment=${item}></comment-item>`
+                )}
+              </div>
             </div>
           `}
       ${this.shouldDisplayPagination
@@ -122,17 +126,16 @@ export class CommentWidget extends LitElement {
   }
 
   async fetchCurrentUser() {
-    const response = await fetch(
-      `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`
-    );
+    const response = await fetch(`${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`);
     const data = await response.json();
-    this.currentUser =
-      data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
+    this.currentUser = data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
   }
 
   async fetchComments() {
     try {
-      this.loading = true;
+      if (this.comments.items.length === 0) {
+        this.loading = true;
+      }
 
       const queryParams = [
         `group=${this.group}`,
@@ -144,9 +147,7 @@ export class CommentWidget extends LitElement {
       ];
 
       const response = await fetch(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join(
-          '&'
-        )}`
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join('&')}`
       );
       const data = await response.json();
       this.comments = data;
@@ -171,25 +172,24 @@ export class CommentWidget extends LitElement {
   }
 
   static override styles = [
-    resetStyles,
+    varStyles,
+    baseStyles,
     css`
       :host {
         width: 100%;
       }
 
-      .halo-comment-widget {
+      .comment-widget {
         width: 100%;
       }
 
-      .comment-widget-comments {
+      .comments-wrapper {
         margin-top: 1.2rem;
       }
 
-      .comment-widget-stats {
+      .comment-stats {
         margin: 0.875rem 0;
-        font-size: 0.875rem;
         font-weight: 500;
-        color: #333;
       }
     `,
   ];

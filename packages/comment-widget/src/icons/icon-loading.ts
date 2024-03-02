@@ -4,11 +4,7 @@ import { customElement } from 'lit/decorators.js';
 @customElement('icon-loading')
 export class IconLoading extends LitElement {
   override render() {
-    return html`<svg
-      fill="none"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    return html`<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <circle
         style="opacity: 0.25;"
         cx="12"

@@ -25,10 +25,6 @@ export class BaseCommentItemAction extends LitElement {
       margin-right: 0.5rem;
     }
 
-    .base-comment-item-action:hover .base-comment-item-action-icon {
-      background-color: rgb(243 244 246);
-    }
-
     .base-comment-item-action-icon {
       display: inline-flex;
       align-items: center;
@@ -41,15 +37,26 @@ export class BaseCommentItemAction extends LitElement {
     }
 
     .base-comment-item-action-icon ::slotted(svg) {
+      color: var(--component-comment-item-action-color);
       width: 1rem;
       height: 1rem;
-      color: rgb(75 85 99);
     }
 
     .base-comment-item-action-text {
-      font-size: 0.875rem;
-      line-height: 1.25rem;
-      color: rgb(75 85 99);
+      color: var(--component-comment-item-action-color);
+      user-select: none;
+    }
+
+    .base-comment-item-action:hover .base-comment-item-action-icon {
+      background-color: var(--component-comment-item-action-bg-color-hover);
+    }
+
+    .base-comment-item-action:hover .base-comment-item-action-text {
+      color: var(--component-comment-item-action-color-hover);
+    }
+
+    .base-comment-item-action:hover .base-comment-item-action-icon ::slotted(svg) {
+      color: var(--component-comment-item-action-color-hover);
     }
   `;
 }

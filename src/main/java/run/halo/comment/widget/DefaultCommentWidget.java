@@ -66,6 +66,7 @@ public class DefaultCommentWidget implements CommentWidget {
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
                 <div id="${domId}"></div>
                 <script src="/plugins/PluginCommentWidget/assets/static/comment-widget.iife.js?version=${version}"></script>
+                <link rel="stylesheet" href="/plugins/PluginCommentWidget/assets/static/style.css?version=${version}" />
                 <script>
                   CommentWidget.init(
                     "#${domId}",

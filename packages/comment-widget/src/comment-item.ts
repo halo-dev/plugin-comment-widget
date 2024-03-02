@@ -1,7 +1,7 @@
 import type { CommentVo } from '@halo-dev/api-client';
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import resetStyles from './styles/reset';
+import baseStyles from './styles/base';
 import './comment-replies';
 import './user-avatar';
 import './base-comment-item';
@@ -9,6 +9,7 @@ import './base-comment-item-action';
 import { consume } from '@lit/context';
 import { baseUrlContext } from './context';
 import { LS_UPVOTED_COMMENTS_KEY } from './constant';
+import varStyles from './styles/var';
 
 @customElement('comment-item')
 export class CommentItem extends LitElement {
@@ -36,9 +37,7 @@ export class CommentItem extends LitElement {
   }
 
   checkUpvotedStatus() {
-    const upvotedComments = JSON.parse(
-      localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
-    );
+    const upvotedComments = JSON.parse(localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]');
 
     if (upvotedComments.includes(this.comment?.metadata.name)) {
       this.upvoted = true;
@@ -46,9 +45,7 @@ export class CommentItem extends LitElement {
   }
 
   async handleUpvote() {
-    const upvotedComments = JSON.parse(
-      localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
-    );
+    const upvotedComments = JSON.parse(localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]');
 
     if (upvotedComments.includes(this.comment?.metadata.name)) {
       return;
@@ -69,10 +66,7 @@ export class CommentItem extends LitElement {
     });
 
     upvotedComments.push(this.comment?.metadata.name);
-    localStorage.setItem(
-      LS_UPVOTED_COMMENTS_KEY,
-      JSON.stringify(upvotedComments)
-    );
+    localStorage.setItem(LS_UPVOTED_COMMENTS_KEY, JSON.stringify(upvotedComments));
 
     this.upvoteCount += 1;
     this.upvoted = true;
@@ -85,6 +79,7 @@ export class CommentItem extends LitElement {
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
+      .approved=${this.comment?.spec.approved}
     >
       <base-comment-item-action
         slot="action"
@@ -100,12 +95,7 @@ export class CommentItem extends LitElement {
               height="32"
               viewBox="0 0 24 24"
             >
-              <g
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
+              <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                 <path d="M0 0h24v24H0z" />
                 <path
                   fill="red"
@@ -163,7 +153,8 @@ export class CommentItem extends LitElement {
   }
 
   static override styles = [
-    resetStyles,
+    varStyles,
+    baseStyles,
     css`
       .comment-item-action-upvote {
         margin-left: -0.5rem;

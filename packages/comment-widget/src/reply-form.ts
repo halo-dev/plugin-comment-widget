@@ -5,11 +5,7 @@ import './base-form';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { BaseForm } from './base-form';
 import { consume } from '@lit/context';
-import {
-  allowAnonymousCommentsContext,
-  baseUrlContext,
-  currentUserContext,
-} from './context';
+import { allowAnonymousCommentsContext, baseUrlContext, currentUserContext } from './context';
 
 @customElement('reply-form')
 export class ReplyForm extends LitElement {
@@ -34,10 +30,7 @@ export class ReplyForm extends LitElement {
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
 
   override render() {
-    return html`<base-form
-      ${ref(this.baseFormRef)}
-      @submit="${this.onSubmit}"
-    ></base-form>`;
+    return html`<base-form ${ref(this.baseFormRef)} @submit="${this.onSubmit}"></base-form>`;
   }
 
   async onSubmit(e: CustomEvent) {

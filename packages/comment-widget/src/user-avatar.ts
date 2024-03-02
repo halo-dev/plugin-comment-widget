@@ -1,6 +1,8 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import './icons/icon-loading';
+import varStyles from './styles/var';
+import baseStyles from './styles/base';
 
 @customElement('user-avatar')
 export class UserAvatar extends LitElement {
@@ -55,9 +57,7 @@ export class UserAvatar extends LitElement {
       return words[0].charAt(0).toUpperCase();
     }
     if (words.length > 1) {
-      return (
-        words[0].charAt(0).toUpperCase() + words[1].charAt(0).toUpperCase()
-      );
+      return words[0].charAt(0).toUpperCase() + words[1].charAt(0).toUpperCase();
     }
     return undefined;
   }
@@ -72,11 +72,7 @@ export class UserAvatar extends LitElement {
 
       if (this.error) {
         return html`<div class="avatar-wrapper avatar-error">
-          <svg
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
               fill="currentColor"
               d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10s-4.477 10-10 10Zm0-2a8 8 0 1 0 0-16a8 8 0 0 0 0 16Zm-1-5h2v2h-2v-2Zm0-8h2v6h-2V7Z"
@@ -95,37 +91,42 @@ export class UserAvatar extends LitElement {
     </div>`;
   }
 
-  static override styles = css`
-    .avatar-wrapper {
-      height: 2rem;
-      width: 2rem;
-      border-radius: 9999px;
-      overflow: hidden;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background-color: rgb(243 244 246);
-    }
+  static override styles = [
+    varStyles,
+    baseStyles,
+    css`
+      .avatar-wrapper {
+        border-radius: var(--component-avatar-rounded);
+        height: var(--component-avatar-size);
+        width: var(--component-avatar-size);
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(243 244 246);
+      }
 
-    .avatar-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+      .avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-    .avatar-error svg {
-      height: 1.15rem;
-      width: 1.15rem;
-      color: rgb(255 59 48);
-    }
+      .avatar-error svg {
+        height: 1.15rem;
+        width: 1.15rem;
+        color: rgb(255 59 48);
+      }
 
-    .avatar-placeholder {
-      font-weight: 500;
-      color: rgb(31 41 55);
-      font-size: 0.75rem;
-      line-height: 1rem;
-    }
-  `;
+      .avatar-placeholder {
+        font-weight: 500;
+        color: rgb(31 41 55);
+        font-size: 0.75rem;
+        line-height: 1rem;
+        user-select: none;
+      }
+    `,
+  ];
 }
 
 declare global {

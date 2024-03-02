@@ -11,10 +11,6 @@ export const allowAnonymousCommentsContext = createContext<boolean>(
   Symbol('allowAnonymousComments')
 );
 
-export const currentUserContext = createContext<User | undefined>(
-  Symbol('currentUser')
-);
+export const currentUserContext = createContext<User | undefined>(Symbol('currentUser'));
 
-export const emojiDataUrlContext = createContext<string>(
-  Symbol('emojiDataUrl')
-);
+export const emojiDataUrlContext = createContext<string>(Symbol('emojiDataUrl'));
