@@ -56,8 +56,7 @@ export class CommentWidget extends LitElement {
   @state()
   comments: CommentVoList = {
     page: 1,
-    // TODO: change to 20
-    size: 5,
+    size: 20,
     total: 0,
     items: [],
     first: true,
@@ -155,6 +154,8 @@ export class CommentWidget extends LitElement {
       console.error('Failed to fetch comments', error);
     } finally {
       this.loading = false;
+
+      this.scrollIntoView({ block: 'start', inline: 'start', behavior: 'smooth' });
     }
   }
 

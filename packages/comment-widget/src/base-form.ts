@@ -329,6 +329,7 @@ export class BaseForm extends LitElement {
       .form__account-info {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 0.75rem;
       }
 
