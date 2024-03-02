@@ -57,7 +57,7 @@ export class ReplyForm extends LitElement {
       replyRequest.quoteReply = this.quoteReply.metadata.name;
     }
 
-    if (this.currentUser && this.allowAnonymousComments) {
+    if (!this.currentUser && !this.allowAnonymousComments) {
       alert('请先登录');
       return;
     }
@@ -85,6 +85,8 @@ export class ReplyForm extends LitElement {
         body: JSON.stringify(replyRequest),
       }
     );
+
+    this.dispatchEvent(new CustomEvent('reload'));
 
     this.baseFormRef.value?.resetForm();
   }

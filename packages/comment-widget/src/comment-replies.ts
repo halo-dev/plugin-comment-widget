@@ -28,7 +28,10 @@ export class CommentReplies extends LitElement {
 
   override render() {
     return html`<div class="comment-replies-wrapper">
-      <reply-form .comment=${this.comment}></reply-form>
+      <reply-form
+        @reload=${this.fetchReplies}
+        .comment=${this.comment}
+      ></reply-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
@@ -43,6 +46,7 @@ export class CommentReplies extends LitElement {
                     .replies=${this.replies}
                     .activeQuoteReply=${this.activeQuoteReply}
                     @set-active-quote-reply=${this.onSetActiveQuoteReply}
+                    @reload=${this.fetchReplies}
                   ></reply-item>`
               )}
             </div>

@@ -100,8 +100,7 @@ export class CommentForm extends LitElement {
       body: JSON.stringify(commentRequest),
     });
 
-    const event = new CustomEvent('reload');
-    this.dispatchEvent(event);
+    this.dispatchEvent(new CustomEvent('reload'));
 
     this.baseFormRef.value?.resetForm();
   }

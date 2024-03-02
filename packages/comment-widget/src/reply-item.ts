@@ -192,6 +192,7 @@ export class ReplyItem extends LitElement {
                 <reply-form
                   .comment=${this.comment}
                   .quoteReply=${this.reply}
+                  @reload=${() => this.dispatchEvent(new CustomEvent('reload'))}
                 ></reply-form>
               </div>
             `
