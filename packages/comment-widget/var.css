@@ -30,6 +30,12 @@
     --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
     --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
     --halo-comment-widget-component-pagination-button-border-color-active: #475569;
+    --halo-comment-widget-component-emoji-picker-rgb-color: 222, 222, 221;
+    --halo-comment-widget-component-emoji-picker-rgb-accent: 58, 130, 247;
+    --halo-comment-widget-component-emoji-picker-rgb-background: 21, 22, 23;
+    --halo-comment-widget-component-emoji-picker-rgb-input: 0, 0, 0;
+    --halo-comment-widget-component-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
+    --halo-comment-widget-component-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -65,4 +71,10 @@
   --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
   --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
   --halo-comment-widget-component-pagination-button-border-color-active: #475569;
+  --halo-comment-widget-component-emoji-picker-rgb-color: 222, 222, 221;
+  --halo-comment-widget-component-emoji-picker-rgb-accent: 58, 130, 247;
+  --halo-comment-widget-component-emoji-picker-rgb-background: 21, 22, 23;
+  --halo-comment-widget-component-emoji-picker-rgb-input: 0, 0, 0;
+  --halo-comment-widget-component-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
+  --halo-comment-widget-component-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
 }

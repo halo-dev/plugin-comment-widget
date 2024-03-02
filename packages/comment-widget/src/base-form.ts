@@ -250,6 +250,15 @@ export class BaseForm extends LitElement {
     varStyles,
     baseStyles,
     css`
+      em-emoji-picker {
+        --rgb-color: var(--component-emoji-picker-rgb-color);
+        --rgb-accent: var(--component-emoji-picker-rgb-accent);
+        --rgb-background: var(--component-emoji-picker-rgb-background);
+        --rgb-input: var(--component-emoji-picker-rgb-input);
+        --color-border: var(--component-emoji-picker-color-border);
+        --color-border-over: var(--component-emoji-picker-color-border-over);
+      }
+
       .base-form {
         width: 100%;
         display: flex;
@@ -277,7 +286,7 @@ export class BaseForm extends LitElement {
       .base-form-anonymous-inputs a {
         font-size: 0.75rem;
         line-height: 1rem;
-        color: #4b5563;
+        color: darkcyan;
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 300ms;
@@ -285,7 +294,7 @@ export class BaseForm extends LitElement {
       }
 
       .base-form-anonymous-inputs a:hover {
-        color: #111827;
+        color: inherit;
       }
 
       input,

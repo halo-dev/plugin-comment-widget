@@ -100,6 +100,39 @@ const varStyles = css`
       --halo-comment-widget-component-pagination-button-border-color-active,
       #d1d5db
     );
+
+    --component-emoji-picker-rgb-color: var(
+      --halo-comment-widget-component-emoji-picker-rgb-color,
+      34,
+      36,
+      39
+    );
+    --component-emoji-picker-rgb-accent: var(
+      --halo-comment-widget-component-emoji-picker-rgb-accent,
+      34,
+      102,
+      237
+    );
+    --component-emoji-picker-rgb-background: var(
+      --halo-comment-widget-component-emoji-picker-rgb-background,
+      255,
+      255,
+      255
+    );
+    --component-emoji-picker-rgb-input: var(
+      --halo-comment-widget-component-emoji-picker-rgb-input,
+      255,
+      255,
+      255
+    );
+    --component-emoji-picker-color-border: var(
+      --halo-comment-widget-component-emoji-picker-color-border,
+      rgba(0, 0, 0, .05)
+    );
+    --component-emoji-picker-color-border-over: var(
+      --halo-comment-widget-component-emoji-picker-color-border-over,
+      rgba(0, 0, 0, .1)
+    );
   }
 `;
 
