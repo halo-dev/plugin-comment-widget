@@ -1,5 +1,6 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import './icons/icon-loading';
 
 @customElement('user-avatar')
 export class UserAvatar extends LitElement {
@@ -65,25 +66,7 @@ export class UserAvatar extends LitElement {
     if (this.src) {
       if (this.loading) {
         return html`<div class="avatar-wrapper avatar-loading">
-          <svg
-            fill="none"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              style="opacity: 0.25;"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              stroke-width="4"
-            ></circle>
-            <path
-              style="opacity: 0.75;"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              fill="currentColor"
-            ></path>
-          </svg>
+          <icon-loading></icon-loading>
         </div>`;
       }
 
@@ -130,12 +113,6 @@ export class UserAvatar extends LitElement {
       object-fit: cover;
     }
 
-    .avatar-loading svg {
-      height: 1.15rem;
-      width: 1.15rem;
-      animation: spin 1s linear infinite;
-    }
-
     .avatar-error svg {
       height: 1.15rem;
       width: 1.15rem;
@@ -147,12 +124,6 @@ export class UserAvatar extends LitElement {
       color: rgb(31 41 55);
       font-size: 0.75rem;
       line-height: 1rem;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
     }
   `;
 }
