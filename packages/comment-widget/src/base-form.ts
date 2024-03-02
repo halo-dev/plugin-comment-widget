@@ -141,6 +141,13 @@ export class BaseForm extends LitElement {
     </div>`;
   }
 
+  onContentInput(e: Event) {
+    const target = e.target as HTMLTextAreaElement;
+    // reset height to auto to make sure it can grow
+    target.style.height = 'auto';
+    target.style.height = `${target.scrollHeight}px`;
+  }
+
   override render() {
     return html`
       <form class="base-form" @submit="${this.onSubmit}">
@@ -151,6 +158,7 @@ export class BaseForm extends LitElement {
           rows="4"
           name="content"
           required
+          @input=${this.onContentInput}
         ></textarea>
 
         ${!this.currentUser && this.allowAnonymousComments
