@@ -159,6 +159,7 @@ export class CommentPagination extends LitElement {
       .pagination__button button,
       .pagination__number button {
         border-radius: var(--base-border-radius);
+        color: initial;
         display: inline-flex;
         align-items: center;
         font-weight: 600;

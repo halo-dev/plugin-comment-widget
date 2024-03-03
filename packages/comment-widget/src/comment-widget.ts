@@ -191,6 +191,7 @@ export class CommentWidget extends LitElement {
       .comment-widget__stats {
         margin: 0.875rem 0;
         font-weight: 500;
+        color: initial;
       }
     `,
   ];

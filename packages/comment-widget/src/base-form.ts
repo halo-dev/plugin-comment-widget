@@ -331,6 +331,7 @@ export class BaseForm extends LitElement {
         align-items: center;
         flex-wrap: wrap;
         gap: 0.75rem;
+        color: initial;
       }
 
       .form__account-info img {
@@ -379,7 +380,7 @@ export class BaseForm extends LitElement {
       }
 
       .form__button--emoji:hover {
-        color: inherit;
+        color: initial;
       }
 
       .form__emoji-panel {

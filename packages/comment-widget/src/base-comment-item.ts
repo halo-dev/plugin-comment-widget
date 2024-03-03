@@ -74,6 +74,7 @@ export class BaseCommentItem extends LitElement {
       }
 
       .item__author {
+        color: initial;
         font-weight: 500;
       }
 
@@ -88,6 +89,7 @@ export class BaseCommentItem extends LitElement {
       }
 
       .item__content pre {
+        color: initial;
         white-space: pre-wrap;
         overflow-wrap: break-word;
         word-break: break-all;
