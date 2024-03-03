@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import './user-avatar';
-import { timeAgo } from './utils/date';
+import { formatDate, timeAgo } from './utils/date';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 
@@ -12,6 +12,9 @@ export class BaseCommentItem extends LitElement {
 
   @property({ type: String })
   userDisplayName: string | undefined;
+
+  @property({ type: String })
+  userWebsite: string | undefined;
 
   @property({ type: String })
   creationTime: string | undefined;
@@ -35,8 +38,14 @@ export class BaseCommentItem extends LitElement {
       </div>
       <div class="item__main">
         <div class="item__meta">
-          <div class="item__author">${this.userDisplayName}</div>
-          <div class="item__meta-info">${timeAgo(this.creationTime)}</div>
+          ${this.userWebsite
+            ? html`<a class="item__author" target="_blank" href=${this.userWebsite}>
+                ${this.userDisplayName}
+              </a>`
+            : html`<div class="item__author">${this.userDisplayName}</div>`}
+          <div class="item__meta-info" title=${formatDate(this.creationTime)}>
+            ${timeAgo(this.creationTime)}
+          </div>
           ${!this.approved ? html`<div class="item__meta-info">审核中</div>` : ''}
         </div>
 

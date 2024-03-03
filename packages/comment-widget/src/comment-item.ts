@@ -80,6 +80,7 @@ export class CommentItem extends LitElement {
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
       .approved=${this.comment?.spec.approved}
+      .userWebsite=${this.comment?.spec.owner.annotations?.['website']}
     >
       <base-comment-item-action
         slot="action"

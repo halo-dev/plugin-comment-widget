@@ -79,7 +79,7 @@ export class CommentWidget extends LitElement {
 
   override render() {
     return html`<div class="comment-widget">
-      <comment-form @reload="${this.fetchComments}"></comment-form>
+      <comment-form @reload="${() => this.fetchComments(1)}"></comment-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
@@ -130,10 +130,14 @@ export class CommentWidget extends LitElement {
     this.currentUser = data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
   }
 
-  async fetchComments() {
+  async fetchComments(page?: number) {
     try {
       if (this.comments.items.length === 0) {
         this.loading = true;
+      }
+
+      if (page) {
+        this.comments.page = page;
       }
 
       const queryParams = [

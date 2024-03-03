@@ -113,6 +113,7 @@ export class ReplyItem extends LitElement {
         .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
         .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
+        .userWebsite=${this.reply?.spec.owner.annotations?.['website']}
       >
         <base-comment-item-action
           slot="action"
