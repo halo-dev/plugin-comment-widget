@@ -1,11 +1,17 @@
 import './base-form';
-import { CommentVo, ReplyRequest, ReplyVo, User } from '@halo-dev/api-client';
+import { CommentVo, Reply, ReplyRequest, ReplyVo, User } from '@halo-dev/api-client';
 import { LitElement, html } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { allowAnonymousCommentsContext, baseUrlContext, currentUserContext } from './context';
+import {
+  allowAnonymousCommentsContext,
+  baseUrlContext,
+  currentUserContext,
+  toastContext,
+} from './context';
 import { customElement, property, state } from 'lit/decorators.js';
 import { BaseForm } from './base-form';
 import { consume } from '@lit/context';
+import { ToastManager } from './lit-toast';
 
 @customElement('reply-form')
 export class ReplyForm extends LitElement {
@@ -26,6 +32,10 @@ export class ReplyForm extends LitElement {
   @consume({ context: allowAnonymousCommentsContext, subscribe: true })
   @state()
   allowAnonymousComments = false;
+
+  @consume({ context: toastContext, subscribe: true })
+  @state()
+  toastManager: ToastManager | undefined;
 
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
 
@@ -51,13 +61,13 @@ export class ReplyForm extends LitElement {
     }
 
     if (!this.currentUser && !this.allowAnonymousComments) {
-      alert('请先登录');
+      this.toastManager?.warn('请先登录');
       return;
     }
 
     if (!this.currentUser && this.allowAnonymousComments) {
       if (!displayName || !email) {
-        alert('请先登录或者完善信息');
+        this.toastManager?.warn('请先登录或者完善信息');
         return;
       } else {
         replyRequest.owner = {
@@ -68,20 +78,37 @@ export class ReplyForm extends LitElement {
       }
     }
 
-    await fetch(
-      `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(replyRequest),
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(replyRequest),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('评论失败，请稍后重试');
       }
-    );
 
-    this.dispatchEvent(new CustomEvent('reload'));
+      const newReply = (await response.json()) as Reply;
 
-    this.baseFormRef.value?.resetForm();
+      if (newReply.spec.approved) {
+        this.toastManager?.success('评论成功');
+      } else {
+        this.toastManager?.warn('评论成功，等待审核');
+      }
+
+      this.dispatchEvent(new CustomEvent('reload'));
+      this.baseFormRef.value?.resetForm();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastManager?.error(error.message);
+      }
+    }
   }
 }
 

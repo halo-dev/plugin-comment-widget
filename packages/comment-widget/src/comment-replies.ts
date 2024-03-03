@@ -3,12 +3,13 @@ import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { consume } from '@lit/context';
-import { baseUrlContext } from './context';
+import { baseUrlContext, toastContext } from './context';
 import './reply-item';
 import './loading-block';
 import './reply-form';
 import varStyles from './styles/var';
 import baseStyles from './styles/base';
+import { ToastManager } from './lit-toast';
 
 @customElement('comment-replies')
 export class CommentReplies extends LitElement {
@@ -27,6 +28,10 @@ export class CommentReplies extends LitElement {
 
   @state()
   activeQuoteReply: ReplyVo | undefined = undefined;
+
+  @consume({ context: toastContext, subscribe: true })
+  @state()
+  toastManager: ToastManager | undefined;
 
   override render() {
     return html`<div class="replies__wrapper">
@@ -61,11 +66,24 @@ export class CommentReplies extends LitElement {
     if (this.replies.length === 0) {
       this.loading = true;
     }
-    const response = await fetch(
-      `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`
-    );
-    const data = await response.json();
-    this.replies = data.items;
+
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`
+      );
+
+      if (!response.ok) {
+        throw new Error('加载回复列表失败，请稍后重试');
+      }
+
+      const data = await response.json();
+      this.replies = data.items;
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastManager?.error(error.message);
+      }
+    }
+
     this.loading = false;
   }
 

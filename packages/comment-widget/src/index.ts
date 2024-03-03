@@ -9,6 +9,7 @@ import { LoadingBlock } from './loading-block';
 import { ReplyForm } from './reply-form';
 import { ReplyItem } from './reply-item';
 import { UserAvatar } from './user-avatar';
+import { LitToast } from './lit-toast';
 
 export {
   CommentWidget,
@@ -22,4 +23,5 @@ export {
   ReplyForm,
   ReplyItem,
   UserAvatar,
+  LitToast,
 };

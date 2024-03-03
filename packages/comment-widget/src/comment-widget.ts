@@ -12,12 +12,14 @@ import {
   groupContext,
   kindContext,
   nameContext,
+  toastContext,
   versionContext,
 } from './context';
 import './comment-form';
 import './comment-item';
 import './comment-pagination';
 import varStyles from './styles/var';
+import { ToastManager } from './lit-toast';
 
 @customElement('comment-widget')
 export class CommentWidget extends LitElement {
@@ -52,6 +54,10 @@ export class CommentWidget extends LitElement {
   @provide({ context: allowAnonymousCommentsContext })
   @state()
   allowAnonymousComments = false;
+
+  @provide({ context: toastContext })
+  @state()
+  toastManager: ToastManager | undefined;
 
   @state()
   comments: CommentVoList = {
@@ -152,13 +158,19 @@ export class CommentWidget extends LitElement {
       const response = await fetch(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join('&')}`
       );
+
+      if (!response.ok) {
+        throw new Error('评论列表加载失败，请稍后重试');
+      }
+
       const data = await response.json();
       this.comments = data;
     } catch (error) {
-      console.error('Failed to fetch comments', error);
+      if (error instanceof Error) {
+        this.toastManager?.error(error.message);
+      }
     } finally {
       this.loading = false;
-
       this.scrollIntoView({ block: 'start', inline: 'start', behavior: 'smooth' });
     }
   }
@@ -171,6 +183,7 @@ export class CommentWidget extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.toastManager = new ToastManager(this);
     this.fetchCurrentUser();
     this.fetchComments();
     this.fetchGlobalInfo();
@@ -182,6 +195,8 @@ export class CommentWidget extends LitElement {
     css`
       :host {
         width: 100%;
+        display: flex;
+        justify-content: center;
       }
 
       .comment-widget {

@@ -8,12 +8,14 @@ import {
   groupContext,
   kindContext,
   nameContext,
+  toastContext,
   versionContext,
 } from './context';
-import { CommentRequest, User } from '@halo-dev/api-client';
+import { CommentRequest, User, Comment } from '@halo-dev/api-client';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { BaseForm } from './base-form';
 import './base-form';
+import { ToastManager } from './lit-toast';
 
 @customElement('comment-form')
 export class CommentForm extends LitElement {
@@ -45,6 +47,10 @@ export class CommentForm extends LitElement {
   @state()
   allowAnonymousComments = false;
 
+  @consume({ context: toastContext, subscribe: true })
+  @state()
+  toastManager: ToastManager | undefined;
+
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
 
   override render() {
@@ -72,13 +78,13 @@ export class CommentForm extends LitElement {
     };
 
     if (!this.currentUser && !this.allowAnonymousComments) {
-      alert('请先登录');
+      this.toastManager?.warn('请先登录');
       return;
     }
 
     if (!this.currentUser && this.allowAnonymousComments) {
       if (!displayName || !email) {
-        alert('请先登录或者完善信息');
+        this.toastManager?.warn('请先登录或者完善信息');
         return;
       } else {
         commentRequest.owner = {
@@ -89,17 +95,34 @@ export class CommentForm extends LitElement {
       }
     }
 
-    await fetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(commentRequest),
-    });
+    try {
+      const response = await fetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(commentRequest),
+      });
 
-    this.dispatchEvent(new CustomEvent('reload'));
+      if (!response.ok) {
+        throw new Error('评论失败，请稍后重试');
+      }
 
-    this.baseFormRef.value?.resetForm();
+      const newComment = (await response.json()) as Comment;
+
+      if (newComment.spec.approved) {
+        this.toastManager?.success('评论成功');
+      } else {
+        this.toastManager?.success('评论成功，等待审核');
+      }
+
+      this.dispatchEvent(new CustomEvent('reload'));
+      this.baseFormRef.value?.resetForm();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastManager?.error(error.message);
+      }
+    }
   }
 }
 
