@@ -1,20 +1,17 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import { Picker } from 'emoji-mart';
+import './emoji-button';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
   currentUserContext,
-  emojiDataUrlContext,
   groupContext,
   kindContext,
   nameContext,
 } from './context';
 import { consume } from '@lit/context';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import './icons/icon-loading';
-import './icons/icon-emoji';
 import type { User } from '@halo-dev/api-client';
 import varStyles from './styles/var';
 
@@ -44,22 +41,7 @@ export class BaseForm extends LitElement {
   @state()
   name = '';
 
-  @consume({ context: emojiDataUrlContext })
-  @state()
-  emojiDataUrl = '';
-
-  @state()
-  emojiLoading = false;
-
-  @state()
-  emojiPicker: Picker | null = null;
-
-  emojiPickerWrapperRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
-
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
-
-  @state()
-  emojiPickerVisible = false;
 
   get customAccount() {
     return JSON.parse(localStorage.getItem('halo-comment-custom-account') || '{}');
@@ -96,41 +78,6 @@ export class BaseForm extends LitElement {
     }
   }
 
-  async handleOpenEmojiPicker() {
-    if (this.emojiPickerVisible) {
-      this.emojiPickerVisible = false;
-      return;
-    }
-
-    if (this.emojiPickerWrapperRef.value?.children.length) {
-      this.emojiPickerVisible = true;
-      return;
-    }
-
-    this.emojiLoading = true;
-
-    const response = await fetch(this.emojiDataUrl);
-    const data = await response.json();
-
-    const emojiPicker = new Picker({
-      data,
-      onEmojiSelect: ({ native }: { native: string }) => {
-        if (this.textareaRef.value) {
-          this.textareaRef.value.value += native;
-          this.textareaRef.value.focus();
-        }
-      },
-      // TODO: support locale
-      // locale: zh,
-    });
-
-    // TODO: fix this ts error
-    this.emojiPickerWrapperRef.value?.appendChild(emojiPicker as unknown as Node);
-
-    this.emojiPickerVisible = true;
-    this.emojiLoading = false;
-  }
-
   renderAccountInfo() {
     return html`<div class="form__account-info">
       ${this.currentUser?.spec.avatar ? html`<img src=${this.currentUser.spec.avatar} />` : ''}
@@ -146,6 +93,14 @@ export class BaseForm extends LitElement {
     // reset height to auto to make sure it can grow
     target.style.height = 'auto';
     target.style.height = `${target.scrollHeight}px`;
+  }
+
+  onEmojiSelect(e: CustomEvent) {
+    const data = e.detail;
+    if (this.textareaRef.value) {
+      this.textareaRef.value.value += data.native;
+      this.textareaRef.value.focus();
+    }
   }
 
   override render() {
@@ -201,17 +156,7 @@ export class BaseForm extends LitElement {
               : ''}
           </div>
           <div class="form__actions">
-            <button class="form__button--emoji" type="button">
-              ${this.emojiLoading
-                ? html`<icon-loading></icon-loading>`
-                : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`}
-
-              <div
-                class="form__emoji-panel"
-                style="display: ${this.emojiPickerVisible ? 'block' : 'none'}"
-                ${ref(this.emojiPickerWrapperRef)}
-              ></div>
-            </button>
+            <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
             <button type="submit" class="form__button--submit">
               <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="h-full w-full">
                 <path
@@ -258,15 +203,6 @@ export class BaseForm extends LitElement {
     varStyles,
     baseStyles,
     css`
-      em-emoji-picker {
-        --rgb-color: var(--component-emoji-picker-rgb-color);
-        --rgb-accent: var(--component-emoji-picker-rgb-accent);
-        --rgb-background: var(--component-emoji-picker-rgb-background);
-        --rgb-input: var(--component-emoji-picker-rgb-input);
-        --color-border: var(--component-emoji-picker-color-border);
-        --color-border-over: var(--component-emoji-picker-color-border-over);
-      }
-
       .form {
         width: 100%;
         display: flex;
@@ -371,31 +307,6 @@ export class BaseForm extends LitElement {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-      }
-
-      .form__button--emoji {
-        color: var(--component-form-button-emoji-color);
-        display: inline-flex;
-        position: relative;
-      }
-
-      .form__button--emoji:hover {
-        color: initial;
-      }
-
-      .form__emoji-panel {
-        position: absolute;
-        top: 2rem;
-        right: 0;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-        border-radius: 0.875rem;
-        overflow: hidden;
-      }
-
-      @media (max-width: 640px) {
-        .form__emoji-panel {
-          right: -7.8rem;
-        }
       }
 
       .form__button--submit {
