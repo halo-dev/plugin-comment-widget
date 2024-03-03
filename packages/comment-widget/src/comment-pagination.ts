@@ -195,6 +195,23 @@ export class CommentPagination extends LitElement {
       .pagination__dot {
         padding: 0.4rem 0.875rem;
       }
+
+      @media (max-width: 768px) {
+        .pagination__number:not(.active) {
+          display: none;
+        }
+        .pagination__number.active button {
+          border: none;
+          background-color: inherit;
+        }
+        .pagination__dot {
+          display: none !important;
+        }
+        .pagination {
+          justify-content: space-between;
+          width: 100%;
+        }
+      }
     `,
   ];
 }

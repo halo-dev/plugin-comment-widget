@@ -90,6 +90,7 @@ export class BaseCommentItem extends LitElement {
       .item__content pre {
         white-space: pre-wrap;
         overflow-wrap: break-word;
+        word-break: break-all;
       }
 
       .item__actions {
