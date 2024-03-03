@@ -1,6 +1,6 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
 import './user-avatar';
+import { LitElement, css, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { formatDate, timeAgo } from './utils/date';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';

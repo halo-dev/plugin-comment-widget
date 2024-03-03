@@ -1,7 +1,6 @@
-import { LitElement, css, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import baseStyles from './styles/base';
 import './emoji-button';
+import { LitElement, css, html } from 'lit';
+import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
@@ -10,9 +9,10 @@ import {
   kindContext,
   nameContext,
 } from './context';
-import { consume } from '@lit/context';
-import { Ref, createRef, ref } from 'lit/directives/ref.js';
+import { customElement, state } from 'lit/decorators.js';
 import type { User } from '@halo-dev/api-client';
+import baseStyles from './styles/base';
+import { consume } from '@lit/context';
 import varStyles from './styles/var';
 
 @customElement('base-form')
@@ -253,7 +253,11 @@ export class BaseForm extends LitElement {
         outline: 0;
         padding: 0.4rem 0.75rem;
         width: 100%;
-        transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
+        transition:
+          background 0.2s,
+          border 0.2s,
+          box-shadow 0.2s,
+          color 0.2s;
       }
 
       input:focus,

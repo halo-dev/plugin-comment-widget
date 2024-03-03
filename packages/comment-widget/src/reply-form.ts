@@ -1,11 +1,11 @@
-import { LitElement, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { CommentVo, ReplyRequest, ReplyVo, User } from '@halo-dev/api-client';
 import './base-form';
+import { CommentVo, ReplyRequest, ReplyVo, User } from '@halo-dev/api-client';
+import { LitElement, html } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
+import { allowAnonymousCommentsContext, baseUrlContext, currentUserContext } from './context';
+import { customElement, property, state } from 'lit/decorators.js';
 import { BaseForm } from './base-form';
 import { consume } from '@lit/context';
-import { allowAnonymousCommentsContext, baseUrlContext, currentUserContext } from './context';
 
 @customElement('reply-form')
 export class ReplyForm extends LitElement {

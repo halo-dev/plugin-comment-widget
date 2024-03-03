@@ -127,11 +127,11 @@ const varStyles = css`
     );
     --component-emoji-picker-color-border: var(
       --halo-comment-widget-component-emoji-picker-color-border,
-      rgba(0, 0, 0, .05)
+      rgba(0, 0, 0, 0.05)
     );
     --component-emoji-picker-color-border-over: var(
       --halo-comment-widget-component-emoji-picker-color-border-over,
-      rgba(0, 0, 0, .1)
+      rgba(0, 0, 0, 0.1)
     );
   }
 `;

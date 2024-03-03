@@ -1,14 +1,13 @@
-import { LitElement, css, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
 import './icons/icon-loading';
+import './icons/icon-emoji';
+import { LitElement, css, html } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
+import { customElement, state } from 'lit/decorators.js';
 import { Picker } from 'emoji-mart';
+import baseStyles from './styles/base';
 import { consume } from '@lit/context';
 import { emojiDataUrlContext } from './context';
-import './icons/icon-emoji';
-import './icons/icon-loading';
 import varStyles from './styles/var';
-import baseStyles from './styles/base';
 
 @customElement('emoji-button')
 export class EmojiButton extends LitElement {

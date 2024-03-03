@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
-    "@halo-dev/api-client": "^2.12.0",
+    "@halo-dev/api-client": "^2.13.0",
     "@lit/context": "^1.1.0",
     "dayjs": "^1.11.10",
     "emoji-mart": "^5.5.2",
@@ -42,6 +42,6 @@
     "lit": "^3.1.2"
   },
   "devDependencies": {
-    "lit-analyzer": "^1.2.1"
+    "lit-analyzer": "^2.0.3"
   }
 }
