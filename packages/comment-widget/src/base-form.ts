@@ -64,7 +64,14 @@ export class BaseForm extends LitElement {
       try {
         const response = await fetch(`${this.baseUrl}/logout`, {
           method: 'POST',
-          credentials: 'include',
+          headers: {
+            'X-Xsrf-Token':
+              document.cookie
+                .split('; ')
+                .find((row) => row.startsWith('XSRF-TOKEN'))
+                ?.split('=')[1] || '',
+          },
+          credentials: 'same-origin',
         });
 
         if (!response.ok) {
@@ -253,11 +260,7 @@ export class BaseForm extends LitElement {
         outline: 0;
         padding: 0.4rem 0.75rem;
         width: 100%;
-        transition:
-          background 0.2s,
-          border 0.2s,
-          box-shadow 0.2s,
-          color 0.2s;
+        transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
       }
 
       input:focus,
