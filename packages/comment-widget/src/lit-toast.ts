@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import './icons/icon-loading';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
@@ -7,7 +7,6 @@ import { classMap } from 'lit/directives/class-map.js';
 
 type ToastType = 'success' | 'error' | 'warn';
 
-@customElement('lit-toast')
 export class LitToast extends LitElement {
   @property({ type: String })
   message = '';
@@ -114,7 +113,6 @@ export class LitToast extends LitElement {
   ];
 }
 
-@customElement('lit-toast-container')
 export class LitToastContainer extends LitElement {
   override render() {
     return html`<slot></slot>`;
@@ -138,6 +136,10 @@ export class LitToastContainer extends LitElement {
     `,
   ];
 }
+
+customElements.get('lit-toast') || customElements.define('lit-toast', LitToast);
+customElements.get('lit-toast-container') ||
+  customElements.define('lit-toast-container', LitToastContainer);
 
 declare global {
   interface HTMLElementTagNameMap {

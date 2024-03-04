@@ -1,9 +1,8 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 
-@customElement('comment-pagination')
 export class CommentPagination extends LitElement {
   @property({ type: Number })
   total = 0;
@@ -217,6 +216,10 @@ export class CommentPagination extends LitElement {
     `,
   ];
 }
+
+customElements.get('comment-pagination') ||
+  customElements.define('comment-pagination', CommentPagination);
+
 declare global {
   interface HTMLElementTagNameMap {
     'comment-pagination': CommentPagination;

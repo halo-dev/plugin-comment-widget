@@ -1,7 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
 
-@customElement('icon-emoji')
 export class IconEmoji extends LitElement {
   override render() {
     return html`<svg viewBox="0 0 24 24" width="1.25em" height="1.25em">
@@ -22,6 +20,8 @@ export class IconEmoji extends LitElement {
     }
   `;
 }
+
+customElements.get('icon-emoji') || customElements.define('icon-emoji', IconEmoji);
 
 declare global {
   interface HTMLElementTagNameMap {

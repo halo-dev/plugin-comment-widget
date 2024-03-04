@@ -1,7 +1,6 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 
-@customElement('base-comment-item-action')
 export class BaseCommentItemAction extends LitElement {
   @property({ type: String })
   text = '';
@@ -60,6 +59,9 @@ export class BaseCommentItemAction extends LitElement {
     }
   `;
 }
+
+customElements.get('base-comment-item-action') ||
+  customElements.define('base-comment-item-action', BaseCommentItemAction);
 
 declare global {
   interface HTMLElementTagNameMap {

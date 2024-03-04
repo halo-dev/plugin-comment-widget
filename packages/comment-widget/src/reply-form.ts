@@ -8,12 +8,11 @@ import {
   currentUserContext,
   toastContext,
 } from './context';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { BaseForm } from './base-form';
 import { consume } from '@lit/context';
 import { ToastManager } from './lit-toast';
 
-@customElement('reply-form')
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
   @state()
@@ -111,6 +110,8 @@ export class ReplyForm extends LitElement {
     }
   }
 }
+
+customElements.get('reply-form') || customElements.define('reply-form', ReplyForm);
 
 declare global {
   interface HTMLElementTagNameMap {

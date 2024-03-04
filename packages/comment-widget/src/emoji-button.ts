@@ -2,7 +2,7 @@ import './icons/icon-loading';
 import './icons/icon-emoji';
 import { LitElement, css, html } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { customElement, state } from 'lit/decorators.js';
+import { state } from 'lit/decorators.js';
 import { Picker } from 'emoji-mart';
 import baseStyles from './styles/base';
 import { consume } from '@lit/context';
@@ -13,7 +13,6 @@ import varStyles from './styles/var';
 //@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
 
-@customElement('emoji-button')
 export class EmojiButton extends LitElement {
   @state()
   emojiPickerVisible = false;
@@ -140,6 +139,8 @@ export class EmojiButton extends LitElement {
     `,
   ];
 }
+
+customElements.get('emoji-button') || customElements.define('emoji-button', EmojiButton);
 
 declare global {
   interface HTMLElementTagNameMap {

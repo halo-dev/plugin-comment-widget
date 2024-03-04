@@ -1,10 +1,9 @@
 import './icons/icon-loading';
 import { LitElement, css, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 
-@customElement('user-avatar')
 export class UserAvatar extends LitElement {
   @property({ type: String })
   src: string | undefined;
@@ -128,6 +127,8 @@ export class UserAvatar extends LitElement {
     `,
   ];
 }
+
+customElements.get('user-avatar') || customElements.define('user-avatar', UserAvatar);
 
 declare global {
   interface HTMLElementTagNameMap {

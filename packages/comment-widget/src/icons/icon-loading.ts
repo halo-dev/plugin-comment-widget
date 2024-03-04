@@ -1,7 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
 
-@customElement('icon-loading')
 export class IconLoading extends LitElement {
   override render() {
     return html`<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -38,6 +36,8 @@ export class IconLoading extends LitElement {
     }
   `;
 }
+
+customElements.get('icon-loading') || customElements.define('icon-loading', IconLoading);
 
 declare global {
   interface HTMLElementTagNameMap {

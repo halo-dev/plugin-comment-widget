@@ -1,6 +1,6 @@
 import type { CommentVo } from '@halo-dev/api-client';
 import { LitElement, css, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import './comment-replies';
 import './user-avatar';
@@ -11,7 +11,6 @@ import { baseUrlContext } from './context';
 import { LS_UPVOTED_COMMENTS_KEY } from './constant';
 import varStyles from './styles/var';
 
-@customElement('comment-item')
 export class CommentItem extends LitElement {
   @consume({ context: baseUrlContext })
   @state()
@@ -163,6 +162,8 @@ export class CommentItem extends LitElement {
     `,
   ];
 }
+
+customElements.get('comment-item') || customElements.define('comment-item', CommentItem);
 
 declare global {
   interface HTMLElementTagNameMap {

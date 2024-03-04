@@ -1,11 +1,10 @@
 import './user-avatar';
 import { LitElement, css, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import { formatDate, timeAgo } from './utils/date';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 
-@customElement('base-comment-item')
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
   userAvatar: string | undefined;
@@ -129,6 +128,9 @@ export class BaseCommentItem extends LitElement {
     `,
   ];
 }
+
+customElements.get('base-comment-item') ||
+  customElements.define('base-comment-item', BaseCommentItem);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -9,13 +9,12 @@ import {
   kindContext,
   nameContext,
 } from './context';
-import { customElement, state } from 'lit/decorators.js';
+import { state } from 'lit/decorators.js';
 import type { User } from '@halo-dev/api-client';
 import baseStyles from './styles/base';
 import { consume } from '@lit/context';
 import varStyles from './styles/var';
 
-@customElement('base-form')
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
   @state()
@@ -359,6 +358,8 @@ export class BaseForm extends LitElement {
     `,
   ];
 }
+
+customElements.get('base-form') || customElements.define('base-form', BaseForm);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,8 +1,6 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
 import './icons/icon-loading';
 
-@customElement('loading-block')
 export class LoadingBlock extends LitElement {
   override render() {
     return html` <div class="loading-block">
@@ -19,6 +17,8 @@ export class LoadingBlock extends LitElement {
     }
   `;
 }
+
+customElements.get('loading-block') || customElements.define('loading-block', LoadingBlock);
 
 declare global {
   interface HTMLElementTagNameMap {

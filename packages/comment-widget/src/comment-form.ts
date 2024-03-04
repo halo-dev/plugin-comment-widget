@@ -1,5 +1,5 @@
 import { LitElement, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { state } from 'lit/decorators.js';
 import { consume } from '@lit/context';
 import {
   allowAnonymousCommentsContext,
@@ -17,7 +17,6 @@ import { BaseForm } from './base-form';
 import './base-form';
 import { ToastManager } from './lit-toast';
 
-@customElement('comment-form')
 export class CommentForm extends LitElement {
   @consume({ context: baseUrlContext })
   @state()
@@ -125,6 +124,8 @@ export class CommentForm extends LitElement {
     }
   }
 }
+
+customElements.get('comment-form') || customElements.define('comment-form', CommentForm);
 
 declare global {
   interface HTMLElementTagNameMap {

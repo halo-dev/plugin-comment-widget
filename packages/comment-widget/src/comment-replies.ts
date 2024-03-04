@@ -1,6 +1,6 @@
 import { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { LitElement, css, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { consume } from '@lit/context';
 import { baseUrlContext, toastContext } from './context';
@@ -11,7 +11,6 @@ import varStyles from './styles/var';
 import baseStyles from './styles/base';
 import { ToastManager } from './lit-toast';
 
-@customElement('comment-replies')
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
   @property({ attribute: false })
@@ -106,6 +105,8 @@ export class CommentReplies extends LitElement {
     `,
   ];
 }
+
+customElements.get('comment-replies') || customElements.define('comment-replies', CommentReplies);
 
 declare global {
   interface HTMLElementTagNameMap {

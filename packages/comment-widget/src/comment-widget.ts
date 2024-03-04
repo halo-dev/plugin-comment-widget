@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { CommentVoList, User } from '@halo-dev/api-client';
 import { repeat } from 'lit/directives/repeat.js';
 import baseStyles from './styles/base';
@@ -21,7 +21,6 @@ import './comment-pagination';
 import varStyles from './styles/var';
 import { ToastManager } from './lit-toast';
 
-@customElement('comment-widget')
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
   @property({ type: String })
@@ -216,6 +215,8 @@ export class CommentWidget extends LitElement {
     `,
   ];
 }
+
+customElements.get('comment-widget') || customElements.define('comment-widget', CommentWidget);
 
 declare global {
   interface HTMLElementTagNameMap {
