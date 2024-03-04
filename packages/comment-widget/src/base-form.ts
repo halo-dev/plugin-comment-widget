@@ -260,7 +260,11 @@ export class BaseForm extends LitElement {
         outline: 0;
         padding: 0.4em 0.75em;
         width: 100%;
-        transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
+        transition:
+          background 0.2s,
+          border 0.2s,
+          box-shadow 0.2s,
+          color 0.2s;
       }
 
       input:focus,
@@ -294,8 +298,7 @@ export class BaseForm extends LitElement {
         border: 1px solid var(--component-form-button-login-border-color);
         font-size: 0.75em;
         outline: none;
-        padding: 0 0.75em;
-        height: 1.75em;
+        padding: 0.2rem 0.75em;
         user-select: none;
       }
 
@@ -322,13 +325,11 @@ export class BaseForm extends LitElement {
         color: var(--component-form-button-submit-color);
         border: 1px solid var(--component-form-button-submit-border-color);
         display: inline-flex;
-        height: 2.25em;
         flex-shrink: 0;
         user-select: none;
         align-items: center;
         justify-content: center;
-        padding-left: 1em;
-        padding-right: 1em;
+        padding: 0.5em 1em;
         text-align: center;
         vertical-align: middle;
         text-decoration-line: none;

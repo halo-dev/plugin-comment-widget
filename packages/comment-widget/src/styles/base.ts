@@ -141,6 +141,10 @@ const baseStyles = css`
     opacity: 1;
     color: #9ca3af;
   }
+
+  pre {
+    font-family: var(--base-font-family);
+  }
 `;
 
 export default baseStyles;
