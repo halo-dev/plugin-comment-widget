@@ -136,7 +136,7 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
     --halo-comment-widget-component-form-input-color: #ffffff;
     --halo-comment-widget-component-form-input-border-color: #495056;
     --halo-comment-widget-component-form-input-border-color-focus: #65a3ff;
-    --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15rem #1c3966;
+    --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15em #1c3966;
     --halo-comment-widget-component-form-button-login-bg-color: #334155;
     --halo-comment-widget-component-form-button-login-bg-color-hover: #475569;
     --halo-comment-widget-component-form-button-login-border-color: #475569;
@@ -170,7 +170,7 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
   --halo-comment-widget-component-form-input-color: #ffffff;
   --halo-comment-widget-component-form-input-border-color: #495056;
   --halo-comment-widget-component-form-input-border-color-focus: #65a3ff;
-  --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15rem #1c3966;
+  --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15em #1c3966;
   --halo-comment-widget-component-form-button-login-bg-color: #334155;
   --halo-comment-widget-component-form-button-login-bg-color-hover: #475569;
   --halo-comment-widget-component-form-button-login-border-color: #475569;

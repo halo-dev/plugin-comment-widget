@@ -3,9 +3,9 @@ import { css } from 'lit';
 const varStyles = css`
   :host {
     /* Base */
-    --base-border-radius: var(--halo-comment-widget-base-border-radius, 0.4rem);
-    --base-font-size: var(--halo-comment-widget-base-font-size, 0.875rem);
-    --base-line-height: var(--halo-comment-widget-base-line-height, 1.25rem);
+    --base-border-radius: var(--halo-comment-widget-base-border-radius, 0.4em);
+    --base-font-size: var(--halo-comment-widget-base-font-size, 100%);
+    --base-line-height: var(--halo-comment-widget-base-line-height, 1.25em);
     --base-font-family: var(
       --halo-comment-widget-base-font-family,
       ui-sans-serif,
@@ -26,7 +26,7 @@ const varStyles = css`
 
     /* Components */
     --component-avatar-rounded: var(--halo-comment-widget-component-avatar-rounded, 9999px);
-    --component-avatar-size: var(--halo-comment-widget-component-avatar-size, 2rem);
+    --component-avatar-size: var(--halo-comment-widget-component-avatar-size, 2em);
     --component-form-input-bg-color: var(--halo-comment-widget-component-form-input-bg-color, #fff);
     --component-form-input-color: var(--halo-comment-widget-component-form-input-color, #3b4351);
     --component-form-input-border-color: var(
@@ -39,7 +39,7 @@ const varStyles = css`
     );
     --component-form-input-box-shadow-focus: var(
       --halo-comment-widget-component-form-input-box-shadow-focus,
-      0 0 0 0.15rem rgba(87, 85, 217, 0.2)
+      0 0 0 0.15em rgba(87, 85, 217, 0.2)
     );
 
     --component-form-button-login-bg-color: var(

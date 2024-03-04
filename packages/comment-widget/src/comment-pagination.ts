@@ -147,7 +147,7 @@ export class CommentPagination extends LitElement {
         display: flex;
         align-items: center;
         list-style: none;
-        gap: 0.2rem;
+        gap: 0.2em;
       }
 
       .pagination li {
@@ -163,7 +163,7 @@ export class CommentPagination extends LitElement {
         display: inline-flex;
         align-items: center;
         font-weight: 600;
-        padding: 0.4rem 0.875rem;
+        padding: 0.4em 0.875em;
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 0.15s;
@@ -171,7 +171,7 @@ export class CommentPagination extends LitElement {
       }
 
       .pagination__button button {
-        gap: 0.5rem;
+        gap: 0.5em;
       }
 
       .pagination__number button {
@@ -194,7 +194,7 @@ export class CommentPagination extends LitElement {
       }
 
       .pagination__dot {
-        padding: 0.4rem 0.875rem;
+        padding: 0.4em 0.875em;
       }
 
       @media (max-width: 768px) {

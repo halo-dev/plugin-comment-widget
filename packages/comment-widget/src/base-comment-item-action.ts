@@ -22,7 +22,7 @@ export class BaseCommentItemAction extends LitElement {
       display: inline-flex;
       align-items: center;
       cursor: pointer;
-      margin-right: 0.5rem;
+      margin-right: 0.5em;
     }
 
     .item-action__icon {
@@ -33,13 +33,13 @@ export class BaseCommentItemAction extends LitElement {
       transition-property: all;
       transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       transition-duration: 0.15s;
-      padding: 0.45rem;
+      padding: 0.45em;
     }
 
     .item-action__icon ::slotted(svg) {
       color: var(--component-comment-item-action-color);
-      width: 1rem;
-      height: 1rem;
+      width: 1em;
+      height: 1em;
     }
 
     .item-action__text {

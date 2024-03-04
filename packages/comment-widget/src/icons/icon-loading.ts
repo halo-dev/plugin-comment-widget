@@ -26,8 +26,8 @@ export class IconLoading extends LitElement {
       display: inline-flex;
     }
     svg {
-      height: 1.25rem;
-      width: 1.25rem;
+      height: 1.25em;
+      width: 1.25em;
       animation: spin 1s linear infinite;
     }
 

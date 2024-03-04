@@ -68,8 +68,8 @@ export class BaseCommentItem extends LitElement {
     css`
       .item {
         display: flex;
-        gap: 0.75rem;
-        padding: 1rem 0;
+        gap: 0.75em;
+        padding: 1em 0;
       }
 
       .item__main {
@@ -79,7 +79,7 @@ export class BaseCommentItem extends LitElement {
       .item__meta {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.75em;
       }
 
       .item__author {
@@ -89,12 +89,12 @@ export class BaseCommentItem extends LitElement {
 
       .item__meta-info {
         color: darkcyan;
-        font-size: 0.75rem;
-        line-height: 1rem;
+        font-size: 0.75em;
+        line-height: 1em;
       }
 
       .item__content {
-        margin-top: 0.5rem;
+        margin-top: 0.5em;
       }
 
       .item__content pre {
@@ -105,7 +105,7 @@ export class BaseCommentItem extends LitElement {
       }
 
       .item__actions {
-        margin-top: 0.5rem;
+        margin-top: 0.5em;
         display: flex;
         align-items: center;
       }

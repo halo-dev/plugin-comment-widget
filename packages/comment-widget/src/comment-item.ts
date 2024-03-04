@@ -158,7 +158,7 @@ export class CommentItem extends LitElement {
     baseStyles,
     css`
       .item__action--upvote {
-        margin-left: -0.5rem;
+        margin-left: -0.5em;
       }
     `,
   ];

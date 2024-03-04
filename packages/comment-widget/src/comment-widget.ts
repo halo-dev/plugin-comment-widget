@@ -204,11 +204,11 @@ export class CommentWidget extends LitElement {
       }
 
       .comment-widget__wrapper {
-        margin-top: 1.2rem;
+        margin-top: 1.2em;
       }
 
       .comment-widget__stats {
-        margin: 0.875rem 0;
+        margin: 0.875em 0;
         font-weight: 500;
         color: initial;
       }

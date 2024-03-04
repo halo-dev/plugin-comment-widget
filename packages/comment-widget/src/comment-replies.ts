@@ -97,11 +97,11 @@ export class CommentReplies extends LitElement {
     baseStyles,
     css`
       .replies__wrapper {
-        margin-top: 0.5rem;
+        margin-top: 0.5em;
       }
 
       .replies__list {
-        margin-top: 0.875rem;
+        margin-top: 0.875em;
       }
     `,
   ];

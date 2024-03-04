@@ -123,16 +123,16 @@ export class EmojiButton extends LitElement {
 
       .form__emoji-panel {
         position: absolute;
-        top: 2rem;
+        top: 2em;
         right: 0;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-        border-radius: 0.875rem;
+        box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
+        border-radius: 0.875em;
         overflow: hidden;
       }
 
       @media (max-width: 640px) {
         .form__emoji-panel {
-          right: -7.8rem;
+          right: -7.8em;
         }
       }
     `,

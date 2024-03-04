@@ -24,12 +24,7 @@ export class LitToast extends LitElement {
       })}"
     >
       ${this.type === 'success'
-        ? html`<svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1rem"
-            height="1rem"
-            viewBox="0 0 24 24"
-          >
+        ? html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g
               fill="none"
               stroke="#fff"
@@ -41,12 +36,7 @@ export class LitToast extends LitElement {
               <path d="m9 12l2 2l4-4" />
             </g>
           </svg>`
-        : html`<svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1rem"
-            height="1rem"
-            viewBox="0 0 24 24"
-          >
+        : html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <path
               fill="none"
               stroke="#fff"
@@ -68,11 +58,11 @@ export class LitToast extends LitElement {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.5rem 0.625rem;
+        padding: 0.5em 0.625em;
         justify-content: space-between;
         overflow: hidden;
         color: #fff;
-        gap: 0.5rem;
+        gap: 0.5em;
         box-shadow:
           0 0 #0000,
           0 0 #0000,
@@ -142,7 +132,7 @@ export class LitToastContainer extends LitElement {
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.5em;
       }
     `,
   ];

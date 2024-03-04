@@ -15,7 +15,7 @@ export class LoadingBlock extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1em;
     }
   `;
 }

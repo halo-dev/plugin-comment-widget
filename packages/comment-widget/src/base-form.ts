@@ -214,7 +214,7 @@ export class BaseForm extends LitElement {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1em;
       }
 
       .form__editor {
@@ -224,7 +224,7 @@ export class BaseForm extends LitElement {
       .form__anonymous-inputs {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 0.5rem;
+        gap: 0.5em;
         align-items: center;
       }
 
@@ -235,8 +235,8 @@ export class BaseForm extends LitElement {
       }
 
       .form__anonymous-inputs a {
-        font-size: 0.75rem;
-        line-height: 1rem;
+        font-size: 0.75em;
+        line-height: 1em;
         color: darkcyan;
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -253,12 +253,12 @@ export class BaseForm extends LitElement {
         border-radius: var(--base-border-radius);
         background: var(--component-form-input-bg-color);
         color: var(--component-form-input-color);
-        border: 0.05rem solid var(--component-form-input-border-color);
+        border: 0.05em solid var(--component-form-input-border-color);
         display: block;
-        height: 2.25rem;
+        height: 2.25em;
         max-width: 100%;
         outline: 0;
-        padding: 0.4rem 0.75rem;
+        padding: 0.4em 0.75em;
         width: 100%;
         transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
       }
@@ -273,13 +273,13 @@ export class BaseForm extends LitElement {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 0.75em;
         color: initial;
       }
 
       .form__account-info img {
-        height: 2rem;
-        width: 2rem;
+        height: 2em;
+        width: 2em;
         border-radius: 9999px;
       }
 
@@ -292,10 +292,10 @@ export class BaseForm extends LitElement {
         border-radius: var(--base-border-radius);
         background: var(--component-form-button-login-bg-color);
         border: 1px solid var(--component-form-button-login-border-color);
-        font-size: 0.75rem;
+        font-size: 0.75em;
         outline: none;
-        padding: 0 0.75rem;
-        height: 1.75rem;
+        padding: 0 0.75em;
+        height: 1.75em;
         user-select: none;
       }
 
@@ -313,7 +313,7 @@ export class BaseForm extends LitElement {
       .form__actions {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.75em;
       }
 
       .form__button--submit {
@@ -322,13 +322,13 @@ export class BaseForm extends LitElement {
         color: var(--component-form-button-submit-color);
         border: 1px solid var(--component-form-button-submit-border-color);
         display: inline-flex;
-        height: 2.25rem;
+        height: 2.25em;
         flex-shrink: 0;
         user-select: none;
         align-items: center;
         justify-content: center;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding-left: 1em;
+        padding-right: 1em;
         text-align: center;
         vertical-align: middle;
         text-decoration-line: none;
@@ -336,7 +336,7 @@ export class BaseForm extends LitElement {
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 0.15s;
-        gap: 0.5rem;
+        gap: 0.5em;
       }
 
       .form__button--submit:hover {

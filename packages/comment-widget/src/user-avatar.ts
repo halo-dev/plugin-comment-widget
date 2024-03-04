@@ -113,16 +113,16 @@ export class UserAvatar extends LitElement {
       }
 
       .avatar--error svg {
-        height: 1.15rem;
-        width: 1.15rem;
+        height: 1.15em;
+        width: 1.15em;
         color: rgb(255 59 48);
       }
 
       .avatar__placeholder {
         font-weight: 500;
         color: rgb(31 41 55);
-        font-size: 0.75rem;
-        line-height: 1rem;
+        font-size: 0.75em;
+        line-height: 1em;
         user-select: none;
       }
     `,

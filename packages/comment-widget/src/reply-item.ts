@@ -217,26 +217,26 @@ export class ReplyItem extends LitElement {
     baseStyles,
     css`
       .item-action__upvote {
-        margin-left: -0.5rem;
+        margin-left: -0.5em;
       }
 
       .form__wrapper {
-        margin-top: 0.5rem;
+        margin-top: 0.5em;
       }
 
       .item__quote-badge {
         display: inline-flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.25rem;
-        padding-left: 0.25rem;
-        padding-right: 0.25rem;
-        padding-top: 0.125rem;
-        padding-bottom: 0.125rem;
+        gap: 0.25em;
+        padding-left: 0.25em;
+        padding-right: 0.25em;
+        padding-top: 0.125em;
+        padding-bottom: 0.125em;
         font-weight: 500;
-        font-size: 0.75rem;
-        line-height: 1rem;
-        border-radius: 0.25rem;
+        font-size: 0.75em;
+        line-height: 1em;
+        border-radius: 0.25em;
         background-color: #e5e7eb;
         color: #4b5563;
         cursor: pointer;
