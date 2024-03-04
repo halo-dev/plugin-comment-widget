@@ -254,6 +254,7 @@ export class BaseForm extends LitElement {
         background: var(--component-form-input-bg-color);
         color: var(--component-form-input-color);
         border: 0.05em solid var(--component-form-input-border-color);
+        font-size: 0.875em;
         display: block;
         height: 2.25em;
         max-width: 100%;
@@ -324,6 +325,7 @@ export class BaseForm extends LitElement {
         background-color: var(--component-form-button-submit-bg-color);
         color: var(--component-form-button-submit-color);
         border: 1px solid var(--component-form-button-submit-border-color);
+        font-size: 0.875em;
         display: inline-flex;
         flex-shrink: 0;
         user-select: none;
