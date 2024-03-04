@@ -99,7 +99,7 @@ export class ReplyForm extends LitElement {
       if (newReply.spec.approved) {
         this.toastManager?.success('评论成功');
       } else {
-        this.toastManager?.warn('评论成功，等待审核');
+        this.toastManager?.success('评论成功，等待审核');
       }
 
       this.dispatchEvent(new CustomEvent('reload'));

@@ -183,7 +183,7 @@ export class CommentWidget extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.toastManager = new ToastManager(this);
+    this.toastManager = new ToastManager();
     this.fetchCurrentUser();
     this.fetchComments();
     this.fetchGlobalInfo();
@@ -208,6 +208,7 @@ export class CommentWidget extends LitElement {
       }
 
       .comment-widget__stats {
+        font-size: 0.875em;
         margin: 0.875em 0;
         font-weight: 500;
         color: initial;

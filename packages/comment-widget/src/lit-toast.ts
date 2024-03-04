@@ -55,6 +55,7 @@ export class LitToast extends LitElement {
     css`
       .toast {
         border-radius: var(--base-border-radius);
+        font-size: 0.875em;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -69,11 +70,11 @@ export class LitToast extends LitElement {
           0 1px 3px 0 rgb(0 0 0 / 0.1),
           0 1px 2px -1px rgb(0 0 0 / 0.1);
 
-        animation: slideInUp 0.3s ease-out forwards;
+        animation: slideInDown 0.3s ease-out forwards;
       }
 
       .toast--exit {
-        animation: slideOutDown 0.3s ease-in forwards;
+        animation: slideOutUp 0.3s ease-in forwards;
       }
 
       .toast--error {
@@ -88,24 +89,24 @@ export class LitToast extends LitElement {
         background-color: #f5a623;
       }
 
-      @keyframes slideInUp {
+      @keyframes slideInDown {
         from {
-          transform: translateY(100%);
+          transform: translateY(0);
           opacity: 0;
         }
         to {
-          transform: translateY(0);
+          transform: translateY(100%);
           opacity: 1;
         }
       }
 
-      @keyframes slideOutDown {
+      @keyframes slideOutUp {
         from {
-          transform: translateY(0);
+          transform: translateY(100%);
           opacity: 1;
         }
         to {
-          transform: translateY(100%);
+          transform: translateY(0);
           opacity: 0;
         }
       }
@@ -125,7 +126,7 @@ export class LitToastContainer extends LitElement {
     css`
       :host {
         position: fixed;
-        bottom: 20px;
+        top: 1em;
         z-index: 1000;
         display: flex;
         width: 100%;
@@ -146,17 +147,15 @@ declare global {
 }
 
 export class ToastManager {
-  private root: LitElement;
+  private body: HTMLBodyElement = document.body as HTMLBodyElement;
   private toastContainer: LitToastContainer;
 
-  constructor(root: LitElement) {
-    this.root = root;
-
-    const container = this.root.shadowRoot?.querySelector('lit-toast-container');
+  constructor() {
+    const container = this.body.querySelector('lit-toast-container');
 
     if (!container) {
       this.toastContainer = new LitToastContainer();
-      this.root.shadowRoot?.appendChild(this.toastContainer);
+      this.body.appendChild(this.toastContainer);
     } else {
       this.toastContainer = container as LitToastContainer;
     }
