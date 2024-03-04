@@ -208,7 +208,7 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
 
 ## 作为组件使用
 
-此插件的 UI 部分采用 [Lit Element](https://lit.dev/) 编写，并最终编译为 Web Component，所以理论上可以在任何 JS 框架中使用。这非常适用于将 Halo 作为 Headless CMS 使用的场景。例如使用 Vue、React、Astro 等框架编写网站，并调用 Halo 的 API 来渲染网页，这个时候文章评论的解决方案就可以直接使用此组件。
+此插件的 UI 部分采用 [Lit Element](https://lit.dev/) 编写，并最终编译为 Web Component，所以理论上可以在任何 JS 框架中使用。这非常适用于将 Halo 作为 Headless CMS 使用的场景。例如使用 Vue、React 等框架编写网站，并调用 Halo 的 API 来渲染网页，这个时候文章评论的解决方案就可以直接使用此组件。
 
 安装：
 
@@ -241,17 +241,39 @@ export default {
 ```vue
 <script setup>
 import '@halo-dev/comment-widget'
+import '@halo-dev/comment-widget/var.css';
 </script>
 
 <template>
-  <comment-widget />
+  <comment-widget
+    baseUrl="https://demo.halo.run"
+    group="content.halo.run"
+    kind="Post"
+    version="v1alpha1"
+    name="e0507f6f-88bb-4d3c-a90a-a88aba222035"
+  ></comment-widget>
 </template>
 ```
 
 ## React
 
-TODO
+```ts
+import "@halo-dev/comment-widget";
+import "@halo-dev/comment-widget/var.css";
 
-## Astro
+function App() {
+  return (
+    <>
+      <comment-widget
+        baseUrl="https://demo.halo.run"
+        group="content.halo.run"
+        kind="Post"
+        version="v1alpha1"
+        name="e0507f6f-88bb-4d3c-a90a-a88aba222035"
+      ></comment-widget>
+    </>
+  );
+}
 
-TODO
+export default App;
+```
