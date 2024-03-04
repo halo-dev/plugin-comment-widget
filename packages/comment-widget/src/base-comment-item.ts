@@ -85,6 +85,7 @@ export class BaseCommentItem extends LitElement {
       .item__author {
         color: initial;
         font-weight: 500;
+        font-size: 0.875em;
       }
 
       .item__meta-info {

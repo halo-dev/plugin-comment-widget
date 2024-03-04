@@ -290,6 +290,7 @@ export class BaseForm extends LitElement {
 
       .form__account-info span {
         font-weight: 500;
+        font-size: 0.9em;
       }
 
       .form__button--logout,
