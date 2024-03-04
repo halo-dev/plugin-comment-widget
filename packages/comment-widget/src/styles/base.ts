@@ -51,7 +51,7 @@ const baseStyles = css`
   kbd,
   samp,
   pre {
-    font-size: 1em;
+    font-size: 0.875em;
   }
 
   small {
