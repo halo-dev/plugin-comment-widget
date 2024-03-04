@@ -9,6 +9,10 @@ import { consume } from '@lit/context';
 import { emojiDataUrlContext } from './context';
 import varStyles from './styles/var';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import zh from '@emoji-mart/data/i18n/zh.json';
+
 @customElement('emoji-button')
 export class EmojiButton extends LitElement {
   @state()
@@ -69,8 +73,7 @@ export class EmojiButton extends LitElement {
       onEmojiSelect: ({ native }: { native: string }) => {
         this.dispatchEvent(new CustomEvent('emoji-select', { detail: { native } }));
       },
-      // TODO: support locale
-      // locale: zh,
+      i18n: zh,
     });
 
     // TODO: fix this ts error
@@ -85,7 +88,6 @@ export class EmojiButton extends LitElement {
       ${this.emojiLoading
         ? html`<icon-loading></icon-loading>`
         : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`}
-
       <div
         class="form__emoji-panel"
         style="display: ${this.emojiPickerVisible ? 'block' : 'none'}"
