@@ -119,7 +119,7 @@ export class EmojiButton extends LitElement {
       }
 
       .emoji-button:hover {
-        color: initial;
+        color: var(--base-color);
       }
 
       .form__emoji-panel {
