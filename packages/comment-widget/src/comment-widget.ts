@@ -84,7 +84,9 @@ export class CommentWidget extends LitElement {
 
   override render() {
     return html`<div class="comment-widget">
-      <comment-form @reload="${() => this.fetchComments(1)}"></comment-form>
+      <comment-form
+        @reload="${() => this.fetchComments({ page: 1, scrollIntoView: true })}"
+      ></comment-form>
       ${this.loading
         ? html`<loading-block></loading-block>`
         : html`
@@ -135,7 +137,8 @@ export class CommentWidget extends LitElement {
     this.currentUser = data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
   }
 
-  async fetchComments(page?: number) {
+  async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {
+    const { page, scrollIntoView } = options || {};
     try {
       if (this.comments.items.length === 0) {
         this.loading = true;
@@ -170,14 +173,17 @@ export class CommentWidget extends LitElement {
       }
     } finally {
       this.loading = false;
-      this.scrollIntoView({ block: 'start', inline: 'start', behavior: 'smooth' });
+
+      if (scrollIntoView) {
+        this.scrollIntoView({ block: 'start', inline: 'start', behavior: 'smooth' });
+      }
     }
   }
 
   async onPageChange(e: CustomEvent) {
     const data = e.detail;
     this.comments.page = data.page;
-    await this.fetchComments();
+    await this.fetchComments({ scrollIntoView: true });
   }
 
   override connectedCallback(): void {
