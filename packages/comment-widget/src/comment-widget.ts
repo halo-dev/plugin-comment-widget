@@ -14,6 +14,7 @@ import {
   nameContext,
   toastContext,
   versionContext,
+  withRepliesContext,
 } from './context';
 import './comment-form';
 import './comment-item';
@@ -41,6 +42,10 @@ export class CommentWidget extends LitElement {
   @provide({ context: nameContext })
   @property({ type: String })
   name = '';
+
+  @provide({ context: withRepliesContext })
+  @property({ type: Boolean })
+  withReplies = true;
 
   @provide({ context: emojiDataUrlContext })
   @property({ type: String })
@@ -152,6 +157,7 @@ export class CommentWidget extends LitElement {
         `page=${this.comments.page}`,
         `size=${this.comments.size}`,
         `version=${this.version}`,
+        `withReplies=${this.withReplies}`,
       ];
 
       const response = await fetch(
