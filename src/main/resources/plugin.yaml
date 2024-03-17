@@ -16,6 +16,8 @@ spec:
   homepage: https://github.com/halo-dev/plugin-comment-widget
   displayName: "评论组件"
   description: "为用户前台提供完整的评论解决方案"
+  configMapName: plugin-comment-widget-configmap
+  settingName: plugin-comment-widget-settings
   license:
     - name: "GPL-3.0"
       url: "https://github.com/halo-dev/plugin-comment-widget/blob/main/LICENSE"
