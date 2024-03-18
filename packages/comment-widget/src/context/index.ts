@@ -8,6 +8,7 @@ export const groupContext = createContext<string>(Symbol('group'));
 export const nameContext = createContext<string>(Symbol('name'));
 export const versionContext = createContext<string>(Symbol('version'));
 export const withRepliesContext = createContext<boolean>(Symbol('withReplies'));
+export const replySizeContext = createContext<number>(Symbol('replySize'));
 
 export const allowAnonymousCommentsContext = createContext<boolean>(
   Symbol('allowAnonymousComments')

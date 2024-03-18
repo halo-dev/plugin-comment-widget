@@ -3,7 +3,7 @@ import { LitElement, css, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { consume } from '@lit/context';
-import { baseUrlContext, toastContext, withRepliesContext } from './context';
+import { baseUrlContext, replySizeContext, toastContext, withRepliesContext } from './context';
 import './reply-item';
 import './loading-block';
 import './reply-form';
@@ -19,6 +19,10 @@ export class CommentReplies extends LitElement {
   @consume({ context: withRepliesContext, subscribe: true })
   @state()
   withReplies = false;
+
+  @consume({ context: replySizeContext, subscribe: true })
+  @state()
+  replySize = 10;
 
   @property({ type: Object })
   comment: CommentVo | undefined;
@@ -88,7 +92,7 @@ export class CommentReplies extends LitElement {
         this.page = 1;
       }
 
-      const queryParams = [`page=${this.page || 0}`, `size=10`];
+      const queryParams = [`page=${this.page || 0}`, `size=${this.replySize}`];
 
       const response = await fetch(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply?${queryParams.join('&')}`

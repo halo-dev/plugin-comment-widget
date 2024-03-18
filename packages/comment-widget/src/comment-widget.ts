@@ -12,6 +12,7 @@ import {
   groupContext,
   kindContext,
   nameContext,
+  replySizeContext,
   toastContext,
   versionContext,
   withRepliesContext,
@@ -46,6 +47,10 @@ export class CommentWidget extends LitElement {
   @provide({ context: withRepliesContext })
   @property({ type: Boolean })
   withReplies = true;
+
+  @provide({ context: replySizeContext })
+  @property({ type: Number })
+  replySize = 10;
 
   @provide({ context: emojiDataUrlContext })
   @property({ type: String })
@@ -158,6 +163,7 @@ export class CommentWidget extends LitElement {
         `size=${this.comments.size}`,
         `version=${this.version}`,
         `withReplies=${this.withReplies}`,
+        `replySize=${this.replySize}`,
       ];
 
       const response = await fetch(

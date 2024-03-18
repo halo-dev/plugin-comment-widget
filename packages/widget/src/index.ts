@@ -27,6 +27,7 @@ export function init(el: string, props: Props) {
   commentWidget.version = 'v1alpha1';
   commentWidget.name = props.name;
   commentWidget.withReplies = props.withReplies || false;
+  commentWidget.replySize = props.replySize || 10;
   commentWidget.emojiDataUrl =
     '/plugins/PluginCommentWidget/assets/static/emoji/native.json';
 

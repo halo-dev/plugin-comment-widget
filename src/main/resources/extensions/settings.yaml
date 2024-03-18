@@ -14,7 +14,6 @@ spec:
           key: withReplies
           value: false
         - $formkit: number
-          if: "$get(withReplies).value === true"
           label: 默认加载回复条数
           name: replySize
           id: replySize
