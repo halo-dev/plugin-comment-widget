@@ -41,5 +41,5 @@ build {
 }
 
 halo {
-    version = "comment"
+    version = "2.13.0"
 }
