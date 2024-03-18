@@ -25,7 +25,7 @@ import { ToastManager } from './lit-toast';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
-  @property({ type: String })
+  @property({ type: String, attribute: 'base-url' })
   baseUrl = '';
 
   @provide({ context: kindContext })
@@ -45,15 +45,15 @@ export class CommentWidget extends LitElement {
   name = '';
 
   @provide({ context: withRepliesContext })
-  @property({ type: Boolean })
-  withReplies = true;
+  @property({ type: Boolean, attribute: 'with-replies' })
+  withReplies = false;
 
   @provide({ context: replySizeContext })
-  @property({ type: Number })
+  @property({ type: Number, attribute: 'reply-size' })
   replySize = 10;
 
   @provide({ context: emojiDataUrlContext })
-  @property({ type: String })
+  @property({ type: String, attribute: 'emoji-data-url' })
   emojiDataUrl = 'https://unpkg.com/@emoji-mart/data';
 
   @provide({ context: currentUserContext })
