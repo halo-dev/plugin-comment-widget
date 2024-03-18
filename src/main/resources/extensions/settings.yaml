@@ -19,4 +19,4 @@ spec:
           id: replySize
           key: replySize
           validation: required
-          value: 10
+          value: 20
