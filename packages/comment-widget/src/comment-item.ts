@@ -103,7 +103,8 @@ export class CommentItem extends LitElement {
 
   override render() {
     return html`<base-comment-item
-      .userAvatar="${this.comment?.owner.avatar}"
+      .userAvatar="${this.comment?.spec.owner.kind === 'User'
+          ? this.comment?.owner.avatar : this.comment?.spec.owner.annotations?.['avatar']}"
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"

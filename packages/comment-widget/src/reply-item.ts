@@ -106,7 +106,8 @@ export class ReplyItem extends LitElement {
   override render() {
     return html`
       <base-comment-item
-        .userAvatar="${this.reply?.owner.avatar}"
+        .userAvatar="${this.comment?.spec.owner.kind === 'User'
+            ? this.comment?.owner.avatar : this.comment?.spec.owner.annotations?.['avatar']}"
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
         .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
