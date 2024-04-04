@@ -1,5 +1,3 @@
-import Gravatar from "./gravatar";
-
 export default abstract class AvatarProvider {
   private readonly _name: string;
   private _url: string;
@@ -22,26 +20,4 @@ export default abstract class AvatarProvider {
   }
 
   abstract getAvatarSrc(emailHash: string | undefined): string;
-}
-
-let avatarProvider: AvatarProvider | undefined;
-
-enum AvatarProviderEnum {
-  GRAVATAR = "Gravatar"
-}
-
-export function setAvatarProvider(provider: string, mirrorUrl?: string) {
-  switch (provider) {
-    case AvatarProviderEnum.GRAVATAR:
-      if (mirrorUrl) {
-        Gravatar.url = mirrorUrl;
-      }
-      avatarProvider = Gravatar;
-      break;
-    default:
-  }
-}
-
-export function getAvatarProvider() {
-  return avatarProvider;
 }

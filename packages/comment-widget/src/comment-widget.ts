@@ -27,7 +27,7 @@ import './comment-pagination';
 import varStyles from './styles/var';
 import { ToastManager } from './lit-toast';
 import { AnonymousUserPolicy, AllUserPolicy, NoAvatarUserPolicy, AvatarPolicyEnum, setPolicyInstance } from './avatar-policy';
-import { setAvatarProvider } from "./avatar/providers/avatar-provider";
+import { setAvatarProvider } from "./avatar-provider";
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })

@@ -1,5 +1,5 @@
 import { CommentVo, ReplyVo } from '@halo-dev/api-client';
-import { getAvatarProvider } from './avatar/providers/avatar-provider';
+import { getAvatarProvider } from './avatar-provider';
 
 abstract class AvatarPolicy {
   abstract applyCommentPolicy(comment: CommentVo | undefined): string | undefined;
