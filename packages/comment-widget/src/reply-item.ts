@@ -10,7 +10,7 @@ import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { consume } from '@lit/context';
 import { baseUrlContext } from './context';
 import varStyles from './styles/var';
-import {handleReplyAvatar} from "./user-avatar";
+import { handleReplyAvatar } from "./user-avatar";
 
 export class ReplyItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -122,7 +122,7 @@ export class ReplyItem extends LitElement {
           @click="${this.handleUpvote}"
         >
           ${this.upvoted
-            ? html`<svg
+        ? html`<svg
                 slot="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="32"
@@ -137,7 +137,7 @@ export class ReplyItem extends LitElement {
                   />
                 </g>
               </svg>`
-            : html`<svg
+        : html`<svg
                 slot="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="32"
@@ -179,7 +179,7 @@ export class ReplyItem extends LitElement {
         </base-comment-item-action>
 
         ${this.showReplyForm
-          ? html`
+        ? html`
               <div class="form__wrapper" slot="footer">
                 <reply-form
                   .comment=${this.comment}
@@ -188,9 +188,9 @@ export class ReplyItem extends LitElement {
                 ></reply-form>
               </div>
             `
-          : ``}
+        : ``}
         ${this.quoteReply
-          ? html`<span
+        ? html`<span
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
@@ -208,7 +208,7 @@ export class ReplyItem extends LitElement {
                 ><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`
-          : ''}
+        : ''}
       </base-comment-item>
     `;
   }

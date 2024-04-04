@@ -26,6 +26,8 @@ import './comment-item';
 import './comment-pagination';
 import varStyles from './styles/var';
 import { ToastManager } from './lit-toast';
+import { AnonymousUserPolicy, AllUserPolicy, NoAvatarUserPolicy, AvatarPolicyEnum, setPolicyInstance } from './avatar-policy';
+import { setAvatarProvider } from "./avatar/providers/avatar-provider";
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -223,12 +225,42 @@ export class CommentWidget extends LitElement {
     await this.fetchComments({ scrollIntoView: true });
   }
 
+  initAvatarProvider() {
+    if (!this.useAvatarProvider) {
+      return;
+    }
+    setAvatarProvider(this.avatarProvider, this.avatarProviderMirror);
+  }
+
+  initAvatarPolicy() {
+    if (!this.useAvatarProvider) {
+      console.log(this.useAvatarProvider);
+      setPolicyInstance(undefined);
+      return;
+    }
+    switch (this.avatarPolicy) {
+      case AvatarPolicyEnum.ALL_USER_POLICY: {
+        setPolicyInstance(new AllUserPolicy());
+        break;
+      }
+      case AvatarPolicyEnum.NO_AVATAR_USER_POLICY: {
+        setPolicyInstance(new NoAvatarUserPolicy());
+        break;
+      }
+      case AvatarPolicyEnum.ANONYMOUS_USER_POLICY:
+      default:
+        setPolicyInstance(new AnonymousUserPolicy());
+    }
+  }
+
   override connectedCallback(): void {
     super.connectedCallback();
     this.toastManager = new ToastManager();
     this.fetchCurrentUser();
     this.fetchComments();
     this.fetchGlobalInfo();
+    this.initAvatarProvider();
+    this.initAvatarPolicy();
   }
 
   static override styles = [

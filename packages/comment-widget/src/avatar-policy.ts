@@ -1,84 +1,84 @@
 import { CommentVo, ReplyVo } from '@halo-dev/api-client';
+import { getAvatarProvider } from './avatar/providers/avatar-provider';
 
 abstract class AvatarPolicy {
-    abstract applyCommentPolicy(comment: CommentVo | undefined): string | undefined;
-    abstract applyReplyPolicy(reply: ReplyVo | undefined): string | undefined;
+  abstract applyCommentPolicy(comment: CommentVo | undefined): string | undefined;
+  abstract applyReplyPolicy(reply: ReplyVo | undefined): string | undefined;
 }
 
-// TODO fetch from halo
-let currentPolicy = "AnonymousUserPolicy";
-let currentPolicyObj: AvatarPolicy | undefined;
-const emailKind = "Email"
+let policyInstance: AvatarPolicy | undefined;
+const emailKind = "Email";
 const emailHash = "emailHash";
-const avatarProvider = "https://gravatar.com/avatar/";
 
 class AnonymousUserPolicy extends AvatarPolicy {
-    applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
-        const isAnonymous = comment?.owner.kind === emailKind;
-        if (isAnonymous) {
-            return avatarProvider + comment?.spec.owner.annotations?.[emailHash];
-        }
-        return comment?.owner.avatar;
+  applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
+    const avatarProvider = getAvatarProvider();
+    const isAnonymous = comment?.owner.kind === emailKind;
+    if (isAnonymous) {
+      return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
     }
-    applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
-        const isAnonymous = reply?.owner.kind === emailKind;
-        if (isAnonymous) {
-            return avatarProvider + reply?.spec.owner.annotations?.[emailHash];
-        }
-        return reply?.owner.avatar;
+    return comment?.owner.avatar;
+  }
+  applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
+    const avatarProvider = getAvatarProvider();
+    const isAnonymous = reply?.owner.kind === emailKind;
+    if (isAnonymous) {
+      return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
     }
+    return reply?.owner.avatar;
+  }
 }
 
 class AllUserPolicy extends AvatarPolicy {
-    applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
-        return avatarProvider + comment?.spec.owner.annotations?.[emailHash];
-    }
-    applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
-        return avatarProvider + reply?.spec.owner.annotations?.[emailHash];
-    }
+  applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
+    const avatarProvider = getAvatarProvider();
+    return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
+  }
+  applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
+    const avatarProvider = getAvatarProvider();
+    return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
+  }
 }
 
 class NoAvatarUserPolicy extends AvatarPolicy {
-    applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
-        const avatar = comment?.owner.avatar;
-        if (!avatar) {
-            return avatarProvider + comment?.spec.owner.annotations?.[emailHash];
-        }
-        return avatar;
+  applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
+    const avatarProvider = getAvatarProvider();
+    const isAnonymous = comment?.owner.kind === emailKind;
+    if (isAnonymous) {
+      return undefined;
     }
-    applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
-        const avatar = reply?.owner.avatar;
-        if (!avatar) {
-            return avatarProvider + reply?.spec.owner.annotations?.[emailHash];
-        }
-        return avatar;
+    const avatar = comment?.owner.avatar;
+    if (!avatar) {
+      return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
     }
+    return avatar;
+  }
+  applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
+    const avatarProvider = getAvatarProvider();
+    const isAnonymous = reply?.owner.kind === emailKind;
+    if (isAnonymous) {
+      return undefined;
+    }
+    const avatar = reply?.owner.avatar;
+    if (!avatar) {
+      return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
+    }
+    return avatar;
+  }
 }
 
 enum AvatarPolicyEnum {
-    "AnonymousUserPolicy" = "AnonymousUserPolicy",
-    "AllUserPolicy" = "AllUserPolicy",
-    "NoAvatarUserPolicy" = "NoAvatarUserPolicy"
+  ANONYMOUS_USER_POLICY = "AnonymousUserPolicy",
+  ALL_USER_POLICY = "AllUserPolicy",
+  NO_AVATAR_USER_POLICY = "NoAvatarUserPolicy"
 }
 
-function getPolicyInstance(): AvatarPolicy {
-    if (currentPolicyObj != undefined) {
-        return currentPolicyObj;
-    }
-    switch (currentPolicy) {
-        case AvatarPolicyEnum.AllUserPolicy: {
-            currentPolicyObj = new AllUserPolicy();
-            break;
-        }
-        case AvatarPolicyEnum.NoAvatarUserPolicy: {
-            currentPolicyObj = new NoAvatarUserPolicy();
-            break;
-        }
-        case AvatarPolicyEnum.AnonymousUserPolicy:
-        default:
-            currentPolicyObj = new AnonymousUserPolicy();
-    }
-    return currentPolicyObj;
+function setPolicyInstance(nPolicyInstance: AvatarPolicy | undefined) {
+  policyInstance = nPolicyInstance;
 }
 
-export {AnonymousUserPolicy, AllUserPolicy, NoAvatarUserPolicy, getPolicyInstance}
+function getPolicyInstance(): AvatarPolicy | undefined {
+  return policyInstance;
+}
+
+export { AnonymousUserPolicy, AllUserPolicy, NoAvatarUserPolicy, AvatarPolicyEnum, setPolicyInstance, getPolicyInstance };

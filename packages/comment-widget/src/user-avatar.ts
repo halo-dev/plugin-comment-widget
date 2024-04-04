@@ -4,7 +4,7 @@ import { LitElement, css, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import {getPolicyInstance} from "./avatar-policy";
+import { getPolicyInstance } from "./avatar-policy";
 
 export class UserAvatar extends LitElement {
   @property({ type: String })
@@ -132,13 +132,19 @@ export class UserAvatar extends LitElement {
 
 customElements.get('user-avatar') || customElements.define('user-avatar', UserAvatar);
 
-const avatarPolicy =  getPolicyInstance();
-
 export function handleCommentAvatar(comment: CommentVo | undefined): string | undefined {
+  const avatarPolicy = getPolicyInstance();
+  if (avatarPolicy === undefined) {
+    return comment?.owner.avatar;
+  }
   return avatarPolicy.applyCommentPolicy(comment);
 }
 
 export function handleReplyAvatar(reply: ReplyVo | undefined): string | undefined {
+  const avatarPolicy = getPolicyInstance();
+  if (avatarPolicy === undefined) {
+    return reply?.owner.avatar;
+  }
   return avatarPolicy.applyReplyPolicy(reply);
 }
 
