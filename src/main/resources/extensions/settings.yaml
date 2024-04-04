@@ -31,3 +31,35 @@ spec:
           key: withReplySize
           validation: required
           value: 5
+        - $formkit: checkbox
+          label: 是否启用第三方头像
+          name: useAvatarProvider
+          id: useAvatarProvider
+          key: useAvatarProvider
+          value: false
+        - $formkit: select
+          label: 头像服务提供者
+          if: "$get(useAvatarProvider).value === true"
+          name: avatarProvider
+          options:
+            - label: 'Gravatar'
+              value: 'Gravatar'
+          value: "Gravatar"
+        - $formkit:
+          label: 头像服务镜像地址
+          if: "$get(useAvatarProvider).value === true"
+          name: avatarProviderMirror
+          value: ""
+          help: 使用官方源则留空
+        - $formkit: select
+          label: 头像策略
+          if: "$get(useAvatarProvider).value === true"
+          name: avatarPolicy
+          options:
+            - label: '仅匿名用户'
+              value: 'AnonymousUserPolicy'
+            - label: '所有用户'
+              value: 'AllUserPolicy'
+            - label: '无头像已注册用户'
+              value: 'NoAvatarUserPolicy'
+          value: "AnonymousUserPolicy"

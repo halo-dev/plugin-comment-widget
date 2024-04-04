@@ -71,6 +71,10 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("replySize", String.valueOf(basicConfig.getReplySize()));
         properties.setProperty("withReplies", String.valueOf(basicConfig.isWithReplies()));
         properties.setProperty("withReplySize", String.valueOf(basicConfig.getWithReplySize()));
+        properties.setProperty("useAvatarProvider", String.valueOf(basicConfig.isUseAvatarProvider()));
+        properties.setProperty("avatarProvider", String.valueOf(basicConfig.getAvatarProvider()));
+        properties.setProperty("avatarProviderMirror", String.valueOf(basicConfig.getAvatarProviderMirror()));
+        properties.setProperty("avatarPolicy", String.valueOf(basicConfig.getAvatarPolicy()));
 
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
                 <div id="${domId}"></div>
@@ -84,7 +88,11 @@ public class DefaultCommentWidget implements CommentWidget {
                       size: ${size},
                       replySize: ${replySize},
                       withReplies: ${withReplies},
-                      withReplySize: ${withReplySize}
+                      withReplySize: ${withReplySize},
+                      useAvatarProvider: ${useAvatarProvider},
+                      avatarProvider: "${avatarProvider}",
+                      avatarProviderMirror: "${avatarProviderMirror}",
+                      avatarPolicy: "${avatarPolicy}",
                     }
                   );
                 </script>
@@ -98,6 +106,10 @@ public class DefaultCommentWidget implements CommentWidget {
         private int replySize;
         private boolean withReplies;
         private int withReplySize;
+        private boolean useAvatarProvider;
+        private String avatarProvider;
+        private String avatarProviderMirror;
+        private String avatarPolicy;
     }
 
     private String domIdFrom(String group, String kind, String name) {

@@ -5,7 +5,6 @@ import { repeat } from 'lit/directives/repeat.js';
 import baseStyles from './styles/base';
 import { provide } from '@lit/context';
 import {
-  allowAnonymousCommentsContext,
   baseUrlContext,
   currentUserContext,
   emojiDataUrlContext,
@@ -16,6 +15,11 @@ import {
   toastContext,
   versionContext,
   withRepliesContext,
+  allowAnonymousCommentsContext,
+  useAvatarProviderContext,
+  avatarPolicyContext,
+  avatarProviderContext,
+  avatarProviderMirrorContext
 } from './context';
 import './comment-form';
 import './comment-item';
@@ -57,6 +61,22 @@ export class CommentWidget extends LitElement {
 
   @property({ type: Number, attribute: 'with-reply-size' })
   withReplySize = 10;
+
+  @provide({ context: useAvatarProviderContext })
+  @property({ type: Boolean, attribute: 'use-avatar-provider' })
+  useAvatarProvider = false;
+
+  @provide({ context: avatarProviderContext })
+  @property({ type: String, attribute: 'avatar-provider' })
+  avatarProvider = '';
+
+  @provide({ context: avatarProviderMirrorContext })
+  @property({ type: String, attribute: 'avatar-provider-mirror' })
+  avatarProviderMirror = '';
+
+  @provide({ context: avatarPolicyContext })
+  @property({ type: String, attribute: 'avatar-policy' })
+  avatarPolicy = '';
 
   @provide({ context: emojiDataUrlContext })
   @property({ type: String, attribute: 'emoji-data-url' })
