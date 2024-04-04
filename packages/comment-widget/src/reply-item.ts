@@ -10,6 +10,7 @@ import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { consume } from '@lit/context';
 import { baseUrlContext } from './context';
 import varStyles from './styles/var';
+import {handleReplyAvatar} from "./user-avatar";
 
 export class ReplyItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -106,8 +107,7 @@ export class ReplyItem extends LitElement {
   override render() {
     return html`
       <base-comment-item
-        .userAvatar="${this.comment?.spec.owner.kind === 'User'
-            ? this.comment?.owner.avatar : this.comment?.spec.owner.annotations?.['avatar']}"
+        .userAvatar="${handleReplyAvatar(this.reply)}"
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
         .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"

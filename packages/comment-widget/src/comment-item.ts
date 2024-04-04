@@ -12,6 +12,7 @@ import { LS_UPVOTED_COMMENTS_KEY } from './constant';
 import varStyles from './styles/var';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { CommentReplies } from './comment-replies';
+import {handleCommentAvatar} from "./user-avatar";
 
 export class CommentItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -103,8 +104,7 @@ export class CommentItem extends LitElement {
 
   override render() {
     return html`<base-comment-item
-      .userAvatar="${this.comment?.spec.owner.kind === 'User'
-          ? this.comment?.owner.avatar : this.comment?.spec.owner.annotations?.['avatar']}"
+      .userAvatar="${handleCommentAvatar(this.comment)}"
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"

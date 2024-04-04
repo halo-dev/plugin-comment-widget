@@ -1,8 +1,10 @@
+import { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import './icons/icon-loading';
 import { LitElement, css, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import {getPolicyInstance} from "./avatar-policy";
 
 export class UserAvatar extends LitElement {
   @property({ type: String })
@@ -129,6 +131,16 @@ export class UserAvatar extends LitElement {
 }
 
 customElements.get('user-avatar') || customElements.define('user-avatar', UserAvatar);
+
+const avatarPolicy =  getPolicyInstance();
+
+export function handleCommentAvatar(comment: CommentVo | undefined): string | undefined {
+  return avatarPolicy.applyCommentPolicy(comment);
+}
+
+export function handleReplyAvatar(reply: ReplyVo | undefined): string | undefined {
+  return avatarPolicy.applyReplyPolicy(reply);
+}
 
 declare global {
   interface HTMLElementTagNameMap {
