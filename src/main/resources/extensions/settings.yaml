@@ -45,7 +45,7 @@ spec:
             - label: 'Gravatar'
               value: 'Gravatar'
           value: "Gravatar"
-        - $formkit:
+        - $formkit: text
           label: 头像服务镜像地址
           if: "$get(useAvatarProvider).value === true"
           name: avatarProviderMirror
