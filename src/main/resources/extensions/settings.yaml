@@ -31,6 +31,9 @@ spec:
           key: withReplySize
           validation: required
           value: 5
+    - group: avatar
+      label: 头像设置
+      formSchema:
         - $formkit: checkbox
           label: 是否启用第三方头像
           name: useAvatarProvider

@@ -66,16 +66,19 @@ public class DefaultCommentWidget implements CommentWidget {
 
         var basicConfig = settingFetcher.fetch(BasicConfig.GROUP, BasicConfig.class)
                 .orElse(new BasicConfig());
-        // placeholderHelper only support string, so we need to convert boolean to string
         properties.setProperty("size", String.valueOf(basicConfig.getSize()));
         properties.setProperty("replySize", String.valueOf(basicConfig.getReplySize()));
         properties.setProperty("withReplies", String.valueOf(basicConfig.isWithReplies()));
         properties.setProperty("withReplySize", String.valueOf(basicConfig.getWithReplySize()));
-        properties.setProperty("useAvatarProvider", String.valueOf(basicConfig.isUseAvatarProvider()));
-        properties.setProperty("avatarProvider", String.valueOf(basicConfig.getAvatarProvider()));
-        properties.setProperty("avatarProviderMirror", String.valueOf(basicConfig.getAvatarProviderMirror()));
-        properties.setProperty("avatarPolicy", String.valueOf(basicConfig.getAvatarPolicy()));
 
+        var avatarConfig = settingFetcher.fetch(AvatarConfig.GROUP, AvatarConfig.class)
+                .orElse(new AvatarConfig());
+        properties.setProperty("useAvatarProvider", String.valueOf(avatarConfig.isUseAvatarProvider()));
+        properties.setProperty("avatarProvider", String.valueOf(avatarConfig.getAvatarProvider()));
+        properties.setProperty("avatarProviderMirror", String.valueOf(avatarConfig.getAvatarProviderMirror()));
+        properties.setProperty("avatarPolicy", String.valueOf(avatarConfig.getAvatarPolicy()));
+
+        // placeholderHelper only support string, so we need to convert boolean to string
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
                 <div id="${domId}"></div>
                 <script>
@@ -100,12 +103,17 @@ public class DefaultCommentWidget implements CommentWidget {
     }
 
     @Data
-    static class BasicConfig {
+    private static class BasicConfig {
         public static final String GROUP = "basic";
         private int size;
         private int replySize;
         private boolean withReplies;
         private int withReplySize;
+    }
+
+    @Data
+    private static class AvatarConfig {
+        public static final String GROUP = "avatar";
         private boolean useAvatarProvider;
         private String avatarProvider;
         private String avatarProviderMirror;
