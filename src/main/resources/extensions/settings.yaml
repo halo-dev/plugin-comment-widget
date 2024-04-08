@@ -46,23 +46,23 @@ spec:
           name: provider
           options:
             - label: 'Gravatar'
-              value: 'Gravatar'
-          value: "Gravatar"
+              value: 'gravatar'
+          value: "gravatar"
         - $formkit: text
           label: 头像服务镜像地址
           if: "$get(enable).value === true"
           name: providerMirror
           value: ""
-          help: 使用官方源则留空
+          help: 使用官方源则留空, 示例：https://gravatar.com
         - $formkit: select
           label: 头像策略
           if: "$get(enable).value === true"
           name: policy
           options:
             - label: '仅匿名用户'
-              value: 'AnonymousUserPolicy'
+              value: 'anonymousUser'
             - label: '所有用户'
-              value: 'AllUserPolicy'
-            - label: '无头像已注册用户'
-              value: 'NoAvatarUserPolicy'
-          value: "AnonymousUserPolicy"
+              value: 'allUser'
+            - label: '无头像用户'
+              value: 'noAvatarUser'
+          value: "anonymousUser"

@@ -1,5 +1,5 @@
 import { CommentVo, ReplyVo } from '@halo-dev/api-client';
-import { getAvatarProvider } from '../avatar-provider';
+import { getAvatarProvider } from './providers';
 
 abstract class AvatarPolicy {
   abstract applyCommentPolicy(comment: CommentVo | undefined): string | undefined;
@@ -68,9 +68,9 @@ class NoAvatarUserPolicy extends AvatarPolicy {
 }
 
 enum AvatarPolicyEnum {
-  ANONYMOUS_USER_POLICY = "AnonymousUserPolicy",
-  ALL_USER_POLICY = "AllUserPolicy",
-  NO_AVATAR_USER_POLICY = "NoAvatarUserPolicy"
+  ANONYMOUS_USER_POLICY = "anonymousUser",
+  ALL_USER_POLICY = "allUser",
+  NO_AVATAR_USER_POLICY = "noAvatarUser"
 }
 
 function setPolicyInstance(nPolicyInstance: AvatarPolicy | undefined) {
