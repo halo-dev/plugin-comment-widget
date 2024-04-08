@@ -73,10 +73,10 @@ public class DefaultCommentWidget implements CommentWidget {
 
         var avatarConfig = settingFetcher.fetch(AvatarConfig.GROUP, AvatarConfig.class)
                 .orElse(new AvatarConfig());
-        properties.setProperty("enable", String.valueOf(avatarConfig.isEnable()));
-        properties.setProperty("provider", String.valueOf(avatarConfig.getProvider()));
-        properties.setProperty("providerMirror", String.valueOf(avatarConfig.getProviderMirror()));
-        properties.setProperty("policy", String.valueOf(avatarConfig.getPolicy()));
+        properties.setProperty("useAvatarProvider", String.valueOf(avatarConfig.isEnable()));
+        properties.setProperty("avatarProvider", String.valueOf(avatarConfig.getProvider()));
+        properties.setProperty("avatarProviderMirror", String.valueOf(avatarConfig.getProviderMirror()));
+        properties.setProperty("avatarPolicy", String.valueOf(avatarConfig.getPolicy()));
 
         // placeholderHelper only support string, so we need to convert boolean to string
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
@@ -92,10 +92,10 @@ public class DefaultCommentWidget implements CommentWidget {
                       replySize: ${replySize},
                       withReplies: ${withReplies},
                       withReplySize: ${withReplySize},
-                      useAvatarProvider: ${enable},
-                      avatarProvider: "${provider}",
-                      avatarProviderMirror: "${providerMirror}",
-                      avatarPolicy: "${policy}",
+                      useAvatarProvider: ${useAvatarProvider},
+                      avatarProvider: "${avatarProvider}",
+                      avatarProviderMirror: "${avatarProviderMirror}",
+                      avatarPolicy: "${avatarPolicy}",
                     }
                   );
                 </script>
