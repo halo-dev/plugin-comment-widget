@@ -73,10 +73,10 @@ public class DefaultCommentWidget implements CommentWidget {
 
         var avatarConfig = settingFetcher.fetch(AvatarConfig.GROUP, AvatarConfig.class)
                 .orElse(new AvatarConfig());
-        properties.setProperty("useAvatarProvider", String.valueOf(avatarConfig.isUseAvatarProvider()));
-        properties.setProperty("avatarProvider", String.valueOf(avatarConfig.getAvatarProvider()));
-        properties.setProperty("avatarProviderMirror", String.valueOf(avatarConfig.getAvatarProviderMirror()));
-        properties.setProperty("avatarPolicy", String.valueOf(avatarConfig.getAvatarPolicy()));
+        properties.setProperty("enable", String.valueOf(avatarConfig.isEnable()));
+        properties.setProperty("provider", String.valueOf(avatarConfig.getProvider()));
+        properties.setProperty("providerMirror", String.valueOf(avatarConfig.getProviderMirror()));
+        properties.setProperty("policy", String.valueOf(avatarConfig.getPolicy()));
 
         // placeholderHelper only support string, so we need to convert boolean to string
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
@@ -92,10 +92,10 @@ public class DefaultCommentWidget implements CommentWidget {
                       replySize: ${replySize},
                       withReplies: ${withReplies},
                       withReplySize: ${withReplySize},
-                      useAvatarProvider: ${useAvatarProvider},
-                      avatarProvider: "${avatarProvider}",
-                      avatarProviderMirror: "${avatarProviderMirror}",
-                      avatarPolicy: "${avatarPolicy}",
+                      useAvatarProvider: ${enable},
+                      avatarProvider: "${provider}",
+                      avatarProviderMirror: "${providerMirror}",
+                      avatarPolicy: "${policy}",
                     }
                   );
                 </script>
@@ -114,10 +114,10 @@ public class DefaultCommentWidget implements CommentWidget {
     @Data
     private static class AvatarConfig {
         public static final String GROUP = "avatar";
-        private boolean useAvatarProvider;
-        private String avatarProvider;
-        private String avatarProviderMirror;
-        private String avatarPolicy;
+        private boolean enable;
+        private String provider;
+        private String providerMirror;
+        private String policy;
     }
 
     private String domIdFrom(String group, String kind, String name) {

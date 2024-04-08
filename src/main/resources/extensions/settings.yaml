@@ -36,28 +36,28 @@ spec:
       formSchema:
         - $formkit: checkbox
           label: 是否启用第三方头像
-          name: useAvatarProvider
-          id: useAvatarProvider
-          key: useAvatarProvider
+          name: enable
+          id: enable
+          key: enable
           value: false
         - $formkit: select
           label: 头像服务提供者
-          if: "$get(useAvatarProvider).value === true"
-          name: avatarProvider
+          if: "$get(enable).value === true"
+          name: provider
           options:
             - label: 'Gravatar'
               value: 'Gravatar'
           value: "Gravatar"
         - $formkit: text
           label: 头像服务镜像地址
-          if: "$get(useAvatarProvider).value === true"
-          name: avatarProviderMirror
+          if: "$get(enable).value === true"
+          name: providerMirror
           value: ""
           help: 使用官方源则留空
         - $formkit: select
           label: 头像策略
-          if: "$get(useAvatarProvider).value === true"
-          name: avatarPolicy
+          if: "$get(enable).value === true"
+          name: policy
           options:
             - label: '仅匿名用户'
               value: 'AnonymousUserPolicy'
