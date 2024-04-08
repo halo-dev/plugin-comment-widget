@@ -10,7 +10,7 @@ import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { consume } from '@lit/context';
 import { baseUrlContext } from './context';
 import varStyles from './styles/var';
-import { handleReplyAvatar } from "./user-avatar";
+import { getPolicyInstance } from "./avatar/avatar-policy";
 
 export class ReplyItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -248,6 +248,14 @@ export class ReplyItem extends LitElement {
 }
 
 customElements.get('reply-item') || customElements.define('reply-item', ReplyItem);
+
+function handleReplyAvatar(reply: ReplyVo | undefined): string | undefined {
+  const avatarPolicy = getPolicyInstance();
+  if (avatarPolicy === undefined) {
+    return reply?.owner.avatar;
+  }
+  return avatarPolicy.applyReplyPolicy(reply);
+}
 
 declare global {
   interface HTMLElementTagNameMap {
