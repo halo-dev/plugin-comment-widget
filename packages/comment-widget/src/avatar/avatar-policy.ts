@@ -44,11 +44,8 @@ class NoAvatarUserPolicy extends AvatarPolicy {
   applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
     const avatarProvider = getAvatarProvider();
     const isAnonymous = comment?.owner.kind === emailKind;
-    if (isAnonymous) {
-      return undefined;
-    }
     const avatar = comment?.owner.avatar;
-    if (!avatar) {
+    if (isAnonymous || !avatar) {
       return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
     }
     return avatar;
@@ -56,11 +53,8 @@ class NoAvatarUserPolicy extends AvatarPolicy {
   applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
     const avatarProvider = getAvatarProvider();
     const isAnonymous = reply?.owner.kind === emailKind;
-    if (isAnonymous) {
-      return undefined;
-    }
     const avatar = reply?.owner.avatar;
-    if (!avatar) {
+    if (isAnonymous || !avatar) {
       return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
     }
     return avatar;

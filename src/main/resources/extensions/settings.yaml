@@ -63,6 +63,6 @@ spec:
               value: 'anonymousUser'
             - label: '所有用户'
               value: 'allUser'
-            - label: '无头像用户'
+            - label: '匿名&无头像用户'
               value: 'noAvatarUser'
           value: "anonymousUser"
