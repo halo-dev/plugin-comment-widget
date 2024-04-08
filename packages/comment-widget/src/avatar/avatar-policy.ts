@@ -1,5 +1,5 @@
 import { CommentVo, ReplyVo } from '@halo-dev/api-client';
-import { getAvatarProvider } from './avatar-provider';
+import { getAvatarProvider } from '../avatar-provider';
 
 abstract class AvatarPolicy {
   abstract applyCommentPolicy(comment: CommentVo | undefined): string | undefined;
@@ -8,7 +8,7 @@ abstract class AvatarPolicy {
 
 let policyInstance: AvatarPolicy | undefined;
 const emailKind = "Email";
-const emailHash = "emailHash";
+const emailHash = "email-hash";
 
 class AnonymousUserPolicy extends AvatarPolicy {
   applyCommentPolicy(comment: CommentVo | undefined): string | undefined {

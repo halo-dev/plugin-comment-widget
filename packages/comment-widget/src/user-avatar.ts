@@ -4,7 +4,7 @@ import { LitElement, css, html } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import { getPolicyInstance } from "./avatar-policy";
+import { getPolicyInstance } from "./avatar/avatar-policy";
 
 export class UserAvatar extends LitElement {
   @property({ type: String })
