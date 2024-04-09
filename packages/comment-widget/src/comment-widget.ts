@@ -19,15 +19,21 @@ import {
   useAvatarProviderContext,
   avatarPolicyContext,
   avatarProviderContext,
-  avatarProviderMirrorContext
+  avatarProviderMirrorContext,
 } from './context';
 import './comment-form';
 import './comment-item';
 import './comment-pagination';
 import varStyles from './styles/var';
 import { ToastManager } from './lit-toast';
-import { AnonymousUserPolicy, AllUserPolicy, NoAvatarUserPolicy, AvatarPolicyEnum, setPolicyInstance } from './avatar/avatar-policy';
-import { setAvatarProvider } from "./avatar/providers";
+import {
+  AnonymousUserPolicy,
+  AllUserPolicy,
+  NoAvatarUserPolicy,
+  AvatarPolicyEnum,
+  setPolicyInstance,
+} from './avatar/avatar-policy';
+import { setAvatarProvider } from './avatar/providers';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })

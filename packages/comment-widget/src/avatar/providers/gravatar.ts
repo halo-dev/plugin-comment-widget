@@ -1,4 +1,4 @@
-import AvatarProvider from "./avatar-provider";
+import AvatarProvider from './avatar-provider';
 
 class Gravatar extends AvatarProvider {
   override getAvatarSrc(emailHash: string | undefined): string {
@@ -6,7 +6,4 @@ class Gravatar extends AvatarProvider {
   }
 }
 
-export default new Gravatar(
-  "Gravatar",
-  "https://gravatar.com"
-);
+export default new Gravatar('Gravatar', 'https://gravatar.com');

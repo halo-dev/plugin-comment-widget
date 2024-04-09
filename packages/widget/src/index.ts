@@ -39,9 +39,9 @@ export function init(el: string, props: Props) {
   commentWidget.emojiDataUrl =
     '/plugins/PluginCommentWidget/assets/static/emoji/native.json';
   commentWidget.useAvatarProvider = props.useAvatarProvider || false;
-  commentWidget.avatarProvider = props.avatarProvider || "";
-  commentWidget.avatarProviderMirror = props.avatarProviderMirror || "";
-  commentWidget.avatarPolicy = props.avatarPolicy || "";
+  commentWidget.avatarProvider = props.avatarProvider || '';
+  commentWidget.avatarProviderMirror = props.avatarProviderMirror || '';
+  commentWidget.avatarPolicy = props.avatarPolicy || '';
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {

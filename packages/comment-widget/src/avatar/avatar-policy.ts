@@ -7,8 +7,8 @@ abstract class AvatarPolicy {
 }
 
 let policyInstance: AvatarPolicy | undefined;
-const emailKind = "Email";
-const emailHash = "email-hash";
+const emailKind = 'Email';
+const emailHash = 'email-hash';
 
 class AnonymousUserPolicy extends AvatarPolicy {
   applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
@@ -62,9 +62,9 @@ class NoAvatarUserPolicy extends AvatarPolicy {
 }
 
 enum AvatarPolicyEnum {
-  ANONYMOUS_USER_POLICY = "anonymousUser",
-  ALL_USER_POLICY = "allUser",
-  NO_AVATAR_USER_POLICY = "noAvatarUser"
+  ANONYMOUS_USER_POLICY = 'anonymousUser',
+  ALL_USER_POLICY = 'allUser',
+  NO_AVATAR_USER_POLICY = 'noAvatarUser',
 }
 
 function setPolicyInstance(nPolicyInstance: AvatarPolicy | undefined) {
@@ -75,4 +75,11 @@ function getPolicyInstance(): AvatarPolicy | undefined {
   return policyInstance;
 }
 
-export { AnonymousUserPolicy, AllUserPolicy, NoAvatarUserPolicy, AvatarPolicyEnum, setPolicyInstance, getPolicyInstance };
+export {
+  AnonymousUserPolicy,
+  AllUserPolicy,
+  NoAvatarUserPolicy,
+  AvatarPolicyEnum,
+  setPolicyInstance,
+  getPolicyInstance,
+};

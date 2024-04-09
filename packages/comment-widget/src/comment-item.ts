@@ -12,7 +12,7 @@ import { LS_UPVOTED_COMMENTS_KEY } from './constant';
 import varStyles from './styles/var';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { CommentReplies } from './comment-replies';
-import { getPolicyInstance } from "./avatar/avatar-policy";
+import { getPolicyInstance } from './avatar/avatar-policy';
 
 export class CommentItem extends LitElement {
   @consume({ context: baseUrlContext })

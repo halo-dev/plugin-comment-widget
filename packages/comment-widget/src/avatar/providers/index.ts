@@ -1,10 +1,10 @@
-import Gravatar from "./gravatar";
-import AvatarProvider from "./avatar-provider";
+import Gravatar from './gravatar';
+import AvatarProvider from './avatar-provider';
 
 let avatarProvider: AvatarProvider | undefined;
 
 enum AvatarProviderEnum {
-  GRAVATAR = "gravatar"
+  GRAVATAR = 'gravatar',
 }
 
 export function setAvatarProvider(provider: string, mirrorUrl?: string) {
