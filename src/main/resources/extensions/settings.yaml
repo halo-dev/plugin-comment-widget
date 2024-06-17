@@ -31,6 +31,19 @@ spec:
           key: withReplySize
           validation: required
           value: 5
+    - group: security
+      label: 安全设置
+      formSchema:
+        - $formkit: group
+          name: captcha
+          label: 验证码
+          children:
+            - $formkit: checkbox
+              label: 匿名评论需要验证码
+              name: anonymousCommentCaptcha
+              id: anonymousCommentCaptcha
+              key: anonymousCommentCaptcha
+              value: false
     - group: avatar
       label: 头像设置
       formSchema:

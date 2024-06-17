@@ -42,7 +42,19 @@ export class BaseForm extends LitElement {
   name = '';
 
   @property({ type: Boolean })
+  captchaRequired = false;
+
+  @property({ type: String })
+  captchaImage = '';
+
+  @property({ type: Boolean })
   submitting = false;
+
+  @property({ type: String })
+  captchaCode = '';
+
+  @property({ type: String })
+  captchaCodeMsg = '';
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
 
@@ -167,6 +179,16 @@ export class BaseForm extends LitElement {
                 placeholder="网站"
               />
               <a href=${this.loginUrl} rel="nofollow"> （已有该站点的账号） </a>
+              <div ?hidden=${!this.captchaRequired}>
+                <input
+                  name="captchaCode"
+                  value=${this.captchaCode}
+                  type="text"
+                  placeholder="验证码"
+                />
+                <span>${this.captchaCodeMsg}</span>
+                <img src="${this.captchaImage}" alt="captcha" width="100%" />
+              </div>
             </div>`
           : ''}
 

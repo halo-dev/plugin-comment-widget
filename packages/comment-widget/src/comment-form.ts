@@ -13,6 +13,7 @@ import {
 } from './context';
 import { Comment, CommentRequest, User } from '@halo-dev/api-client';
 import { createRef, Ref, ref } from 'lit/directives/ref.js';
+import { isRequireCaptcha, getCaptchaCodeHeader } from './utils/captcha';
 import { BaseForm } from './base-form';
 import './base-form';
 import { ToastManager } from './lit-toast';
@@ -53,11 +54,23 @@ export class CommentForm extends LitElement {
   @state()
   submitting = false;
 
+  @state()
+  captchaRequired = false;
+
+  @state()
+  captchaImageBase64 = '';
+
+  @state()
+  captchaCodeMsg = '';
+
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
 
   override render() {
     return html` <base-form
       .submitting=${this.submitting}
+      .captchaRequired=${this.captchaRequired}
+      .captchaImage=${this.captchaImageBase64}
+      .captchaCodeMsg=${this.captchaCodeMsg}
       ${ref(this.baseFormRef)}
       @submit="${this.onSubmit}"
     ></base-form>`;
@@ -110,9 +123,21 @@ export class CommentForm extends LitElement {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getCaptchaCodeHeader(data.captchaCode),
         },
         body: JSON.stringify(commentRequest),
       });
+
+      console.log(response);
+      if (isRequireCaptcha(response)) {
+        this.captchaRequired = true;
+        const { captcha, detail } = await response.json();
+        this.captchaImageBase64 = captcha;
+        this.captchaCodeMsg = detail;
+        return;
+      }
+      this.captchaCodeMsg = ''
+      this.captchaRequired = false;
 
       if (!response.ok) {
         throw new Error('评论失败，请稍后重试');
