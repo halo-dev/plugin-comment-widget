@@ -42,9 +42,17 @@ export class BaseForm extends LitElement {
   name = '';
 
   @property({ type: Boolean })
+  captchaRequired = false;
+
+  @property({ type: String })
+  captchaImage = '';
+
+  @property({ type: Boolean })
   submitting = false;
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
+
+  captchaRef: Ref<HTMLInputElement> = createRef<HTMLInputElement>();
 
   get customAccount() {
     return JSON.parse(localStorage.getItem('halo-comment-custom-account') || '{}');
@@ -167,6 +175,15 @@ export class BaseForm extends LitElement {
                 placeholder="网站"
               />
               <a href=${this.loginUrl} rel="nofollow"> （已有该站点的账号） </a>
+              <div ?hidden=${!this.captchaRequired}>
+                <input
+                  name="captcha"
+                  value=${ref(this.captchaRef)}
+                  type="text"
+                  placeholder="验证码"
+                />
+                <img src="${this.captchaImage}" alt="captcha" />
+              </div>
             </div>`
           : ''}
 

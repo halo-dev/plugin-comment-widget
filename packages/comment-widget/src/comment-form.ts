@@ -13,6 +13,7 @@ import {
 } from './context';
 import { Comment, CommentRequest, User } from '@halo-dev/api-client';
 import { createRef, Ref, ref } from 'lit/directives/ref.js';
+import { isRequireCaptcha } from './utils/captcha';
 import { BaseForm } from './base-form';
 import './base-form';
 import { ToastManager } from './lit-toast';
@@ -53,11 +54,19 @@ export class CommentForm extends LitElement {
   @state()
   submitting = false;
 
+  @state()
+  captchaRequired = false;
+
+  @state()
+  captchaImageBase64 = '';
+
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
 
   override render() {
     return html` <base-form
       .submitting=${this.submitting}
+      .captchaRequired=${this.captchaRequired}
+      .captchaImage=${this.captchaImageBase64}
       ${ref(this.baseFormRef)}
       @submit="${this.onSubmit}"
     ></base-form>`;
@@ -113,6 +122,13 @@ export class CommentForm extends LitElement {
         },
         body: JSON.stringify(commentRequest),
       });
+
+      console.log(response);
+      if (isRequireCaptcha(response)) {
+        this.captchaRequired = true;
+        this.captchaImageBase64 = 'data:image/png;base64,' + (await response.text());
+        return;
+      }
 
       if (!response.ok) {
         throw new Error('评论失败，请稍后重试');
