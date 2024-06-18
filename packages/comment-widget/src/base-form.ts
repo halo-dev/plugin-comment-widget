@@ -6,13 +6,16 @@ import { createRef, Ref, ref } from 'lit/directives/ref.js';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
+  captchaEnabledContext,
   currentUserContext,
   groupContext,
   kindContext,
   nameContext,
+  toastContext,
 } from './context';
 import './emoji-button';
 import './icons/icon-loading';
+import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 
@@ -29,6 +32,10 @@ export class BaseForm extends LitElement {
   @state()
   allowAnonymousComments = false;
 
+  @consume({ context: captchaEnabledContext, subscribe: true })
+  @state()
+  captchaEnabled = false;
+
   @consume({ context: groupContext })
   @state()
   group = '';
@@ -42,10 +49,15 @@ export class BaseForm extends LitElement {
   name = '';
 
   @property({ type: String })
+  @state()
   captcha = '';
 
   @property({ type: Boolean })
   submitting = false;
+
+  @consume({ context: toastContext, subscribe: true })
+  @state()
+  toastManager: ToastManager | undefined;
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
 
@@ -59,6 +71,25 @@ export class BaseForm extends LitElement {
       .replaceAll(/-+/g, '-')}`;
 
     return `/console/login?redirect_uri=${encodeURIComponent(window.location.href + parentDomId)}`;
+  }
+
+  get showCaptcha() {
+    return this.captchaEnabled && !this.currentUser;
+  }
+
+  async handleFetchCaptcha() {
+    if (!this.showCaptcha) {
+      return;
+    }
+
+    const response = await fetch(`/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`);
+
+    if (!response.ok) {
+      this.toastManager?.error('获取验证码失败');
+      return;
+    }
+
+    this.captcha = await response.text();
   }
 
   handleOpenLoginPage() {
@@ -127,6 +158,7 @@ export class BaseForm extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener('keydown', this.onKeydown);
+    this.handleFetchCaptcha();
   }
 
   override disconnectedCallback(): void {
@@ -185,11 +217,16 @@ export class BaseForm extends LitElement {
               </button> `
             : ''}
           <div class="form__actions">
-            ${this.captcha
+            ${this.showCaptcha
               ? html`
                   <div class="form__action--captcha">
                     <input name="captchaCode" type="text" placeholder="请输入验证码" />
-                    <img src="${this.captcha}" alt="captcha" width="100%" />
+                    <img
+                      @click=${this.handleFetchCaptcha}
+                      src="${this.captcha}"
+                      alt="captcha"
+                      width="100%"
+                    />
                   </div>
                 `
               : ''}

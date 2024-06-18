@@ -127,7 +127,7 @@ export class CommentForm extends LitElement {
         return;
       }
 
-      this.captcha = '';
+      this.baseFormRef.value?.handleFetchCaptcha();
 
       if (!response.ok) {
         throw new Error('评论失败，请稍后重试');

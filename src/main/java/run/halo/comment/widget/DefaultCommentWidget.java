@@ -84,7 +84,7 @@ public class DefaultCommentWidget implements CommentWidget {
             .map(SettingConfigGetter.CaptchaConfig::anonymousCommentCaptcha)
             .blockOptional()
             .orElse(false);
-        properties.setProperty("enableCaptcha", String.valueOf(captcha));
+        properties.setProperty("captchaEnabled", String.valueOf(captcha));
 
         // placeholderHelper only support string, so we need to convert boolean to string
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
@@ -104,7 +104,7 @@ public class DefaultCommentWidget implements CommentWidget {
                   avatarProvider: "${avatarProvider}",
                   avatarProviderMirror: "${avatarProviderMirror}",
                   avatarPolicy: "${avatarPolicy}",
-                  enableCaptcha: ${enableCaptcha},
+                  captchaEnabled: ${captchaEnabled},
                 }
               );
             </script>
