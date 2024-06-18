@@ -16,9 +16,9 @@ import org.springframework.util.Assert;
 @UtilityClass
 public class CaptchaGenerator {
     private static final String CHAR_STRING = "ABCDEFGHJKMNPRSTUVWXYZabcdefghjkmnpqrstuvwxyz0123456789";
-    private static final int WIDTH = 160;
-    private static final int HEIGHT = 40;
-    private static final int CHAR_LENGTH = 6;
+    private static final int WIDTH = 120;
+    private static final int HEIGHT = 36;
+    private static final int CHAR_LENGTH = 4;
 
     private static final Font customFont;
 

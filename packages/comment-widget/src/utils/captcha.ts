@@ -1,5 +1,4 @@
 export const getCaptchaCodeHeader = (code: string): Record<string, string> => {
-  console.log('code input:', code)
   if (!code || code.trim().length === 0) {
     return {};
   }
