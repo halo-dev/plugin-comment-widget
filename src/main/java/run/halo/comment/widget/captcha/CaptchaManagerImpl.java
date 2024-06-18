@@ -5,11 +5,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Component
+@RequiredArgsConstructor
 public class CaptchaManagerImpl implements CaptchaManager {
     public static final long CODE_EXPIRATION_MINUTES = 1;
 
@@ -18,6 +21,8 @@ public class CaptchaManagerImpl implements CaptchaManager {
             .expireAfterWrite(CODE_EXPIRATION_MINUTES, TimeUnit.MINUTES)
             .maximumSize(100)
             .build();
+
+    private final CaptchaCookieResolver captchaCookieResolver;
 
     @Override
     public Mono<Boolean> verify(String key, String captchaCode) {
@@ -33,7 +38,12 @@ public class CaptchaManagerImpl implements CaptchaManager {
     }
 
     @Override
-    public Mono<Captcha> generate() {
+    public Mono<Captcha> generate(ServerWebExchange exchange) {
+        return doGenerate()
+            .doOnNext(captcha -> captchaCookieResolver.setCookie(exchange, captcha.id()));
+    }
+
+    private Mono<Captcha> doGenerate() {
         var captchaCode = CaptchaGenerator.generateRandomText();
         return Mono.fromSupplier(() -> {
                 var image = CaptchaGenerator.generateCaptchaImage(captchaCode);

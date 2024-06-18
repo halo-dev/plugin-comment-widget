@@ -65,9 +65,8 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
     private Mono<Void> sendCaptchaRequiredResponse(ServerWebExchange exchange, ResponseStatusException e) {
         exchange.getResponse().getHeaders().addIfAbsent(CAPTCHA_REQUIRED_HEADER, "true");
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        return captchaManager.generate()
+        return captchaManager.generate(exchange)
             .flatMap(captcha -> {
-                captchaCookieResolver.setCookie(exchange, captcha.id());
                 var problemDetail = toProblemDetail(e);
                 problemDetail.setProperty("captcha", captcha.imageBase64());
                 var responseData = getResponseData(problemDetail);

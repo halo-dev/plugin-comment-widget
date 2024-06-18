@@ -1,5 +1,6 @@
 package run.halo.comment.widget.captcha;
 
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 public interface CaptchaManager {
@@ -7,7 +8,7 @@ public interface CaptchaManager {
 
     Mono<Void> invalidate(String id);
 
-    Mono<Captcha> generate();
+    Mono<Captcha> generate(ServerWebExchange exchange);
 
     record Captcha(String id, String code, String imageBase64) {
     }
