@@ -54,6 +54,7 @@ export class CommentForm extends LitElement {
   @state()
   submitting = false;
 
+  @state()
   captcha = '';
 
   baseFormRef: Ref<BaseForm> = createRef<BaseForm>();
