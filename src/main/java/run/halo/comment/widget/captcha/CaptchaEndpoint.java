@@ -9,12 +9,14 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import run.halo.app.core.extension.endpoint.CustomEndpoint;
 import run.halo.app.extension.GroupVersion;
+import run.halo.comment.widget.SettingConfigGetter;
 
 @Component
 @RequiredArgsConstructor
 public class CaptchaEndpoint implements CustomEndpoint {
 
     private final CaptchaManager captchaManager;
+    private final SettingConfigGetter settingConfigGetter;
 
     @Override
     public RouterFunction<ServerResponse> endpoint() {
@@ -24,7 +26,9 @@ public class CaptchaEndpoint implements CustomEndpoint {
     }
 
     private Mono<ServerResponse> generateCaptcha(ServerRequest request) {
-        return captchaManager.generate(request.exchange())
+        return settingConfigGetter.getSecurityConfig()
+            .map(SettingConfigGetter.SecurityConfig::getCaptcha)
+            .flatMap(captchaConfig -> captchaManager.generate(request.exchange(), captchaConfig.getType()))
             .flatMap(captcha -> ServerResponse.ok().bodyValue(captcha.imageBase64()));
     }
 

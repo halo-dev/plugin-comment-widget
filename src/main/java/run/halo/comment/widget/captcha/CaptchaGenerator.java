@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.Random;
+import java.util.function.Function;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 @Slf4j
 @UtilityClass
@@ -26,8 +26,15 @@ public class CaptchaGenerator {
         customFont = loadArialFont();
     }
 
-    public static BufferedImage generateCaptchaImage(String captchaText) {
-        Assert.hasText(captchaText, "Captcha text must not be blank");
+    public static Captcha generateMathCaptcha() {
+        return generateCaptchaImage(CaptchaGenerator::drawMathCaptchaText);
+    }
+
+    public static Captcha generateSimpleCaptcha() {
+        return generateCaptchaImage(CaptchaGenerator::drawSimpleText);
+    }
+
+    private static Captcha generateCaptchaImage(Function<Graphics2D, String> drawCaptchaTextFunc) {
         BufferedImage bufferedImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = bufferedImage.createGraphics();
 
@@ -37,14 +44,10 @@ public class CaptchaGenerator {
 
         g2d.setFont(customFont);
 
-        // draw captcha text
-        Random random = new Random();
-        for (int i = 0; i < captchaText.length(); i++) {
-            g2d.setColor(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
-            g2d.drawString(String.valueOf(captchaText.charAt(i)), 20 + i * 24, 30);
-        }
+        var captchaText = drawCaptchaTextFunc.apply(g2d);
 
         // add some noise
+        Random random = new Random();
         for (int i = 0; i < 10; i++) {
             g2d.setColor(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
             int x1 = random.nextInt(WIDTH);
@@ -55,7 +58,48 @@ public class CaptchaGenerator {
         }
 
         g2d.dispose();
-        return bufferedImage;
+        return new Captcha(captchaText, bufferedImage);
+    }
+
+    private static String drawMathCaptchaText(Graphics2D g2d) {
+        Random random = new Random();
+        int num1 = random.nextInt(90) + 1;
+        int num2 = random.nextInt(90) + 1;
+        char operator = getRandomOperator();
+
+        int result;
+        String mathText = switch (operator) {
+            case '+' -> {
+                result = num1 + num2;
+                yield num1 + " + " + num2 + " = ?";
+            }
+            case '-' -> {
+                result = num1 - num2;
+                yield num1 + " - " + num2 + " = ?";
+            }
+            case '*' -> {
+                result = num1 * num2;
+                yield num1 + " * " + num2 + " = ?";
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + operator);
+        };
+
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(mathText, 20, 30);
+        return String.valueOf(result);
+    }
+
+    public record Captcha(String code, BufferedImage image) {
+    }
+
+    private static String drawSimpleText(Graphics2D g2d) {
+        var captchaText = generateRandomText();
+        Random random = new Random();
+        for (int i = 0; i < captchaText.length(); i++) {
+            g2d.setColor(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+            g2d.drawString(String.valueOf(captchaText.charAt(i)), 20 + i * 24, 30);
+        }
+        return captchaText;
     }
 
     private static Font loadArialFont() {
@@ -71,7 +115,13 @@ public class CaptchaGenerator {
         }
     }
 
-    public static String generateRandomText() {
+    private static char getRandomOperator() {
+        char[] operators = {'+', '-', '*'};
+        Random random = new Random();
+        return operators[random.nextInt(operators.length)];
+    }
+
+    private static String generateRandomText() {
         StringBuilder sb = new StringBuilder(CHAR_LENGTH);
         Random random = new Random();
         for (int i = 0; i < CHAR_LENGTH; i++) {

@@ -8,7 +8,7 @@ public interface CaptchaManager {
 
     Mono<Void> invalidate(String id);
 
-    Mono<Captcha> generate(ServerWebExchange exchange);
+    Mono<Captcha> generate(ServerWebExchange exchange, CaptchaType type);
 
     record Captcha(String id, String code, String imageBase64) {
     }

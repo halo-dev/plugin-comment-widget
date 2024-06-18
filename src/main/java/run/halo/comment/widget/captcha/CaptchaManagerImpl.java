@@ -38,18 +38,20 @@ public class CaptchaManagerImpl implements CaptchaManager {
     }
 
     @Override
-    public Mono<Captcha> generate(ServerWebExchange exchange) {
-        return doGenerate()
+    public Mono<Captcha> generate(ServerWebExchange exchange, CaptchaType type) {
+        return doGenerate(type)
             .doOnNext(captcha -> captchaCookieResolver.setCookie(exchange, captcha.id()));
     }
 
-    private Mono<Captcha> doGenerate() {
-        var captchaCode = CaptchaGenerator.generateRandomText();
+    private Mono<Captcha> doGenerate(CaptchaType type) {
         return Mono.fromSupplier(() -> {
-                var image = CaptchaGenerator.generateCaptchaImage(captchaCode);
-                var imageBase64 = encodeBufferedImageToDataUri(image);
+                var captcha = switch (type) {
+                    case ALPHANUMERIC -> CaptchaGenerator.generateSimpleCaptcha();
+                    case ARITHMETIC -> CaptchaGenerator.generateMathCaptcha();
+                };
+                var imageBase64 = encodeBufferedImageToDataUri(captcha.image());
                 var id = UUID.randomUUID().toString();
-                return new Captcha(id, captchaCode, imageBase64);
+                return new Captcha(id, captcha.code(), imageBase64);
             })
             .subscribeOn(Schedulers.boundedElastic())
             .doOnNext(captcha -> captchaCache.put(captcha.id(), captcha));

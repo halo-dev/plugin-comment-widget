@@ -51,21 +51,24 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
         return pathMatcher.matches(exchange)
             .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
             .flatMap(result -> settingConfigGetter.getSecurityConfig())
-            .map(SettingConfigGetter.SecurityConfig::captcha)
+            .map(SettingConfigGetter.SecurityConfig::getCaptcha)
             .filterWhen(captchaConfig -> isAnonymousCommenter(exchange))
             .switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
             .flatMap(captchaConfig -> {
-                if (!captchaConfig.anonymousCommentCaptcha()) {
+                if (!captchaConfig.isAnonymousCommentCaptcha()) {
                     return chain.filter(exchange);
                 }
-                return validateCaptcha(exchange, chain);
+                return validateCaptcha(exchange, chain, captchaConfig);
             });
     }
 
-    private Mono<Void> sendCaptchaRequiredResponse(ServerWebExchange exchange, ResponseStatusException e) {
+    private Mono<Void> sendCaptchaRequiredResponse(ServerWebExchange exchange,
+                                                   SettingConfigGetter.CaptchaConfig captchaConfig,
+                                                   ResponseStatusException e) {
+        var type = captchaConfig.getType();
         exchange.getResponse().getHeaders().addIfAbsent(CAPTCHA_REQUIRED_HEADER, "true");
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        return captchaManager.generate(exchange)
+        return captchaManager.generate(exchange, type)
             .flatMap(captcha -> {
                 var problemDetail = toProblemDetail(e);
                 problemDetail.setProperty("captcha", captcha.imageBase64());
@@ -84,11 +87,12 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
         }
     }
 
-    private Mono<Void> validateCaptcha(ServerWebExchange exchange, WebFilterChain chain) {
+    private Mono<Void> validateCaptcha(ServerWebExchange exchange, WebFilterChain chain,
+                                       SettingConfigGetter.CaptchaConfig captchaConfig) {
         var captchaCodeOpt = getCaptchaCode(exchange);
         var cookie = captchaCookieResolver.resolveCookie(exchange);
         if (captchaCodeOpt.isEmpty() || cookie == null) {
-            return sendCaptchaRequiredResponse(exchange, new CaptchaCodeMissingException());
+            return sendCaptchaRequiredResponse(exchange, captchaConfig, new CaptchaCodeMissingException());
         }
         return captchaManager.verify(cookie.getValue(), captchaCodeOpt.get())
             .flatMap(valid -> {
@@ -96,7 +100,7 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
                     captchaCookieResolver.expireCookie(exchange);
                     return chain.filter(exchange);
                 }
-                return sendCaptchaRequiredResponse(exchange, new InvalidCaptchaCodeException());
+                return sendCaptchaRequiredResponse(exchange, captchaConfig, new InvalidCaptchaCodeException());
             });
     }
 

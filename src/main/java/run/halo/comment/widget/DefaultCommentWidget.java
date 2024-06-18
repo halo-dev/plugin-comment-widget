@@ -80,8 +80,8 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("avatarPolicy", String.valueOf(avatarConfig.getPolicy()));
 
         var captcha = settingConfigGetter.getSecurityConfig()
-            .map(SettingConfigGetter.SecurityConfig::captcha)
-            .map(SettingConfigGetter.CaptchaConfig::anonymousCommentCaptcha)
+            .map(SettingConfigGetter.SecurityConfig::getCaptcha)
+            .map(SettingConfigGetter.CaptchaConfig::isAnonymousCommentCaptcha)
             .blockOptional()
             .orElse(false);
         properties.setProperty("captchaEnabled", String.valueOf(captcha));
