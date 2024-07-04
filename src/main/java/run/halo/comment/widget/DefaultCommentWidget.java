@@ -1,7 +1,6 @@
 package run.halo.comment.widget;
 
 import java.util.Properties;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +12,6 @@ import org.thymeleaf.model.IAttribute;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import run.halo.app.plugin.PluginContext;
-import run.halo.app.plugin.SettingFetcher;
 import run.halo.app.theme.dialect.CommentWidget;
 
 /**
@@ -29,7 +27,6 @@ public class DefaultCommentWidget implements CommentWidget {
     static final PropertyPlaceholderHelper PROPERTY_PLACEHOLDER_HELPER = new PropertyPlaceholderHelper("${", "}");
 
     private final PluginContext pluginContext;
-    private final SettingFetcher settingFetcher;
     private final SettingConfigGetter settingConfigGetter;
 
     @Override
@@ -65,15 +62,13 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("name", nameAttribute.getValue());
         properties.setProperty("domId", domIdFrom(group, kindAttribute.getValue(), nameAttribute.getValue()));
 
-        var basicConfig = settingFetcher.fetch(BasicConfig.GROUP, BasicConfig.class)
-            .orElse(new BasicConfig());
+        var basicConfig = settingConfigGetter.getBasicConfig().blockOptional().orElseThrow();
         properties.setProperty("size", String.valueOf(basicConfig.getSize()));
         properties.setProperty("replySize", String.valueOf(basicConfig.getReplySize()));
         properties.setProperty("withReplies", String.valueOf(basicConfig.isWithReplies()));
         properties.setProperty("withReplySize", String.valueOf(basicConfig.getWithReplySize()));
 
-        var avatarConfig = settingFetcher.fetch(AvatarConfig.GROUP, AvatarConfig.class)
-            .orElse(new AvatarConfig());
+        var avatarConfig = settingConfigGetter.getAvatarConfig().blockOptional().orElseThrow();
         properties.setProperty("useAvatarProvider", String.valueOf(avatarConfig.isEnable()));
         properties.setProperty("avatarProvider", String.valueOf(avatarConfig.getProvider()));
         properties.setProperty("avatarProviderMirror", String.valueOf(avatarConfig.getProviderMirror()));
@@ -109,24 +104,6 @@ public class DefaultCommentWidget implements CommentWidget {
               );
             </script>
             """, properties);
-    }
-
-    @Data
-    private static class BasicConfig {
-        public static final String GROUP = "basic";
-        private int size;
-        private int replySize;
-        private boolean withReplies;
-        private int withReplySize;
-    }
-
-    @Data
-    private static class AvatarConfig {
-        public static final String GROUP = "avatar";
-        private boolean enable;
-        private String provider;
-        private String providerMirror;
-        private String policy;
     }
 
     private String domIdFrom(String group, String kind, String name) {
