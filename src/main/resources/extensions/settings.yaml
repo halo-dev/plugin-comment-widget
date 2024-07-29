@@ -73,6 +73,10 @@ spec:
           options:
             - label: "Gravatar"
               value: "gravatar"
+            - label: "Cravatar"
+              value: "cravatar"
+            - label: "Weavatar"
+              value: "weavatar"
           value: "gravatar"
         - $formkit: text
           label: 头像服务镜像地址
