@@ -71,7 +71,7 @@ export class BaseForm extends LitElement {
       .join('-')
       .replaceAll(/-+/g, '-')}`;
 
-    return `/console/login?redirect_uri=${encodeURIComponent(window.location.href + parentDomId)}`;
+    return `/login?redirect_uri=${encodeURIComponent(window.location.href + parentDomId)}`;
   }
 
   get showCaptcha() {
