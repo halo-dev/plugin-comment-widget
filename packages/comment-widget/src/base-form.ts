@@ -71,7 +71,7 @@ export class BaseForm extends LitElement {
       .join('-')
       .replaceAll(/-+/g, '-')}`;
 
-    return `/login?redirect_uri=${encodeURIComponent(window.location.href + parentDomId)}`;
+    return `/login?redirect_uri=${encodeURIComponent(window.location.pathname + parentDomId)}`;
   }
 
   get showCaptcha() {
@@ -98,25 +98,9 @@ export class BaseForm extends LitElement {
   }
 
   async handleLogout() {
-    if (window.confirm('确定要退出登录吗？')) {
+    if (window.confirm('点击确定将跳转至退出登录页面，请确保正在编辑的内容已保存。')) {
       try {
-        const response = await fetch(`${this.baseUrl}/logout`, {
-          method: 'POST',
-          headers: {
-            'X-Xsrf-Token':
-              document.cookie
-                .split('; ')
-                .find((row) => row.startsWith('XSRF-TOKEN'))
-                ?.split('=')[1] || '',
-          },
-          credentials: 'same-origin',
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to logout');
-        }
-
-        window.location.reload();
+        window.location.href = '/logout';
       } catch (error) {
         console.error('Failed to logout', error);
       }
