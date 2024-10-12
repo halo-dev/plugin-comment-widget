@@ -4,6 +4,7 @@ metadata:
   name: comment-widget-public-apis
   labels:
     halo.run/role-template: "true"
+    halo.run/hidden: "true"
     rbac.authorization.halo.run/aggregate-to-anonymous: "true"
   annotations:
     rbac.authorization.halo.run/module: "Comment Widget"
