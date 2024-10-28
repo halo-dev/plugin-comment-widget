@@ -78,6 +78,19 @@ export class BaseForm extends LitElement {
     return this.captchaEnabled && !this.currentUser && this.allowAnonymousComments;
   }
 
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  override updated(changedProperties: Map<string, any>) {
+    if (
+      changedProperties.has('captchaEnabled') ||
+      changedProperties.has('currentUser') ||
+      changedProperties.has('allowAnonymousComments')
+    ) {
+      if (this.showCaptcha) {
+        this.handleFetchCaptcha();
+      }
+    }
+  }
+
   async handleFetchCaptcha() {
     if (!this.showCaptcha) {
       return;
@@ -143,7 +156,6 @@ export class BaseForm extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener('keydown', this.onKeydown);
-    this.handleFetchCaptcha();
   }
 
   override disconnectedCallback(): void {
