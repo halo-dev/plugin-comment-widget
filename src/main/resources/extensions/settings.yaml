@@ -31,6 +31,30 @@ spec:
           key: withReplySize
           validation: required
           value: 5
+        - $formkit: text
+          label: 昵称输入提示
+          name: nicknamePlaceholder
+          id: nicknamePlaceholder
+          key: nicknamePlaceholder
+          value: "昵称"
+          help: 匿名评论时昵称输入栏的提示信息
+          validation: required
+        - $formkit: text
+          label: 电子邮件输入提示
+          name: emailPlaceholder
+          id: emailPlaceholder
+          key: emailPlaceholder
+          value: "电子邮件"
+          help: 匿名评论时电子邮件输入栏的提示信息
+          validation: required
+        - $formkit: text
+          label: 网站输入提示
+          name: websitePlaceholder
+          id: websitePlaceholder
+          key: websitePlaceholder
+          value: "网站"
+          help: 匿名评论时网站输入栏的提示信息
+          validation: required
     - group: security
       label: 安全设置
       formSchema:

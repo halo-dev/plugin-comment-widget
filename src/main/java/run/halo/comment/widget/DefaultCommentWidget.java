@@ -67,6 +67,9 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("replySize", String.valueOf(basicConfig.getReplySize()));
         properties.setProperty("withReplies", String.valueOf(basicConfig.isWithReplies()));
         properties.setProperty("withReplySize", String.valueOf(basicConfig.getWithReplySize()));
+        properties.setProperty("nicknamePlaceholder", String.valueOf(basicConfig.getNicknamePlaceholder()));
+        properties.setProperty("emailPlaceholder", String.valueOf(basicConfig.getEmailPlaceholder()));
+        properties.setProperty("websitePlaceholder", String.valueOf(basicConfig.getWebsitePlaceholder()));
 
         var avatarConfig = settingConfigGetter.getAvatarConfig().blockOptional().orElseThrow();
         properties.setProperty("useAvatarProvider", String.valueOf(avatarConfig.isEnable()));
@@ -100,6 +103,9 @@ public class DefaultCommentWidget implements CommentWidget {
                   avatarProviderMirror: "${avatarProviderMirror}",
                   avatarPolicy: "${avatarPolicy}",
                   captchaEnabled: ${captchaEnabled},
+                  nicknamePlaceholder: "${nicknamePlaceholder}",
+                  emailPlaceholder: "${emailPlaceholder}",
+                  websitePlaceholder: "${websitePlaceholder}",
                 }
               );
             </script>

@@ -31,6 +31,9 @@ import {
   useAvatarProviderContext,
   versionContext,
   withRepliesContext,
+  nicknamePlaceholderContext,
+  emailPlaceholderContext,
+  websitePlaceholderContext,
 } from './context';
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
@@ -70,6 +73,18 @@ export class CommentWidget extends LitElement {
 
   @property({ type: Number, attribute: 'with-reply-size' })
   withReplySize = 10;
+
+  @provide({ context: nicknamePlaceholderContext })
+  @property({ type: String, attribute: 'nickname-placeholder' })
+  nicknamePlaceholder = '';
+
+  @provide({ context: emailPlaceholderContext })
+  @property({ type: String, attribute: 'email-placeholder' })
+  emailPlaceholder = '';
+
+  @provide({ context: websitePlaceholderContext })
+  @property({ type: String, attribute: 'website-placeholder' })
+  websitePlaceholder = '';
 
   @provide({ context: useAvatarProviderContext })
   @property({ type: Boolean, attribute: 'use-avatar-provider' })

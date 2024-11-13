@@ -13,6 +13,9 @@ import {
   kindContext,
   nameContext,
   toastContext,
+  nicknamePlaceholderContext,
+  emailPlaceholderContext,
+  websitePlaceholderContext,
 } from './context';
 import './emoji-button';
 import './icons/icon-loading';
@@ -59,6 +62,18 @@ export class BaseForm extends LitElement {
   @consume({ context: toastContext, subscribe: true })
   @state()
   toastManager: ToastManager | undefined;
+
+  @consume({ context: nicknamePlaceholderContext, subscribe: true  })
+  @state()
+  nicknamePlaceholder = '';
+
+  @consume({ context: emailPlaceholderContext, subscribe: true  })
+  @state()
+  emailPlaceholder = '';
+
+  @consume({ context: websitePlaceholderContext, subscribe: true  })
+  @state()
+  websitePlaceholder = '';
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
 
@@ -182,21 +197,21 @@ export class BaseForm extends LitElement {
                 name="displayName"
                 value=${this.customAccount.displayName}
                 type="text"
-                placeholder="昵称"
+                placeholder=${this.nicknamePlaceholder}
                 required
               />
               <input
                 name="email"
                 value=${this.customAccount.email}
                 type="email"
-                placeholder="电子邮件"
+                placeholder=${this.emailPlaceholder}
                 required
               />
               <input
                 name="website"
                 value=${this.customAccount.website}
                 type="url"
-                placeholder="网站"
+                placeholder=${this.websitePlaceholder}
               />
               <a href=${this.loginUrl} rel="nofollow">（或登录账号）</a>
             </div>`
