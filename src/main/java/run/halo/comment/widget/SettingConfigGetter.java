@@ -69,6 +69,9 @@ public interface SettingConfigGetter {
         private int replySize;
         private boolean withReplies;
         private int withReplySize;
+        private String nicknamePlaceholder;
+        private String emailPlaceholder;
+        private String websitePlaceholder;
     }
 
     @Data

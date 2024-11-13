@@ -13,6 +13,9 @@ export const useAvatarProviderContext = createContext<boolean>(Symbol('useAvatar
 export const avatarProviderContext = createContext<string>(Symbol('avatarProvider'));
 export const avatarProviderMirrorContext = createContext<string>(Symbol('avatarProviderMirror'));
 export const avatarPolicyContext = createContext<string>(Symbol('avatarPolicy'));
+export const nicknamePlaceholderContext = createContext<string>(Symbol('nicknamePlaceholder'));
+export const emailPlaceholderContext = createContext<string>(Symbol('emailPlaceholder'));
+export const websitePlaceholderContext = createContext<string>(Symbol('websitePlaceholder'));
 
 export const allowAnonymousCommentsContext = createContext<boolean>(
   Symbol('allowAnonymousComments')

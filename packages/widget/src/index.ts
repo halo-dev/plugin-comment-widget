@@ -16,6 +16,9 @@ interface Props {
   avatarProviderMirror?: string;
   avatarPolicy?: string;
   captchaEnabled: boolean;
+  nicknamePlaceholder?: string;
+  emailPlaceholder?: string;
+  websitePlaceholder?: string;
 }
 
 export function init(el: string, props: Props) {
@@ -44,6 +47,9 @@ export function init(el: string, props: Props) {
   commentWidget.avatarProviderMirror = props.avatarProviderMirror || '';
   commentWidget.avatarPolicy = props.avatarPolicy || '';
   commentWidget.captchaEnabled = props.captchaEnabled || false;
+  commentWidget.nicknamePlaceholder = props.nicknamePlaceholder || '';
+  commentWidget.emailPlaceholder = props.emailPlaceholder || '';
+  commentWidget.websitePlaceholder = props.websitePlaceholder || '';
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
