@@ -19,6 +19,7 @@ import './icons/icon-loading';
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import { msg } from '@lit/localize';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -99,7 +100,7 @@ export class BaseForm extends LitElement {
     const response = await fetch(`/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`);
 
     if (!response.ok) {
-      this.toastManager?.error('获取验证码失败');
+      this.toastManager?.error(msg('Failed to obtain verification code'));
       return;
     }
 
@@ -111,7 +112,13 @@ export class BaseForm extends LitElement {
   }
 
   async handleLogout() {
-    if (window.confirm('点击确定将跳转至退出登录页面，请确保正在编辑的内容已保存。')) {
+    if (
+      window.confirm(
+        msg(
+          'Click OK to jump to the logout page, Please make sure the content being edited has been saved.'
+        )
+      )
+    ) {
       try {
         window.location.href = '/logout';
       } catch (error) {
@@ -125,7 +132,7 @@ export class BaseForm extends LitElement {
       ${this.currentUser?.spec.avatar ? html`<img src=${this.currentUser.spec.avatar} />` : ''}
       <span> ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name} </span>
       <button @click=${this.handleLogout} type="button" class="form__button--logout">
-        退出登录
+        ${msg('Logout')}
       </button>
     </div>`;
   }
@@ -169,7 +176,7 @@ export class BaseForm extends LitElement {
         <textarea
           class="form__editor"
           ${ref(this.textareaRef)}
-          placeholder="编写评论"
+          placeholder=${msg('Write a comment')}
           rows="4"
           name="content"
           required
@@ -182,23 +189,23 @@ export class BaseForm extends LitElement {
                 name="displayName"
                 value=${this.customAccount.displayName}
                 type="text"
-                placeholder="昵称"
+                placeholder=${msg('Nicename')}
                 required
               />
               <input
                 name="email"
                 value=${this.customAccount.email}
                 type="email"
-                placeholder="电子邮件"
+                placeholder=${msg('Email')}
                 required
               />
               <input
                 name="website"
                 value=${this.customAccount.website}
                 type="url"
-                placeholder="网站"
+                placeholder=${msg('Website')}
               />
-              <a href=${this.loginUrl} rel="nofollow">（或登录账号）</a>
+              <a href=${this.loginUrl} rel="nofollow">${msg('(Or login)')}</a>
             </div>`
           : ''}
 
@@ -210,14 +217,18 @@ export class BaseForm extends LitElement {
                 class="form__button--login"
                 type="button"
               >
-                登录
+                ${msg('Login')}
               </button> `
             : ''}
           <div class="form__actions">
             ${this.showCaptcha
               ? html`
                   <div class="form__action--captcha">
-                    <input name="captchaCode" type="text" placeholder="请输入验证码" />
+                    <input
+                      name="captchaCode"
+                      type="text"
+                      placeholder=${msg('Please enter the verification code')}
+                    />
                     <img
                       @click=${this.handleFetchCaptcha}
                       src="${this.captcha}"
@@ -243,7 +254,7 @@ export class BaseForm extends LitElement {
                       d="M8 7.71L18 12L8 16.29v-3.34l7.14-.95L8 11.05V7.71M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8Z"
                     ></path>
                   </svg>`}
-              提交评论
+              ${msg('Submit')}
             </button>
           </div>
         </div>

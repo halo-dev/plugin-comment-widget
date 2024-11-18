@@ -12,6 +12,21 @@ import varStyles from './styles/var';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import en from '@emoji-mart/data/i18n/en.json';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import es from '@emoji-mart/data/i18n/es.json';
+import { msg } from '@lit/localize';
+import { getLocale } from './locale';
+
+const localeMap = {
+  'zh-CN': zh,
+  'zh-TW': zh,
+  en: en,
+  es: es,
+};
 
 export class EmojiButton extends LitElement {
   @state()
@@ -72,7 +87,7 @@ export class EmojiButton extends LitElement {
       onEmojiSelect: ({ native }: { native: string }) => {
         this.dispatchEvent(new CustomEvent('emoji-select', { detail: { native } }));
       },
-      i18n: zh,
+      i18n: localeMap[getLocale()],
     });
 
     // TODO: fix this ts error
@@ -83,7 +98,7 @@ export class EmojiButton extends LitElement {
   }
 
   override render() {
-    return html`<button class="emoji-button" type="button" aria-label="选择表情">
+    return html`<button class="emoji-button" type="button" aria-label=${msg('Select emoticon')}>
       ${this.emojiLoading
         ? html`<icon-loading></icon-loading>`
         : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`}

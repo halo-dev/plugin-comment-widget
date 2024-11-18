@@ -2,6 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { property } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import { msg } from '@lit/localize';
 
 export class CommentPagination extends LitElement {
   @property({ type: Number })
@@ -107,7 +108,7 @@ export class CommentPagination extends LitElement {
                 d="m15 6l-6 6l6 6"
               />
             </svg>
-            上一页
+            ${msg('Previous')}
           </button>
         </li>
         ${this.renderPageNumbers()}
@@ -116,7 +117,7 @@ export class CommentPagination extends LitElement {
             @click=${() => this.gotoPage(this.page + 1)}
             ?disabled=${this.page === this.totalPages}
           >
-            下一页
+            ${msg('Next')}
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
               <path
                 fill="none"

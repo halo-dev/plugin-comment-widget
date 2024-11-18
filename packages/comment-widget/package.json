@@ -36,6 +36,7 @@
     "@emoji-mart/data": "^1.1.2",
     "@halo-dev/api-client": "^2.14.0",
     "@lit/context": "^1.1.0",
+    "@lit/localize": "^0.12.2",
     "dayjs": "^1.11.10",
     "emoji-mart": "^5.5.2",
     "javascript-time-ago": "^2.5.9",
@@ -43,6 +44,7 @@
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {
+    "@lit/localize-tools": "^0.8.0",
     "@types/lodash-es": "^4.17.12",
     "lit-analyzer": "^2.0.3"
   }

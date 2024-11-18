@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<file target-language="zh-CN" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+<body>
+<trans-unit id="s67749057edb2586b">
+  <source>Logout</source>
+  <target>退出登录</target>
+</trans-unit>
+<trans-unit id="s9f2ed66340f019c6">
+  <source>Write a comment</source>
+  <target>编写评论</target>
+</trans-unit>
+<trans-unit id="s7437373e541a8037">
+  <source>Nicename</source>
+  <target>昵称</target>
+</trans-unit>
+<trans-unit id="sd1f44f1a8bc20e67">
+  <source>Email</source>
+  <target>电子邮件</target>
+</trans-unit>
+<trans-unit id="s82665b2ffabc9c0a">
+  <source>Website</source>
+  <target>网站</target>
+</trans-unit>
+<trans-unit id="sc8da3cc71de63832">
+  <source>Login</source>
+  <target>登录</target>
+</trans-unit>
+<trans-unit id="sb3d4f79d9d8b71e5">
+  <source>Submit</source>
+  <target>提交评论</target>
+</trans-unit>
+<trans-unit id="s09c7e0ff5f4e18cb">
+  <source>Cancel reply</source>
+  <target>取消回复</target>
+</trans-unit>
+<trans-unit id="s0b7ae9543c001867">
+  <source>Reply</source>
+  <target>回复</target>
+</trans-unit>
+<trans-unit id="sf3ff78cc329d3528">
+  <source>Previous</source>
+  <target>上一页</target>
+</trans-unit>
+<trans-unit id="s0fbf6dc6a1966408">
+  <source>Next</source>
+  <target>下一页</target>
+</trans-unit>
+<trans-unit id="sf77128b082955d42">
+  <source>(Or login)</source>
+  <target>（或登录账号）</target>
+</trans-unit>
+<trans-unit id="sa8dddacbaa66f8e0">
+  <source>Please login first</source>
+  <target>请先登录</target>
+</trans-unit>
+<trans-unit id="s7584ded3d749c75e">
+  <source>Load more</source>
+  <target>加载更多</target>
+</trans-unit>
+<trans-unit id="h6a83761bb66bbcc5">
+  <source><x id="0" equiv-text="${this.comments.total}"/> Comments</source>
+  <target><x id="0" equiv-text="${this.comments.total}"/> 条评论</target>
+</trans-unit>
+<trans-unit id="s98a5f7789c49dd3f">
+  <source>Reviewing</source>
+  <target>审核中</target>
+</trans-unit>
+<trans-unit id="sea7e567ed89dc0d7">
+  <source>Select emoticon</source>
+  <target>选择表情</target>
+</trans-unit>
+<trans-unit id="s4c0e15f9073382e6">
+  <source>Failed to obtain verification code</source>
+  <target>获取验证码失败</target>
+</trans-unit>
+<trans-unit id="s053945ad43e9d1d6">
+  <source>Please enter the verification code</source>
+  <target>请输入验证码</target>
+</trans-unit>
+<trans-unit id="s84b033b2f7360187">
+  <source>Please log in or complete the information first</source>
+  <target>请先登录或者完善信息</target>
+</trans-unit>
+<trans-unit id="sd5e242ab9574958a">
+  <source>Comment failed, please try again later</source>
+  <target>评论失败，请稍后重试</target>
+</trans-unit>
+<trans-unit id="sb5a28aa35006ff08">
+  <source>Comment submitted successfully</source>
+  <target>评论成功</target>
+</trans-unit>
+<trans-unit id="s3fb33d17bad61aa9">
+  <source>Comment submitted successfully, pending review</source>
+  <target>评论成功，请等待审核</target>
+</trans-unit>
+<trans-unit id="sa10fbe3fcd6ae148">
+  <source>Add reply</source>
+  <target>加入回复</target>
+</trans-unit>
+<trans-unit id="s1c6fefb092506753">
+  <source>Failed to load comment list, please try again later</source>
+  <target>加载评论列表失败，请稍后重试</target>
+</trans-unit>
+<trans-unit id="s1e3e30a26025484c">
+  <source>Failed to load reply list, please try again later</source>
+  <target>加载回复列表失败，请稍后重试</target>
+</trans-unit>
+<trans-unit id="s299b10f3a58a09fd">
+  <source>Click OK to jump to the logout page, Please make sure the content being edited has been saved.</source>
+  <target>点击确定将跳转至退出登录页面，请确保正在编辑的内容已保存。</target>
+</trans-unit>
+</body>
+</file>
+</xliff>
