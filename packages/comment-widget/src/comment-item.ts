@@ -13,6 +13,7 @@ import varStyles from './styles/var';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { CommentReplies } from './comment-replies';
 import { getPolicyInstance } from './avatar/avatar-policy';
+import { msg } from '@lit/localize';
 
 export class CommentItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -178,7 +179,7 @@ export class CommentItem extends LitElement {
       ${this.withReplies
         ? html` <base-comment-item-action
             slot="action"
-            .text=${this.showReplyForm ? '取消回复' : '加入回复'}
+            .text=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}
             @click="${() => (this.showReplyForm = !this.showReplyForm)}"
           >
             <svg

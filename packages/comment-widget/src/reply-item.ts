@@ -11,6 +11,7 @@ import { consume } from '@lit/context';
 import { baseUrlContext } from './context';
 import varStyles from './styles/var';
 import { getPolicyInstance } from './avatar/avatar-policy';
+import { msg } from '@lit/localize';
 
 export class ReplyItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -158,7 +159,7 @@ export class ReplyItem extends LitElement {
         <base-comment-item-action
           slot="action"
           @click="${() => (this.showReplyForm = !this.showReplyForm)}"
-          .text=${this.showReplyForm ? '取消回复' : '回复'}
+          .text=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}
         >
           <svg
             slot="icon"

@@ -35,6 +35,7 @@ import {
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import { msg } from '@lit/localize';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -141,7 +142,7 @@ export class CommentWidget extends LitElement {
         : html`
             <div class="comment-widget__wrapper">
               <div class="comment-widget__stats">
-                <span>${this.comments.total} 条评论</span>
+                <span>${msg(html`${this.comments.total} Comments`)}</span>
               </div>
 
               <div class="comment-widget__list">
@@ -213,7 +214,7 @@ export class CommentWidget extends LitElement {
       );
 
       if (!response.ok) {
-        throw new Error('评论列表加载失败，请稍后重试');
+        throw new Error(msg('Failed to load comment list, please try again later'));
       }
 
       this.comments = await response.json();

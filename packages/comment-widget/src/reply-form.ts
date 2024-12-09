@@ -13,6 +13,7 @@ import {
 } from './context';
 import { ToastManager } from './lit-toast';
 import { getCaptchaCodeHeader, isRequireCaptcha } from './utils/captcha';
+import { msg } from '@lit/localize';
 
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -84,14 +85,14 @@ export class ReplyForm extends LitElement {
     }
 
     if (!this.currentUser && !this.allowAnonymousComments) {
-      this.toastManager?.warn('请先登录');
+      this.toastManager?.warn(msg('Please login first'));
       this.submitting = false;
       return;
     }
 
     if (!this.currentUser && this.allowAnonymousComments) {
       if (!displayName || !email) {
-        this.toastManager?.warn('请先登录或者完善信息');
+        this.toastManager?.warn(msg('Please log in or complete the information first'));
         this.submitting = false;
         return;
       } else {
@@ -126,15 +127,15 @@ export class ReplyForm extends LitElement {
       this.baseFormRef.value?.handleFetchCaptcha();
 
       if (!response.ok) {
-        throw new Error('评论失败，请稍后重试');
+        throw new Error(msg('Comment failed, please try again later'));
       }
 
       const newReply = (await response.json()) as Reply;
 
       if (newReply.spec.approved) {
-        this.toastManager?.success('评论成功');
+        this.toastManager?.success(msg('Comment submitted successfully'));
       } else {
-        this.toastManager?.success('评论成功，等待审核');
+        this.toastManager?.success(msg('Comment submitted successfully, pending review'));
       }
 
       this.dispatchEvent(new CustomEvent('reload'));

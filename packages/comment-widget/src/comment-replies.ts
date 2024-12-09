@@ -10,6 +10,7 @@ import './reply-form';
 import varStyles from './styles/var';
 import baseStyles from './styles/base';
 import { ToastManager } from './lit-toast';
+import { msg } from '@lit/localize';
 
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
@@ -73,7 +74,7 @@ export class CommentReplies extends LitElement {
       ${this.loading ? html` <loading-block></loading-block>` : ''}
       ${this.hasNext && !this.loading
         ? html` <div class="replies__next-wrapper">
-            <button @click=${this.fetchNext}>加载更多</button>
+            <button @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
         : ''}
     </div>`;
@@ -99,7 +100,7 @@ export class CommentReplies extends LitElement {
       );
 
       if (!response.ok) {
-        throw new Error('加载回复列表失败，请稍后重试');
+        throw new Error(msg('Failed to load reply list, please try again later'));
       }
 
       const data = (await response.json()) as ReplyVoList;

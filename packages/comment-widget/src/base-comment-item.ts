@@ -4,6 +4,7 @@ import { property } from 'lit/decorators.js';
 import { formatDate, timeAgo } from './utils/date';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import { msg } from '@lit/localize';
 
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
@@ -45,7 +46,7 @@ export class BaseCommentItem extends LitElement {
           <div class="item__meta-info" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </div>
-          ${!this.approved ? html`<div class="item__meta-info">审核中</div>` : ''}
+          ${!this.approved ? html`<div class="item__meta-info">${msg('Reviewing')}</div>` : ''}
         </div>
 
         <div class="item__content">
