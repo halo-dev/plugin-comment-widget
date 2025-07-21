@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 import './icons/icon-loading';
 
 export class LoadingBlock extends LitElement {
@@ -18,7 +18,8 @@ export class LoadingBlock extends LitElement {
   `;
 }
 
-customElements.get('loading-block') || customElements.define('loading-block', LoadingBlock);
+customElements.get('loading-block') ||
+  customElements.define('loading-block', LoadingBlock);
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,8 +1,8 @@
-import { LitElement, css, html } from 'lit';
+import { msg } from '@lit/localize';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import { msg } from '@lit/localize';
 
 export class CommentPagination extends LitElement {
   @property({ type: Number })
@@ -20,7 +20,8 @@ export class CommentPagination extends LitElement {
     const pageNumbers = [];
     const currentPage = this.page;
     const totalPageNumbersToShow = 3;
-    let startPage, endPage;
+    let startPage: number;
+    let endPage: number;
 
     if (this.totalPages <= totalPageNumbersToShow) {
       startPage = 1;

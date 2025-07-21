@@ -1,16 +1,21 @@
-import { CommentVo, ReplyVo, ReplyVoList } from '@halo-dev/api-client';
+import type { CommentVo, ReplyVo, ReplyVoList } from '@halo-dev/api-client';
+import { consume } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { consume } from '@lit/context';
-import { baseUrlContext, replySizeContext, toastContext, withRepliesContext } from './context';
+import {
+  baseUrlContext,
+  replySizeContext,
+  toastContext,
+  withRepliesContext,
+} from './context';
 import './reply-item';
 import './loading-block';
 import './reply-form';
-import varStyles from './styles/var';
-import baseStyles from './styles/base';
-import { ToastManager } from './lit-toast';
 import { msg } from '@lit/localize';
+import type { ToastManager } from './lit-toast';
+import baseStyles from './styles/base';
+import varStyles from './styles/var';
 
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
@@ -52,8 +57,9 @@ export class CommentReplies extends LitElement {
 
   override render() {
     return html` <div class="replies__wrapper">
-      ${this.replies.length
-        ? html`
+      ${
+        this.replies.length
+          ? html`
             <div class="replies__list">
               ${repeat(
                 this.replies,
@@ -70,13 +76,16 @@ export class CommentReplies extends LitElement {
               )}
             </div>
           `
-        : ''}
+          : ''
+      }
       ${this.loading ? html` <loading-block></loading-block>` : ''}
-      ${this.hasNext && !this.loading
-        ? html` <div class="replies__next-wrapper">
+      ${
+        this.hasNext && !this.loading
+          ? html` <div class="replies__next-wrapper">
             <button @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
-        : ''}
+          : ''
+      }
     </div>`;
   }
 
@@ -100,7 +109,9 @@ export class CommentReplies extends LitElement {
       );
 
       if (!response.ok) {
-        throw new Error(msg('Failed to load reply list, please try again later'));
+        throw new Error(
+          msg('Failed to load reply list, please try again later')
+        );
       }
 
       const data = (await response.json()) as ReplyVoList;
@@ -188,7 +199,8 @@ export class CommentReplies extends LitElement {
   ];
 }
 
-customElements.get('comment-replies') || customElements.define('comment-replies', CommentReplies);
+customElements.get('comment-replies') ||
+  customElements.define('comment-replies', CommentReplies);
 
 declare global {
   interface HTMLElementTagNameMap {

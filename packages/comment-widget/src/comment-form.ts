@@ -1,10 +1,11 @@
-import { Comment, CommentRequest, User } from '@halo-dev/api-client';
+import type { Comment, CommentRequest, User } from '@halo-dev/api-client';
 import { consume } from '@lit/context';
-import { LitElement, html } from 'lit';
+import { html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
-import { Ref, createRef, ref } from 'lit/directives/ref.js';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
-import { BaseForm } from './base-form';
+import { msg } from '@lit/localize';
+import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
@@ -15,9 +16,8 @@ import {
   toastContext,
   versionContext,
 } from './context';
-import { ToastManager } from './lit-toast';
+import type { ToastManager } from './lit-toast';
 import { getCaptchaCodeHeader, isRequireCaptcha } from './utils/captcha';
-import { msg } from '@lit/localize';
 
 export class CommentForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -99,7 +99,9 @@ export class CommentForm extends LitElement {
 
     if (!this.currentUser && this.allowAnonymousComments) {
       if (!displayName || !email) {
-        this.toastManager?.warn(msg('Please log in or complete the information first'));
+        this.toastManager?.warn(
+          msg('Please log in or complete the information first')
+        );
         this.submitting = false;
         return;
       } else {
@@ -112,14 +114,17 @@ export class CommentForm extends LitElement {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getCaptchaCodeHeader(data.captchaCode),
-        },
-        body: JSON.stringify(commentRequest),
-      });
+      const response = await fetch(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getCaptchaCodeHeader(data.captchaCode),
+          },
+          body: JSON.stringify(commentRequest),
+        }
+      );
 
       if (isRequireCaptcha(response)) {
         const { captcha, detail } = await response.json();
@@ -139,7 +144,9 @@ export class CommentForm extends LitElement {
       if (newComment.spec.approved) {
         this.toastManager?.success(msg('Comment submitted successfully'));
       } else {
-        this.toastManager?.success(msg('Comment submitted successfully, pending review'));
+        this.toastManager?.success(
+          msg('Comment submitted successfully, pending review')
+        );
       }
 
       this.dispatchEvent(new CustomEvent('reload'));
@@ -154,7 +161,8 @@ export class CommentForm extends LitElement {
   }
 }
 
-customElements.get('comment-form') || customElements.define('comment-form', CommentForm);
+customElements.get('comment-form') ||
+  customElements.define('comment-form', CommentForm);
 
 declare global {
   interface HTMLElementTagNameMap {

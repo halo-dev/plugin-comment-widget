@@ -1,5 +1,5 @@
 import './icons/icon-loading';
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
@@ -40,7 +40,7 @@ export class UserAvatar extends LitElement {
           resolve(null);
         };
       });
-    } catch (e) {
+    } catch (_e) {
       this.error = true;
     } finally {
       this.loading = false;
@@ -56,7 +56,9 @@ export class UserAvatar extends LitElement {
       return words[0].charAt(0).toUpperCase();
     }
     if (words.length > 1) {
-      return words[0].charAt(0).toUpperCase() + words[1].charAt(0).toUpperCase();
+      return (
+        words[0].charAt(0).toUpperCase() + words[1].charAt(0).toUpperCase()
+      );
     }
     return undefined;
   }
@@ -128,7 +130,8 @@ export class UserAvatar extends LitElement {
   ];
 }
 
-customElements.get('user-avatar') || customElements.define('user-avatar', UserAvatar);
+customElements.get('user-avatar') ||
+  customElements.define('user-avatar', UserAvatar);
 
 declare global {
   interface HTMLElementTagNameMap {

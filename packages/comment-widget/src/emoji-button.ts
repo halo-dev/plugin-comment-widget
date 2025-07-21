@@ -1,25 +1,24 @@
 import './icons/icon-loading';
 import './icons/icon-emoji';
-import { LitElement, css, html } from 'lit';
-import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { state } from 'lit/decorators.js';
-import { Picker } from 'emoji-mart';
-import baseStyles from './styles/base';
-import { consume } from '@lit/context';
-import { emojiDataUrlContext } from './context';
-import varStyles from './styles/var';
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-import zh from '@emoji-mart/data/i18n/zh.json';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import en from '@emoji-mart/data/i18n/en.json';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import es from '@emoji-mart/data/i18n/es.json';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import zh from '@emoji-mart/data/i18n/zh.json';
+import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
+import { Picker } from 'emoji-mart';
+import { css, html, LitElement } from 'lit';
+import { state } from 'lit/decorators.js';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import { emojiDataUrlContext } from './context';
 import { getLocale } from './locale';
+import baseStyles from './styles/base';
+import varStyles from './styles/var';
 
 const localeMap = {
   'zh-CN': zh,
@@ -85,13 +84,17 @@ export class EmojiButton extends LitElement {
     const emojiPicker = new Picker({
       data,
       onEmojiSelect: ({ native }: { native: string }) => {
-        this.dispatchEvent(new CustomEvent('emoji-select', { detail: { native } }));
+        this.dispatchEvent(
+          new CustomEvent('emoji-select', { detail: { native } })
+        );
       },
       i18n: localeMap[getLocale()],
     });
 
     // TODO: fix this ts error
-    this.emojiPickerWrapperRef.value?.appendChild(emojiPicker as unknown as Node);
+    this.emojiPickerWrapperRef.value?.appendChild(
+      emojiPicker as unknown as Node
+    );
 
     this.emojiPickerVisible = true;
     this.emojiLoading = false;
@@ -99,9 +102,11 @@ export class EmojiButton extends LitElement {
 
   override render() {
     return html`<button class="emoji-button" type="button" aria-label=${msg('Select emoticon')}>
-      ${this.emojiLoading
-        ? html`<icon-loading></icon-loading>`
-        : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`}
+      ${
+        this.emojiLoading
+          ? html`<icon-loading></icon-loading>`
+          : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`
+      }
       <div
         class="form__emoji-panel"
         style="display: ${this.emojiPickerVisible ? 'block' : 'none'}"
@@ -168,7 +173,8 @@ export class EmojiButton extends LitElement {
   ];
 }
 
-customElements.get('emoji-button') || customElements.define('emoji-button', EmojiButton);
+customElements.get('emoji-button') ||
+  customElements.define('emoji-button', EmojiButton);
 
 declare global {
   interface HTMLElementTagNameMap {

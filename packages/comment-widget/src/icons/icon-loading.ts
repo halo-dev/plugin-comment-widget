@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 
 export class IconLoading extends LitElement {
   override render() {
@@ -37,7 +37,8 @@ export class IconLoading extends LitElement {
   `;
 }
 
-customElements.get('icon-loading') || customElements.define('icon-loading', IconLoading);
+customElements.get('icon-loading') ||
+  customElements.define('icon-loading', IconLoading);
 
 declare global {
   interface HTMLElementTagNameMap {

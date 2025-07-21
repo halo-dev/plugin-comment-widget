@@ -1,9 +1,9 @@
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import './icons/icon-loading';
+import { classMap } from 'lit/directives/class-map.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import { classMap } from 'lit/directives/class-map.js';
 
 type ToastType = 'success' | 'error' | 'warn';
 
@@ -22,8 +22,9 @@ export class LitToast extends LitElement {
         'toast--warn': this.type === 'warn',
       })}"
     >
-      ${this.type === 'success'
-        ? html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+      ${
+        this.type === 'success'
+          ? html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <g
               fill="none"
               stroke="#fff"
@@ -35,7 +36,7 @@ export class LitToast extends LitElement {
               <path d="m9 12l2 2l4-4" />
             </g>
           </svg>`
-        : html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+          : html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
             <path
               fill="none"
               stroke="#fff"
@@ -44,7 +45,8 @@ export class LitToast extends LitElement {
               stroke-width="2"
               d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0m9-3v4m0 3v.01"
             />
-          </svg>`} <span>${this.message}</span>
+          </svg>`
+      } <span>${this.message}</span>
     </div>`;
   }
 

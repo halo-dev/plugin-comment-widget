@@ -1,5 +1,5 @@
+import type AvatarProvider from './avatar-provider';
 import Gravatar from './gravatar';
-import AvatarProvider from './avatar-provider';
 
 let avatarProvider: AvatarProvider | undefined;
 

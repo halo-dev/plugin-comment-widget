@@ -1,6 +1,6 @@
-import { CommentVoList, User } from '@halo-dev/api-client';
+import type { CommentVoList, User } from '@halo-dev/api-client';
 import { provide } from '@lit/context';
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import {
@@ -14,6 +14,7 @@ import { setAvatarProvider } from './avatar/providers';
 import './comment-form';
 import './comment-item';
 import './comment-pagination';
+import { msg } from '@lit/localize';
 import {
   allowAnonymousCommentsContext,
   avatarPolicyContext,
@@ -35,7 +36,6 @@ import {
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import { msg } from '@lit/localize';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -137,9 +137,10 @@ export class CommentWidget extends LitElement {
       <comment-form
         @reload="${() => this.fetchComments({ page: 1, scrollIntoView: true })}"
       ></comment-form>
-      ${this.loading
-        ? html` <loading-block></loading-block>`
-        : html`
+      ${
+        this.loading
+          ? html` <loading-block></loading-block>`
+          : html`
             <div class="comment-widget__wrapper">
               <div class="comment-widget__stats">
                 <span>${msg(html`${this.comments.total} Comments`)}</span>
@@ -149,13 +150,16 @@ export class CommentWidget extends LitElement {
                 ${repeat(
                   this.comments.items,
                   (item) => item.metadata.name,
-                  (item) => html` <comment-item .comment=${item}></comment-item>`
+                  (item) =>
+                    html` <comment-item .comment=${item}></comment-item>`
                 )}
               </div>
             </div>
-          `}
-      ${this.shouldDisplayPagination
-        ? html`
+          `
+      }
+      ${
+        this.shouldDisplayPagination
+          ? html`
             <comment-pagination
               .total=${this.comments.total}
               .page=${this.comments.page}
@@ -163,7 +167,8 @@ export class CommentWidget extends LitElement {
               @page-change=${this.onPageChange}
             ></comment-pagination>
           `
-        : ''}
+          : ''
+      }
     </div>`;
   }
 
@@ -182,9 +187,12 @@ export class CommentWidget extends LitElement {
   }
 
   async fetchCurrentUser() {
-    const response = await fetch(`${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`);
+    const response = await fetch(
+      `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`
+    );
     const data = await response.json();
-    this.currentUser = data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
+    this.currentUser =
+      data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
   }
 
   async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {
@@ -214,7 +222,9 @@ export class CommentWidget extends LitElement {
       );
 
       if (!response.ok) {
-        throw new Error(msg('Failed to load comment list, please try again later'));
+        throw new Error(
+          msg('Failed to load comment list, please try again later')
+        );
       }
 
       this.comments = await response.json();
@@ -226,7 +236,11 @@ export class CommentWidget extends LitElement {
       this.loading = false;
 
       if (scrollIntoView) {
-        this.scrollIntoView({ block: 'start', inline: 'start', behavior: 'smooth' });
+        this.scrollIntoView({
+          block: 'start',
+          inline: 'start',
+          behavior: 'smooth',
+        });
       }
     }
   }
@@ -259,7 +273,6 @@ export class CommentWidget extends LitElement {
         setPolicyInstance(new NoAvatarUserPolicy());
         break;
       }
-      case AvatarPolicyEnum.ANONYMOUS_USER_POLICY:
       default:
         setPolicyInstance(new AnonymousUserPolicy());
     }
@@ -303,7 +316,8 @@ export class CommentWidget extends LitElement {
   ];
 }
 
-customElements.get('comment-widget') || customElements.define('comment-widget', CommentWidget);
+customElements.get('comment-widget') ||
+  customElements.define('comment-widget', CommentWidget);
 
 declare global {
   interface HTMLElementTagNameMap {
