@@ -1,17 +1,17 @@
-import { CommentVo, ReplyVo } from '@halo-dev/api-client';
-import { LitElement, css, html } from 'lit';
+import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
 import './base-comment-item-action';
 import './reply-form';
-import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { consume } from '@lit/context';
+import { msg } from '@lit/localize';
+import { getPolicyInstance } from './avatar/avatar-policy';
+import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { baseUrlContext } from './context';
 import varStyles from './styles/var';
-import { getPolicyInstance } from './avatar/avatar-policy';
-import { msg } from '@lit/localize';
 
 export class ReplyItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -69,15 +69,23 @@ export class ReplyItem extends LitElement {
   }
 
   checkUpvotedStatus() {
-    const upvotedReplies = JSON.parse(localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]');
+    const upvotedReplies = JSON.parse(
+      localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
+    );
 
     if (upvotedReplies.includes(this.reply?.metadata.name)) {
       this.upvoted = true;
     }
   }
 
+  handleToggleReplyForm() {
+    this.showReplyForm = !this.showReplyForm;
+  }
+
   async handleUpvote() {
-    const upvotedReplies = JSON.parse(localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]');
+    const upvotedReplies = JSON.parse(
+      localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
+    );
 
     if (upvotedReplies.includes(this.reply?.metadata.name)) {
       return;
@@ -98,7 +106,10 @@ export class ReplyItem extends LitElement {
     });
 
     upvotedReplies.push(this.reply?.metadata.name);
-    localStorage.setItem(LS_UPVOTED_REPLIES_KEY, JSON.stringify(upvotedReplies));
+    localStorage.setItem(
+      LS_UPVOTED_REPLIES_KEY,
+      JSON.stringify(upvotedReplies)
+    );
 
     this.upvoteCount += 1;
     this.upvoted = true;
@@ -114,16 +125,17 @@ export class ReplyItem extends LitElement {
         .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
         .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
-        .userWebsite=${this.reply?.spec.owner.annotations?.['website']}
+        .userWebsite=${this.reply?.spec.owner.annotations?.website}
       >
         <base-comment-item-action
           slot="action"
           class="item-action__upvote"
-          .text="${this.upvoteCount + ''}"
+          .text="${`${this.upvoteCount}`}"
           @click="${this.handleUpvote}"
         >
-          ${this.upvoted
-            ? html`<svg
+          ${
+            this.upvoted
+              ? html`<svg
                 slot="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="32"
@@ -138,7 +150,7 @@ export class ReplyItem extends LitElement {
                   />
                 </g>
               </svg>`
-            : html`<svg
+              : html`<svg
                 slot="icon"
                 xmlns="http://www.w3.org/2000/svg"
                 width="32"
@@ -153,12 +165,13 @@ export class ReplyItem extends LitElement {
                   stroke-width="2"
                   d="M19.5 12.572L12 20l-7.5-7.428A5 5 0 1 1 12 6.006a5 5 0 1 1 7.5 6.572"
                 />
-              </svg>`}
+              </svg>`
+          }
         </base-comment-item-action>
 
         <base-comment-item-action
           slot="action"
-          @click="${() => (this.showReplyForm = !this.showReplyForm)}"
+          @click="${this.handleToggleReplyForm}"
           .text=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}
         >
           <svg
@@ -179,8 +192,9 @@ export class ReplyItem extends LitElement {
           </svg>
         </base-comment-item-action>
 
-        ${this.showReplyForm
-          ? html`
+        ${
+          this.showReplyForm
+            ? html`
               <div class="form__wrapper" slot="footer">
                 <reply-form
                   .comment=${this.comment}
@@ -189,9 +203,11 @@ export class ReplyItem extends LitElement {
                 ></reply-form>
               </div>
             `
-          : ``}
-        ${this.quoteReply
-          ? html`<span
+            : ``
+        }
+        ${
+          this.quoteReply
+            ? html`<span
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
@@ -209,7 +225,8 @@ export class ReplyItem extends LitElement {
                 ><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`
-          : ''}
+            : ''
+        }
       </base-comment-item>
     `;
   }
@@ -248,7 +265,8 @@ export class ReplyItem extends LitElement {
   ];
 }
 
-customElements.get('reply-item') || customElements.define('reply-item', ReplyItem);
+customElements.get('reply-item') ||
+  customElements.define('reply-item', ReplyItem);
 
 function handleReplyAvatar(reply: ReplyVo | undefined): string | undefined {
   const avatarPolicy = getPolicyInstance();

@@ -1,10 +1,10 @@
 import './user-avatar';
-import { LitElement, css, html } from 'lit';
+import { msg } from '@lit/localize';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { formatDate, timeAgo } from './utils/date';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import { msg } from '@lit/localize';
+import { formatDate, timeAgo } from './utils/date';
 
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
@@ -38,11 +38,13 @@ export class BaseCommentItem extends LitElement {
       </div>
       <div class="item__main">
         <div class="item__meta">
-          ${this.userWebsite
-            ? html`<a class="item__author" target="_blank" href=${this.userWebsite}>
+          ${
+            this.userWebsite
+              ? html`<a class="item__author" target="_blank" href=${this.userWebsite}>
                 ${this.userDisplayName}
               </a>`
-            : html`<div class="item__author">${this.userDisplayName}</div>`}
+              : html`<div class="item__author">${this.userDisplayName}</div>`
+          }
           <div class="item__meta-info" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </div>

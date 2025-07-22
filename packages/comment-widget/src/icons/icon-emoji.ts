@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 
 export class IconEmoji extends LitElement {
   override render() {
@@ -21,7 +21,8 @@ export class IconEmoji extends LitElement {
   `;
 }
 
-customElements.get('icon-emoji') || customElements.define('icon-emoji', IconEmoji);
+customElements.get('icon-emoji') ||
+  customElements.define('icon-emoji', IconEmoji);
 
 declare global {
   interface HTMLElementTagNameMap {

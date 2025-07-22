@@ -1,8 +1,10 @@
-import { CommentVo, ReplyVo } from '@halo-dev/api-client';
+import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { getAvatarProvider } from './providers';
 
 abstract class AvatarPolicy {
-  abstract applyCommentPolicy(comment: CommentVo | undefined): string | undefined;
+  abstract applyCommentPolicy(
+    comment: CommentVo | undefined
+  ): string | undefined;
   abstract applyReplyPolicy(reply: ReplyVo | undefined): string | undefined;
 }
 
@@ -15,7 +17,9 @@ class AnonymousUserPolicy extends AvatarPolicy {
     const avatarProvider = getAvatarProvider();
     const isAnonymous = comment?.owner.kind === emailKind;
     if (isAnonymous) {
-      return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
+      return avatarProvider?.getAvatarSrc(
+        comment?.spec.owner.annotations?.[emailHash]
+      );
     }
     return comment?.owner.avatar;
   }
@@ -23,7 +27,9 @@ class AnonymousUserPolicy extends AvatarPolicy {
     const avatarProvider = getAvatarProvider();
     const isAnonymous = reply?.owner.kind === emailKind;
     if (isAnonymous) {
-      return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
+      return avatarProvider?.getAvatarSrc(
+        reply?.spec.owner.annotations?.[emailHash]
+      );
     }
     return reply?.owner.avatar;
   }
@@ -32,11 +38,15 @@ class AnonymousUserPolicy extends AvatarPolicy {
 class AllUserPolicy extends AvatarPolicy {
   applyCommentPolicy(comment: CommentVo | undefined): string | undefined {
     const avatarProvider = getAvatarProvider();
-    return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
+    return avatarProvider?.getAvatarSrc(
+      comment?.spec.owner.annotations?.[emailHash]
+    );
   }
   applyReplyPolicy(reply: ReplyVo | undefined): string | undefined {
     const avatarProvider = getAvatarProvider();
-    return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
+    return avatarProvider?.getAvatarSrc(
+      reply?.spec.owner.annotations?.[emailHash]
+    );
   }
 }
 
@@ -46,7 +56,9 @@ class NoAvatarUserPolicy extends AvatarPolicy {
     const isAnonymous = comment?.owner.kind === emailKind;
     const avatar = comment?.owner.avatar;
     if (isAnonymous || !avatar) {
-      return avatarProvider?.getAvatarSrc(comment?.spec.owner.annotations?.[emailHash]);
+      return avatarProvider?.getAvatarSrc(
+        comment?.spec.owner.annotations?.[emailHash]
+      );
     }
     return avatar;
   }
@@ -55,7 +67,9 @@ class NoAvatarUserPolicy extends AvatarPolicy {
     const isAnonymous = reply?.owner.kind === emailKind;
     const avatar = reply?.owner.avatar;
     if (isAnonymous || !avatar) {
-      return avatarProvider?.getAvatarSrc(reply?.spec.owner.annotations?.[emailHash]);
+      return avatarProvider?.getAvatarSrc(
+        reply?.spec.owner.annotations?.[emailHash]
+      );
     }
     return avatar;
   }

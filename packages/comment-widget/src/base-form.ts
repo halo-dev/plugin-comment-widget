@@ -1,9 +1,9 @@
 import type { User } from '@halo-dev/api-client';
 import { consume } from '@lit/context';
+import { debounce } from 'es-toolkit';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { createRef, Ref, ref } from 'lit/directives/ref.js';
-import { debounce } from 'lodash-es';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
@@ -16,10 +16,10 @@ import {
 } from './context';
 import './emoji-button';
 import './icons/icon-loading';
-import { ToastManager } from './lit-toast';
+import { msg } from '@lit/localize';
+import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
-import { msg } from '@lit/localize';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -64,11 +64,17 @@ export class BaseForm extends LitElement {
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
 
   get customAccount() {
-    return JSON.parse(localStorage.getItem('halo-comment-custom-account') || '{}');
+    return JSON.parse(
+      localStorage.getItem('halo-comment-custom-account') || '{}'
+    );
   }
 
   get loginUrl() {
-    const parentDomId = `#comment-${[this.group?.replaceAll('.', '-'), this.kind, this.name]
+    const parentDomId = `#comment-${[
+      this.group?.replaceAll('.', '-'),
+      this.kind,
+      this.name,
+    ]
       .join('-')
       .replaceAll(/-+/g, '-')}`;
 
@@ -76,11 +82,12 @@ export class BaseForm extends LitElement {
   }
 
   get showCaptcha() {
-    return this.captchaEnabled && !this.currentUser && this.allowAnonymousComments;
+    return (
+      this.captchaEnabled && !this.currentUser && this.allowAnonymousComments
+    );
   }
 
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  override updated(changedProperties: Map<string, any>) {
+  override updated(changedProperties: Map<string, unknown>) {
     if (
       changedProperties.has('captchaEnabled') ||
       changedProperties.has('currentUser') ||
@@ -97,7 +104,9 @@ export class BaseForm extends LitElement {
       return;
     }
 
-    const response = await fetch(`/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`);
+    const response = await fetch(
+      `/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`
+    );
 
     if (!response.ok) {
       this.toastManager?.error(msg('Failed to obtain verification code'));
@@ -183,8 +192,9 @@ export class BaseForm extends LitElement {
           @input=${this.onContentInput}
         ></textarea>
 
-        ${!this.currentUser && this.allowAnonymousComments
-          ? html`<div class="form__anonymous-inputs">
+        ${
+          !this.currentUser && this.allowAnonymousComments
+            ? html`<div class="form__anonymous-inputs">
               <input
                 name="displayName"
                 value=${this.customAccount.displayName}
@@ -207,22 +217,26 @@ export class BaseForm extends LitElement {
               />
               <a href=${this.loginUrl} rel="nofollow">${msg('(Or login)')}</a>
             </div>`
-          : ''}
+            : ''
+        }
 
         <div class="form__footer">
           ${this.currentUser ? this.renderAccountInfo() : ''}
-          ${!this.currentUser && !this.allowAnonymousComments
-            ? html`<button
+          ${
+            !this.currentUser && !this.allowAnonymousComments
+              ? html`<button
                 @click=${this.handleOpenLoginPage}
                 class="form__button--login"
                 type="button"
               >
                 ${msg('Login')}
               </button> `
-            : ''}
+              : ''
+          }
           <div class="form__actions">
-            ${this.showCaptcha
-              ? html`
+            ${
+              this.showCaptcha
+                ? html`
                   <div class="form__action--captcha">
                     <input
                       name="captchaCode"
@@ -237,13 +251,15 @@ export class BaseForm extends LitElement {
                     />
                   </div>
                 `
-              : ''}
+                : ''
+            }
 
             <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
             <button .disabled=${this.submitting} type="submit" class="form__button--submit">
-              ${this.submitting
-                ? html` <icon-loading></icon-loading>`
-                : html` <svg
+              ${
+                this.submitting
+                  ? html` <icon-loading></icon-loading>`
+                  : html` <svg
                     viewBox="0 0 24 24"
                     width="1.25em"
                     height="1.25em"
@@ -253,7 +269,8 @@ export class BaseForm extends LitElement {
                       fill="currentColor"
                       d="M8 7.71L18 12L8 16.29v-3.34l7.14-.95L8 11.05V7.71M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8Z"
                     ></path>
-                  </svg>`}
+                  </svg>`
+              }
               ${msg('Submit')}
             </button>
           </div>

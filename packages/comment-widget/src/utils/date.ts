@@ -3,8 +3,8 @@ import 'dayjs/locale/zh-cn';
 import 'dayjs/locale/zh-tw';
 import 'dayjs/locale/en';
 import 'dayjs/locale/es';
-import timezone from 'dayjs/plugin/timezone';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import timezone from 'dayjs/plugin/timezone';
 import { getLocale } from '../locale';
 
 const localeMap = {

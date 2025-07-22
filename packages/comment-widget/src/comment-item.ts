@@ -1,5 +1,5 @@
 import type { CommentVo } from '@halo-dev/api-client';
-import { LitElement, css, html } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import './comment-replies';
@@ -7,13 +7,13 @@ import './user-avatar';
 import './base-comment-item';
 import './base-comment-item-action';
 import { consume } from '@lit/context';
-import { baseUrlContext, withRepliesContext } from './context';
-import { LS_UPVOTED_COMMENTS_KEY } from './constant';
-import varStyles from './styles/var';
-import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { CommentReplies } from './comment-replies';
-import { getPolicyInstance } from './avatar/avatar-policy';
 import { msg } from '@lit/localize';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import { getPolicyInstance } from './avatar/avatar-policy';
+import type { CommentReplies } from './comment-replies';
+import { LS_UPVOTED_COMMENTS_KEY } from './constant';
+import { baseUrlContext, withRepliesContext } from './context';
+import varStyles from './styles/var';
 
 export class CommentItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -54,7 +54,9 @@ export class CommentItem extends LitElement {
   }
 
   checkUpvotedStatus() {
-    const upvotedComments = JSON.parse(localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]');
+    const upvotedComments = JSON.parse(
+      localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
+    );
 
     if (upvotedComments.includes(this.comment?.metadata.name)) {
       this.upvoted = true;
@@ -62,7 +64,9 @@ export class CommentItem extends LitElement {
   }
 
   async handleUpvote() {
-    const upvotedComments = JSON.parse(localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]');
+    const upvotedComments = JSON.parse(
+      localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
+    );
 
     if (upvotedComments.includes(this.comment?.metadata.name)) {
       return;
@@ -83,7 +87,10 @@ export class CommentItem extends LitElement {
     });
 
     upvotedComments.push(this.comment?.metadata.name);
-    localStorage.setItem(LS_UPVOTED_COMMENTS_KEY, JSON.stringify(upvotedComments));
+    localStorage.setItem(
+      LS_UPVOTED_COMMENTS_KEY,
+      JSON.stringify(upvotedComments)
+    );
 
     this.upvoteCount += 1;
     this.upvoted = true;
@@ -103,6 +110,10 @@ export class CommentItem extends LitElement {
     this.showReplies = true;
   }
 
+  handleToggleReplyForm() {
+    this.showReplyForm = !this.showReplyForm;
+  }
+
   override render() {
     return html`<base-comment-item
       .userAvatar="${handleCommentAvatar(this.comment)}"
@@ -110,16 +121,17 @@ export class CommentItem extends LitElement {
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
       .approved=${this.comment?.spec.approved}
-      .userWebsite=${this.comment?.spec.owner.annotations?.['website']}
+      .userWebsite=${this.comment?.spec.owner.annotations?.website}
     >
       <base-comment-item-action
         slot="action"
         class="item__action--upvote"
-        .text="${this.upvoteCount + ''}"
+        .text="${`${this.upvoteCount}`}"
         @click="${this.handleUpvote}"
       >
-        ${this.upvoted
-          ? html`<svg
+        ${
+          this.upvoted
+            ? html`<svg
               slot="icon"
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -134,7 +146,7 @@ export class CommentItem extends LitElement {
                 />
               </g>
             </svg>`
-          : html`<svg
+            : html`<svg
               slot="icon"
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -149,14 +161,16 @@ export class CommentItem extends LitElement {
                 stroke-width="2"
                 d="M19.5 12.572L12 20l-7.5-7.428A5 5 0 1 1 12 6.006a5 5 0 1 1 7.5 6.572"
               />
-            </svg>`}
+            </svg>`
+        }
       </base-comment-item-action>
 
-      ${this.withReplies && this.comment?.status?.visibleReplyCount === 0
-        ? ''
-        : html`<base-comment-item-action
+      ${
+        this.withReplies && this.comment?.status?.visibleReplyCount === 0
+          ? ''
+          : html`<base-comment-item-action
             slot="action"
-            .text="${(this.comment?.status?.visibleReplyCount || 0) + ''}"
+            .text="${`${this.comment?.status?.visibleReplyCount || 0}`}"
             @click="${this.handleShowReplies}"
           >
             <svg
@@ -175,12 +189,14 @@ export class CommentItem extends LitElement {
                 d="m3 20l1.3-3.9C1.976 12.663 2.874 8.228 6.4 5.726c3.526-2.501 8.59-2.296 11.845.48c3.255 2.777 3.695 7.266 1.029 10.501C16.608 19.942 11.659 20.922 7.7 19L3 20"
               />
             </svg>
-          </base-comment-item-action>`}
-      ${this.withReplies
-        ? html` <base-comment-item-action
+          </base-comment-item-action>`
+      }
+      ${
+        this.withReplies
+          ? html` <base-comment-item-action
             slot="action"
             .text=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}
-            @click="${() => (this.showReplyForm = !this.showReplyForm)}"
+            @click="${this.handleToggleReplyForm}"
           >
             <svg
               slot="icon"
@@ -199,21 +215,26 @@ export class CommentItem extends LitElement {
               />
             </svg>
           </base-comment-item-action>`
-        : ''}
+          : ''
+      }
 
       <div slot="footer">
-        ${this.showReplyForm
-          ? html`<div class="item__reply-form">
+        ${
+          this.showReplyForm
+            ? html`<div class="item__reply-form">
               <reply-form @reload=${this.onReplyCreated} .comment=${this.comment}></reply-form>
             </div>`
-          : ''}
-        ${this.showReplies
-          ? html`<comment-replies
+            : ''
+        }
+        ${
+          this.showReplies
+            ? html`<comment-replies
               ${ref(this.commentRepliesRef)}
               .comment="${this.comment}"
               .showReplyForm=${this.showReplyForm}
             ></comment-replies>`
-          : ``}
+            : ``
+        }
       </div>
     </base-comment-item>`;
   }
@@ -233,9 +254,12 @@ export class CommentItem extends LitElement {
   ];
 }
 
-customElements.get('comment-item') || customElements.define('comment-item', CommentItem);
+customElements.get('comment-item') ||
+  customElements.define('comment-item', CommentItem);
 
-function handleCommentAvatar(comment: CommentVo | undefined): string | undefined {
+function handleCommentAvatar(
+  comment: CommentVo | undefined
+): string | undefined {
   const avatarPolicy = getPolicyInstance();
   if (avatarPolicy === undefined) {
     return comment?.owner.avatar;

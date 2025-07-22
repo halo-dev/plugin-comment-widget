@@ -1,19 +1,25 @@
-import { CommentVo, Reply, ReplyRequest, ReplyVo, User } from '@halo-dev/api-client';
+import type {
+  CommentVo,
+  Reply,
+  ReplyRequest,
+  ReplyVo,
+  User,
+} from '@halo-dev/api-client';
 import { consume } from '@lit/context';
-import { LitElement, html } from 'lit';
+import { html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { Ref, createRef, ref } from 'lit/directives/ref.js';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
-import { BaseForm } from './base-form';
+import { msg } from '@lit/localize';
+import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
   currentUserContext,
   toastContext,
 } from './context';
-import { ToastManager } from './lit-toast';
+import type { ToastManager } from './lit-toast';
 import { getCaptchaCodeHeader, isRequireCaptcha } from './utils/captcha';
-import { msg } from '@lit/localize';
 
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -50,7 +56,11 @@ export class ReplyForm extends LitElement {
     super.connectedCallback();
 
     setTimeout(() => {
-      this.scrollIntoView({ block: 'center', inline: 'start', behavior: 'smooth' });
+      this.scrollIntoView({
+        block: 'center',
+        inline: 'start',
+        behavior: 'smooth',
+      });
       this.baseFormRef.value?.setFocus();
     }, 0);
   }
@@ -92,7 +102,9 @@ export class ReplyForm extends LitElement {
 
     if (!this.currentUser && this.allowAnonymousComments) {
       if (!displayName || !email) {
-        this.toastManager?.warn(msg('Please log in or complete the information first'));
+        this.toastManager?.warn(
+          msg('Please log in or complete the information first')
+        );
         this.submitting = false;
         return;
       } else {
@@ -135,7 +147,9 @@ export class ReplyForm extends LitElement {
       if (newReply.spec.approved) {
         this.toastManager?.success(msg('Comment submitted successfully'));
       } else {
-        this.toastManager?.success(msg('Comment submitted successfully, pending review'));
+        this.toastManager?.success(
+          msg('Comment submitted successfully, pending review')
+        );
       }
 
       this.dispatchEvent(new CustomEvent('reload'));
@@ -150,7 +164,8 @@ export class ReplyForm extends LitElement {
   }
 }
 
-customElements.get('reply-form') || customElements.define('reply-form', ReplyForm);
+customElements.get('reply-form') ||
+  customElements.define('reply-form', ReplyForm);
 
 declare global {
   interface HTMLElementTagNameMap {
