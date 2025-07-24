@@ -65,10 +65,9 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
     private Mono<Void> sendCaptchaRequiredResponse(ServerWebExchange exchange,
                                                    SettingConfigGetter.CaptchaConfig captchaConfig,
                                                    ResponseStatusException e) {
-        var type = captchaConfig.getType();
         exchange.getResponse().getHeaders().addIfAbsent(CAPTCHA_REQUIRED_HEADER, "true");
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-        return captchaManager.generate(exchange, type)
+        return captchaManager.generate(exchange, captchaConfig)
             .flatMap(captcha -> {
                 var problemDetail = toProblemDetail(e);
                 problemDetail.setProperty("captcha", captcha.imageBase64());
@@ -94,7 +93,7 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
         if (captchaCodeOpt.isEmpty() || cookie == null) {
             return sendCaptchaRequiredResponse(exchange, captchaConfig, new CaptchaCodeMissingException());
         }
-        return captchaManager.verify(cookie.getValue(), captchaCodeOpt.get())
+        return captchaManager.verify(cookie.getValue(), captchaCodeOpt.get(), captchaConfig.isIgnoreCase())
             .flatMap(valid -> {
                 if (valid) {
                     captchaCookieResolver.expireCookie(exchange);

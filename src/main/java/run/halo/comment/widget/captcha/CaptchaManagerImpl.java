@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import run.halo.comment.widget.SettingConfigGetter;
 
 @Component
 @RequiredArgsConstructor
@@ -25,9 +26,9 @@ public class CaptchaManagerImpl implements CaptchaManager {
     private final CaptchaCookieResolver captchaCookieResolver;
 
     @Override
-    public Mono<Boolean> verify(String key, String captchaCode) {
+    public Mono<Boolean> verify(String key, String captchaCode, boolean ignoreCase) {
         return Mono.justOrEmpty(captchaCache.getIfPresent(key))
-            .filter(captcha -> captcha.code().equalsIgnoreCase(captchaCode))
+            .filter(captcha -> ignoreCase ? captcha.code().equalsIgnoreCase(captchaCode) : captcha.code().equals(captchaCode))
             .hasElement();
     }
 
@@ -38,16 +39,16 @@ public class CaptchaManagerImpl implements CaptchaManager {
     }
 
     @Override
-    public Mono<Captcha> generate(ServerWebExchange exchange, CaptchaType type) {
-        return doGenerate(type)
+    public Mono<Captcha> generate(ServerWebExchange exchange, SettingConfigGetter.CaptchaConfig captchaConfig) {
+        return doGenerate(captchaConfig)
             .doOnNext(captcha -> captchaCookieResolver.setCookie(exchange, captcha.id()));
     }
 
-    private Mono<Captcha> doGenerate(CaptchaType type) {
+    private Mono<Captcha> doGenerate(SettingConfigGetter.CaptchaConfig captchaConfig) {
         return Mono.fromSupplier(() -> {
-                var captcha = switch (type) {
-                    case ALPHANUMERIC -> CaptchaGenerator.generateSimpleCaptcha();
-                    case ARITHMETIC -> CaptchaGenerator.generateMathCaptcha();
+                var captcha = switch (captchaConfig.getType()) {
+                    case ALPHANUMERIC -> CaptchaGenerator.generateSimpleCaptcha(captchaConfig.getCaptchaLength());
+                    case ARITHMETIC -> CaptchaGenerator.generateMathCaptcha(captchaConfig.getArithmeticRange());
                 };
                 var imageBase64 = encodeBufferedImageToDataUri(captcha.image());
                 var id = UUID.randomUUID().toString();
