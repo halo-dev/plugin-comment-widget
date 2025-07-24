@@ -51,12 +51,42 @@ spec:
               label: 验证码类型
               if: "$get(anonymousCommentCaptcha).value === true"
               name: type
+              id: type
               value: "ALPHANUMERIC"
               options:
                 - label: 字母数字组合
                   value: "ALPHANUMERIC"
                 - label: 算术验证码
                   value: "ARITHMETIC"
+            - $formkit: number
+              if: "$get(type).value === ALPHANUMERIC"
+              name: captchaLength
+              key: captchaLength
+              label: 验证码长度
+              help: 字母数字组合验证码长度，不宜过长或过短，建议4-6位
+              max: 8
+              value: 4
+              validation: required
+            - $formkit: radio
+              if: "$get(type).value === ALPHANUMERIC"
+              name: ignoreCase
+              key: ignoreCase
+              label: 是否忽略验证码大小写验证
+              help: 忽略大小写验证码，建议开启
+              value: true
+              options:
+                - label: 是
+                  value: true
+                - label: 否
+                  value: false
+            - $formkit: number
+              if: "$get(type).value === ARITHMETIC"
+              name: arithmeticRange
+              key: arithmeticRange
+              label: 计算范围
+              help: 算术验证码计算范围
+              value: 90
+              validation: required
     - group: avatar
       label: 头像设置
       formSchema:

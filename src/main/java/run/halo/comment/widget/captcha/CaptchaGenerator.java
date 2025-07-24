@@ -26,12 +26,12 @@ public class CaptchaGenerator {
         customFont = loadArialFont();
     }
 
-    public static Captcha generateMathCaptcha() {
-        return generateCaptchaImage(CaptchaGenerator::drawMathCaptchaText);
+    public static Captcha generateMathCaptcha(int arithmeticRange) {
+        return generateCaptchaImage((g2d) -> drawMathCaptchaText(g2d, arithmeticRange));
     }
 
-    public static Captcha generateSimpleCaptcha() {
-        return generateCaptchaImage(CaptchaGenerator::drawSimpleText);
+    public static Captcha generateSimpleCaptcha(int captchaLength) {
+        return generateCaptchaImage((g2d) -> drawSimpleText(g2d, captchaLength));
     }
 
     private static Captcha generateCaptchaImage(Function<Graphics2D, String> drawCaptchaTextFunc) {
@@ -61,10 +61,10 @@ public class CaptchaGenerator {
         return new Captcha(captchaText, bufferedImage);
     }
 
-    private static String drawMathCaptchaText(Graphics2D g2d) {
+    private static String drawMathCaptchaText(Graphics2D g2d, int arithmeticRange) {
         Random random = new Random();
-        int num1 = random.nextInt(90) + 1;
-        int num2 = random.nextInt(90) + 1;
+        int num1 = random.nextInt(arithmeticRange) + 1;
+        int num2 = random.nextInt(arithmeticRange) + 1;
         char operator = getRandomOperator();
 
         int result;
@@ -92,12 +92,15 @@ public class CaptchaGenerator {
     public record Captcha(String code, BufferedImage image) {
     }
 
-    private static String drawSimpleText(Graphics2D g2d) {
-        var captchaText = generateRandomText();
+    private static String drawSimpleText(Graphics2D g2d, int captchaLength) {
+        var captchaText = generateRandomText(captchaLength);
         Random random = new Random();
+        int charSpacing = WIDTH / (captchaLength + 1);
         for (int i = 0; i < captchaText.length(); i++) {
             g2d.setColor(new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
-            g2d.drawString(String.valueOf(captchaText.charAt(i)), 20 + i * 24, 30);
+            // 动态计算每个字符的位置
+            int xPos = charSpacing + i * charSpacing;
+            g2d.drawString(String.valueOf(captchaText.charAt(i)), xPos, 30);
         }
         return captchaText;
     }
@@ -121,10 +124,10 @@ public class CaptchaGenerator {
         return operators[random.nextInt(operators.length)];
     }
 
-    private static String generateRandomText() {
-        StringBuilder sb = new StringBuilder(CHAR_LENGTH);
+    private static String generateRandomText(int captchaLength) {
+        StringBuilder sb = new StringBuilder(captchaLength);
         Random random = new Random();
-        for (int i = 0; i < CHAR_LENGTH; i++) {
+        for (int i = 0; i < captchaLength; i++) {
             sb.append(CHAR_STRING.charAt(random.nextInt(CHAR_STRING.length())));
         }
         return sb.toString();
