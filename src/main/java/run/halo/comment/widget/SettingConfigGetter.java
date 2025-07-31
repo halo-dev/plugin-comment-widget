@@ -52,6 +52,12 @@ public interface SettingConfigGetter {
         @Getter(onMethod_ = @NonNull)
         private CaptchaType type = CaptchaType.ALPHANUMERIC;
 
+        private boolean ignoreCase = true;
+
+        private int captchaLength = 4;
+
+        private int arithmeticRange = 90;
+
         public CaptchaConfig setType(CaptchaType type) {
             this.type = (type == null ? CaptchaType.ALPHANUMERIC : type);
             return this;
