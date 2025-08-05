@@ -80,12 +80,14 @@ public class DefaultCommentWidget implements CommentWidget {
             .blockOptional()
             .orElse(false);
         properties.setProperty("captchaEnabled", String.valueOf(captcha));
+        properties.setProperty("version", pluginContext.getVersion());
 
         // placeholderHelper only support string, so we need to convert boolean to string
         return PROPERTY_PLACEHOLDER_HELPER.replacePlaceholders("""
             <div id="${domId}"></div>
-            <script>
-              CommentWidget.init(
+            <script type="module" data-pjax>
+              import { init } from "/plugins/PluginCommentWidget/assets/static/comment-widget.js?version=${version}";
+              init(
                 "#${domId}",
                 {
                   group: "${group}",
