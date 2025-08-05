@@ -23,7 +23,6 @@ import {
   baseUrlContext,
   captchaEnabledContext,
   currentUserContext,
-  emojiDataUrlContext,
   groupContext,
   kindContext,
   nameContext,
@@ -87,10 +86,6 @@ export class CommentWidget extends LitElement {
   @provide({ context: avatarPolicyContext })
   @property({ type: String, attribute: 'avatar-policy' })
   avatarPolicy = '';
-
-  @provide({ context: emojiDataUrlContext })
-  @property({ type: String, attribute: 'emoji-data-url' })
-  emojiDataUrl = 'https://unpkg.com/@emoji-mart/data';
 
   @provide({ context: currentUserContext })
   @state()

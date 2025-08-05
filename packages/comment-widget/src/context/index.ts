@@ -34,10 +34,6 @@ export const currentUserContext = createContext<User | undefined>(
   Symbol('currentUser')
 );
 
-export const emojiDataUrlContext = createContext<string>(
-  Symbol('emojiDataUrl')
-);
-
 export const toastContext = createContext<ToastManager | undefined>(
   Symbol('toastContext')
 );

@@ -9,13 +9,11 @@ import es from '@emoji-mart/data/i18n/es.json';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
-import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { Picker } from 'emoji-mart';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
-import { emojiDataUrlContext } from './context';
 import { getLocale } from './locale';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
@@ -36,10 +34,6 @@ export class EmojiButton extends LitElement {
 
   @state()
   emojiPicker: Picker | null = null;
-
-  @consume({ context: emojiDataUrlContext })
-  @state()
-  emojiDataUrl = '';
 
   emojiPickerWrapperRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
 
@@ -78,8 +72,9 @@ export class EmojiButton extends LitElement {
 
     this.emojiLoading = true;
 
-    const response = await fetch(this.emojiDataUrl);
-    const data = await response.json();
+    const { default: data } = await import(
+      /* webpackChunkName: "emoji-mart-data" */ '@emoji-mart/data'
+    );
 
     const emojiPicker = new Picker({
       data,
@@ -91,7 +86,6 @@ export class EmojiButton extends LitElement {
       i18n: localeMap[getLocale()],
     });
 
-    // TODO: fix this ts error
     this.emojiPickerWrapperRef.value?.appendChild(
       emojiPicker as unknown as Node
     );
@@ -101,7 +95,11 @@ export class EmojiButton extends LitElement {
   }
 
   override render() {
-    return html`<button class="emoji-button" type="button" aria-label=${msg('Select emoticon')}>
+    return html`<button
+      class="emoji-button"
+      type="button"
+      aria-label=${msg('Select emoticon')}
+    >
       ${
         this.emojiLoading
           ? html`<icon-loading></icon-loading>`
