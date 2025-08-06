@@ -3,12 +3,7 @@ import { consume } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import {
-  baseUrlContext,
-  replySizeContext,
-  toastContext,
-  withRepliesContext,
-} from './context';
+import { baseUrlContext, configMapDataContext, toastContext } from './context';
 import './reply-item';
 import './loading-block';
 import './reply-form';
@@ -16,19 +11,16 @@ import { msg } from '@lit/localize';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import type { ConfigMapData } from './types';
 
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
   @property({ attribute: false })
   baseUrl = '';
 
-  @consume({ context: withRepliesContext, subscribe: true })
+  @consume({ context: configMapDataContext })
   @state()
-  withReplies = false;
-
-  @consume({ context: replySizeContext, subscribe: true })
-  @state()
-  replySize = 10;
+  configMapData: ConfigMapData | undefined;
 
   @property({ type: Object })
   comment: CommentVo | undefined;
@@ -102,10 +94,15 @@ export class CommentReplies extends LitElement {
         this.page = 1;
       }
 
-      const queryParams = [`page=${this.page || 1}`, `size=${this.replySize}`];
+      const queryParams = [
+        `page=${this.page || 1}`,
+        `size=${this.configMapData?.basic.replySize || 10}`,
+      ];
 
       const response = await fetch(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply?${queryParams.join('&')}`
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${
+          this.comment?.metadata.name
+        }/reply?${queryParams.join('&')}`
       );
 
       if (!response.ok) {
@@ -134,7 +131,7 @@ export class CommentReplies extends LitElement {
   }
 
   async fetchNext() {
-    if (this.withReplies) {
+    if (this.configMapData?.basic.withReplies) {
       // if withReplies is true, we need to reload the replies list
       await this.fetchReplies({ append: !(this.page === 1) });
       this.page++;
@@ -147,7 +144,7 @@ export class CommentReplies extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
 
-    if (this.withReplies) {
+    if (this.configMapData?.basic.withReplies) {
       // TODO: Fix ts error
       // Needs @halo-dev/api-client@2.14.0
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

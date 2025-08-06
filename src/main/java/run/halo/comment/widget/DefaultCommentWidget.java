@@ -27,7 +27,6 @@ public class DefaultCommentWidget implements CommentWidget {
     static final PropertyPlaceholderHelper PROPERTY_PLACEHOLDER_HELPER = new PropertyPlaceholderHelper("${", "}");
 
     private final PluginContext pluginContext;
-    private final SettingConfigGetter settingConfigGetter;
 
     @Override
     public void render(ITemplateContext context,
@@ -62,24 +61,6 @@ public class DefaultCommentWidget implements CommentWidget {
         properties.setProperty("name", nameAttribute.getValue());
         properties.setProperty("domId", domIdFrom(group, kindAttribute.getValue(), nameAttribute.getValue()));
 
-        var basicConfig = settingConfigGetter.getBasicConfig().blockOptional().orElseThrow();
-        properties.setProperty("size", String.valueOf(basicConfig.getSize()));
-        properties.setProperty("replySize", String.valueOf(basicConfig.getReplySize()));
-        properties.setProperty("withReplies", String.valueOf(basicConfig.isWithReplies()));
-        properties.setProperty("withReplySize", String.valueOf(basicConfig.getWithReplySize()));
-
-        var avatarConfig = settingConfigGetter.getAvatarConfig().blockOptional().orElseThrow();
-        properties.setProperty("useAvatarProvider", String.valueOf(avatarConfig.isEnable()));
-        properties.setProperty("avatarProvider", String.valueOf(avatarConfig.getProvider()));
-        properties.setProperty("avatarProviderMirror", String.valueOf(avatarConfig.getProviderMirror()));
-        properties.setProperty("avatarPolicy", String.valueOf(avatarConfig.getPolicy()));
-
-        var captcha = settingConfigGetter.getSecurityConfig()
-            .map(SettingConfigGetter.SecurityConfig::getCaptcha)
-            .map(SettingConfigGetter.CaptchaConfig::isAnonymousCommentCaptcha)
-            .blockOptional()
-            .orElse(false);
-        properties.setProperty("captchaEnabled", String.valueOf(captcha));
         properties.setProperty("version", pluginContext.getVersion());
 
         // placeholderHelper only support string, so we need to convert boolean to string
@@ -93,15 +74,6 @@ public class DefaultCommentWidget implements CommentWidget {
                   group: "${group}",
                   kind: "${kind}",
                   name: "${name}",
-                  size: ${size},
-                  replySize: ${replySize},
-                  withReplies: ${withReplies},
-                  withReplySize: ${withReplySize},
-                  useAvatarProvider: ${useAvatarProvider},
-                  avatarProvider: "${avatarProvider}",
-                  avatarProviderMirror: "${avatarProviderMirror}",
-                  avatarPolicy: "${avatarPolicy}",
-                  captchaEnabled: ${captchaEnabled},
                 }
               );
             </script>

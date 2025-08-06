@@ -17,24 +17,19 @@ import './comment-pagination';
 import { msg } from '@lit/localize';
 import {
   allowAnonymousCommentsContext,
-  avatarPolicyContext,
-  avatarProviderContext,
-  avatarProviderMirrorContext,
   baseUrlContext,
-  captchaEnabledContext,
+  configMapDataContext,
   currentUserContext,
   groupContext,
   kindContext,
   nameContext,
-  replySizeContext,
   toastContext,
-  useAvatarProviderContext,
   versionContext,
-  withRepliesContext,
 } from './context';
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import type { ConfigMapData } from './types';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -57,36 +52,6 @@ export class CommentWidget extends LitElement {
   @property({ type: String })
   name = '';
 
-  @property({ type: Number, attribute: 'size' })
-  size: number = 20;
-
-  @provide({ context: replySizeContext })
-  @property({ type: Number, attribute: 'reply-size' })
-  replySize: number = 10;
-
-  @provide({ context: withRepliesContext })
-  @property({ type: Boolean, attribute: 'with-replies' })
-  withReplies = false;
-
-  @property({ type: Number, attribute: 'with-reply-size' })
-  withReplySize = 10;
-
-  @provide({ context: useAvatarProviderContext })
-  @property({ type: Boolean, attribute: 'use-avatar-provider' })
-  useAvatarProvider = false;
-
-  @provide({ context: avatarProviderContext })
-  @property({ type: String, attribute: 'avatar-provider' })
-  avatarProvider = '';
-
-  @provide({ context: avatarProviderMirrorContext })
-  @property({ type: String, attribute: 'avatar-provider-mirror' })
-  avatarProviderMirror = '';
-
-  @provide({ context: avatarPolicyContext })
-  @property({ type: String, attribute: 'avatar-policy' })
-  avatarPolicy = '';
-
   @provide({ context: currentUserContext })
   @state()
   currentUser: User | undefined;
@@ -95,9 +60,9 @@ export class CommentWidget extends LitElement {
   @state()
   allowAnonymousComments = false;
 
-  @provide({ context: captchaEnabledContext })
-  @property({ type: Boolean, attribute: 'enable-captcha' })
-  captchaEnabled = false;
+  @provide({ context: configMapDataContext })
+  @state()
+  configMapData: ConfigMapData | undefined;
 
   @provide({ context: toastContext })
   @state()
@@ -181,6 +146,13 @@ export class CommentWidget extends LitElement {
     }
   }
 
+  async fetchConfigMapData() {
+    const response = await fetch(
+      `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/plugins/PluginCommentWidget/json-config`
+    );
+    this.configMapData = (await response.json()) as ConfigMapData;
+  }
+
   async fetchCurrentUser() {
     const response = await fetch(
       `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`
@@ -206,14 +178,16 @@ export class CommentWidget extends LitElement {
         `kind=${this.kind}`,
         `name=${this.name}`,
         `page=${this.comments.page}`,
-        `size=${this.size}`,
+        `size=${this.configMapData?.basic.size || 20}`,
         `version=${this.version}`,
-        `withReplies=${this.withReplies}`,
-        `replySize=${this.withReplySize}`,
+        `withReplies=${this.configMapData?.basic.withReplies || false}`,
+        `replySize=${this.configMapData?.basic.replySize || 10}`,
       ];
 
       const response = await fetch(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join('&')}`
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join(
+          '&'
+        )}`
       );
 
       if (!response.ok) {
@@ -247,19 +221,21 @@ export class CommentWidget extends LitElement {
   }
 
   initAvatarProvider() {
-    if (!this.useAvatarProvider) {
+    if (!this.configMapData?.avatar.enable) {
       return;
     }
-    setAvatarProvider(this.avatarProvider, this.avatarProviderMirror);
+    setAvatarProvider(
+      this.configMapData.avatar.provider,
+      this.configMapData.avatar.providerMirror
+    );
   }
 
   initAvatarPolicy() {
-    if (!this.useAvatarProvider) {
-      console.log(this.useAvatarProvider);
+    if (!this.configMapData?.avatar.enable) {
       setPolicyInstance(undefined);
       return;
     }
-    switch (this.avatarPolicy) {
+    switch (this.configMapData.avatar.policy) {
       case AvatarPolicyEnum.ALL_USER_POLICY: {
         setPolicyInstance(new AllUserPolicy());
         break;
@@ -275,10 +251,15 @@ export class CommentWidget extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.init();
+  }
+
+  async init() {
     this.toastManager = new ToastManager();
-    this.fetchCurrentUser();
-    this.fetchComments();
-    this.fetchGlobalInfo();
+    await this.fetchCurrentUser();
+    await this.fetchGlobalInfo();
+    await this.fetchConfigMapData();
+    await this.fetchComments();
     this.initAvatarProvider();
     this.initAvatarPolicy();
   }

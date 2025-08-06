@@ -7,7 +7,7 @@ import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
-  captchaEnabledContext,
+  configMapDataContext,
   currentUserContext,
   groupContext,
   kindContext,
@@ -20,6 +20,7 @@ import { msg } from '@lit/localize';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import type { ConfigMapData } from './types';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -30,13 +31,13 @@ export class BaseForm extends LitElement {
   @state()
   currentUser: User | undefined;
 
+  @consume({ context: configMapDataContext })
+  @state()
+  configMapData: ConfigMapData | undefined;
+
   @consume({ context: allowAnonymousCommentsContext, subscribe: true })
   @state()
   allowAnonymousComments = false;
-
-  @consume({ context: captchaEnabledContext, subscribe: true })
-  @state()
-  captchaEnabled = false;
 
   @consume({ context: groupContext })
   @state()
@@ -78,18 +79,22 @@ export class BaseForm extends LitElement {
       .join('-')
       .replaceAll(/-+/g, '-')}`;
 
-    return `/login?redirect_uri=${encodeURIComponent(window.location.pathname + parentDomId)}`;
+    return `/login?redirect_uri=${encodeURIComponent(
+      window.location.pathname + parentDomId
+    )}`;
   }
 
   get showCaptcha() {
     return (
-      this.captchaEnabled && !this.currentUser && this.allowAnonymousComments
+      this.configMapData?.security.captcha.anonymousCommentCaptcha &&
+      !this.currentUser &&
+      this.allowAnonymousComments
     );
   }
 
   override updated(changedProperties: Map<string, unknown>) {
     if (
-      changedProperties.has('captchaEnabled') ||
+      changedProperties.has('configMapData') ||
       changedProperties.has('currentUser') ||
       changedProperties.has('allowAnonymousComments')
     ) {
@@ -138,9 +143,19 @@ export class BaseForm extends LitElement {
 
   renderAccountInfo() {
     return html`<div class="form__account-info">
-      ${this.currentUser?.spec.avatar ? html`<img src=${this.currentUser.spec.avatar} />` : ''}
-      <span> ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name} </span>
-      <button @click=${this.handleLogout} type="button" class="form__button--logout">
+      ${
+        this.currentUser?.spec.avatar
+          ? html`<img src=${this.currentUser.spec.avatar} />`
+          : ''
+      }
+      <span>
+        ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
+      </span>
+      <button
+        @click=${this.handleLogout}
+        type="button"
+        class="form__button--logout"
+      >
         ${msg('Logout')}
       </button>
     </div>`;
@@ -255,7 +270,11 @@ export class BaseForm extends LitElement {
             }
 
             <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
-            <button .disabled=${this.submitting} type="submit" class="form__button--submit">
+            <button
+              .disabled=${this.submitting}
+              type="submit"
+              class="form__button--submit"
+            >
               ${
                 this.submitting
                   ? html` <icon-loading></icon-loading>`
@@ -369,11 +388,7 @@ export class BaseForm extends LitElement {
         outline: 0;
         padding: 0.4em 0.75em;
         width: 100%;
-        transition:
-          background 0.2s,
-          border 0.2s,
-          box-shadow 0.2s,
-          color 0.2s;
+        transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
       }
 
       input:focus,
