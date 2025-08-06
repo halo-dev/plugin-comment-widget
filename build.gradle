@@ -1,12 +1,22 @@
 plugins {
     id 'java'
-    id "io.freefair.lombok" version "8.0.1"
-    id "com.github.node-gradle.node" version "7.0.2"
-    id "run.halo.plugin.devtools" version "0.0.7"
+    id "io.freefair.lombok" version "8.13"
+    id "com.github.node-gradle.node" version "7.1.0"
+    id "run.halo.plugin.devtools" version "0.6.2"
 }
 
 group 'run.halo.comment.widget'
-sourceCompatibility = JavaVersion.VERSION_17
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    options.release = 21
+}
 
 repositories {
     mavenCentral()
