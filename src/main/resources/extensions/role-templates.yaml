@@ -11,19 +11,6 @@ metadata:
     rbac.authorization.halo.run/display-name: "Comment Widget Public APIs"
 rules:
   - apiGroups: [ "api.commentwidget.halo.run" ]
-    resources: [ "captcha/generate" ]
+    resources: [ "captcha/generate", "config" ]
     verbs: [ "get" ]
----
-# TODO: Write a new api to get configmap data in public
-apiVersion: v1alpha1
-kind: Role
-metadata:
-  name: comment-widget-anonymous-accessible-config
-  labels:
-    halo.run/role-template: "true"
-    halo.run/hidden: "true"
-    rbac.authorization.halo.run/aggregate-to-anonymous: "true"
-rules:
-  - apiGroups: [ "api.console.halo.run" ]
-    resources: [ "plugins/json-config" ]
-    verbs: [ "get" ]
+

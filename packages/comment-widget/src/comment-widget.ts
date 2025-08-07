@@ -148,7 +148,7 @@ export class CommentWidget extends LitElement {
 
   async fetchConfigMapData() {
     const response = await fetch(
-      `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/plugins/PluginCommentWidget/json-config`
+      `${this.baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/config`
     );
     this.configMapData = (await response.json()) as ConfigMapData;
   }
