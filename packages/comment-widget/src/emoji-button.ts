@@ -99,22 +99,25 @@ export class EmojiButton extends LitElement {
   }
 
   override render() {
-    return html`<button
-      class="emoji-button"
-      type="button"
+    return html`<div
+      role="button"
+      class="relative size-7 flex items-center justify-center cursor-pointer"
       aria-label=${msg('Select emoticon')}
     >
       ${
         this.emojiLoading
           ? html`<icon-loading></icon-loading>`
-          : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`
+          : html`<div
+            class="i-mdi-sticker-emoji size-5 text-gray-500 hover:text-gray-900"
+            @click=${this.handleOpenEmojiPicker}
+          ></div>`
       }
       <div
         class="form__emoji-panel"
-        style="display: ${this.emojiPickerVisible ? 'block' : 'none'}"
+        ?hidden=${!this.emojiPickerVisible}
         ${ref(this.emojiPickerWrapperRef)}
       ></div>
-    </button>`;
+    </div>`;
   }
 
   static override styles = [
@@ -125,6 +128,8 @@ export class EmojiButton extends LitElement {
         display: inline-flex;
       }
 
+      @unocss-placeholder;
+
       em-emoji-picker {
         --rgb-color: var(--component-emoji-picker-rgb-color);
         --rgb-accent: var(--component-emoji-picker-rgb-accent);
@@ -132,16 +137,6 @@ export class EmojiButton extends LitElement {
         --rgb-input: var(--component-emoji-picker-rgb-input);
         --color-border: var(--component-emoji-picker-color-border);
         --color-border-over: var(--component-emoji-picker-color-border-over);
-      }
-
-      .emoji-button {
-        color: var(--base-color);
-        display: inline-flex;
-        position: relative;
-      }
-
-      .emoji-button:hover icon-emoji {
-        opacity: 0.8;
       }
 
       .form__emoji-panel {

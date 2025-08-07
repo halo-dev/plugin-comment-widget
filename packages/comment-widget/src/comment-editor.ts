@@ -125,9 +125,9 @@ export class CommentEditor extends LitElement {
 
   private renderSkeleton() {
     return html`<div
-        class="border rounded-md border-solid border-gray-200"
-        ?hidden=${!this.loading}
-      >
+      class="border rounded-md border-solid border-gray-200"
+      ?hidden=${!this.loading}
+    >
       <div class="animate-pulse p-4">
         <div class="h-4 my-1 w-20 bg-gray-200 rounded"></div>
       </div>
@@ -149,7 +149,9 @@ export class CommentEditor extends LitElement {
 
   private renderActionItem(item: ActionItem, editor?: Editor) {
     if (item.type === 'separator') {
-      return html`<li class="text-gray-100 text-xs">|</li>`;
+      return html`<li class="flex items-center">
+        <div class="w-1px bg-gray-100 rounded-full h-3"></div>
+      </li>`;
     }
 
     if (item.type === 'action') {
