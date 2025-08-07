@@ -191,7 +191,7 @@ export class CommentEditor extends LitElement {
 
       .tiptap p {
         padding: 0;
-        margin: 0;
+        margin-bottom: 10px;
       }
 
       .tiptap p.is-editor-empty:first-child::before {
