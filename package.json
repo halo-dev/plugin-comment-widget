@@ -41,6 +41,8 @@
   },
   "dependencies": {
     "@tiptap/extensions": "^3.0.9",
-    "github-markdown-css": "^5.8.1"
+    "github-markdown-css": "^5.8.1",
+    "shiki": "^3.9.2",
+    "tiptap-extension-code-block-shiki": "^0.5.1"
   }
 }

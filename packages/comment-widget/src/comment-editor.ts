@@ -5,6 +5,7 @@ import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
 import contentStyles from 'github-markdown-css/github-markdown-light.css?inline';
+import CodeBlockShiki from 'tiptap-extension-code-block-shiki';
 
 interface ActionItem {
   type: 'action' | 'separator';
@@ -80,9 +81,14 @@ export class CommentEditor extends LitElement {
           link: {
             openOnClick: false,
           },
+          codeBlock: false,
         }),
         Placeholder.configure({
           placeholder: msg('Write a comment'),
+        }),
+
+        CodeBlockShiki.configure({
+          defaultTheme: 'github-dark',
         }),
       ],
     });
@@ -114,7 +120,7 @@ export class CommentEditor extends LitElement {
           id="editor-container"
           class="p-4 markdown-body !bg-transparent"
         ></div>
-        <ul class="list-none p-2.5 flex gap-1 m-0 items-center overflow-x-auto">
+        <ul class="list-none p-2.5 flex gap-1 m-0 items-center">
           ${repeat(actionItems, (item) =>
             this.renderActionItem(item, this.editor)
           )}
@@ -200,6 +206,10 @@ export class CommentEditor extends LitElement {
         float: left;
         height: 0;
         pointer-events: none;
+      }
+
+      .tiptap code br {
+        display: block;
       }
     `,
   ];
