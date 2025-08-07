@@ -82,6 +82,17 @@ export class CommentList extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
     this.fetchComments();
+
+    // Handle comment:reload event
+    window.addEventListener('comment:reload', (e: Event) => {
+      if (e instanceof CustomEvent) {
+        const data = e.detail;
+        this.fetchComments({
+          page: data.page,
+          scrollIntoView: data.scrollIntoView,
+        });
+      }
+    });
   }
 
   async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {

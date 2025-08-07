@@ -29,8 +29,6 @@ import baseStyles from './styles/base';
 import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 import './comment-list';
-import { createRef, type Ref, ref } from 'lit/directives/ref.js';
-import type { CommentList } from './comment-list';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -72,22 +70,14 @@ export class CommentWidget extends LitElement {
   @state()
   isInitialized = false;
 
-  commentListRef: Ref<CommentList> = createRef<CommentList>();
-
   override render() {
     return html` <div class="comment-widget">
       ${
         !this.isInitialized
           ? html`<loading-block></loading-block>`
           : html`
-            <comment-form
-              @reload="${() =>
-                this.commentListRef.value?.fetchComments({
-                  page: 1,
-                  scrollIntoView: true,
-                })}"
-            ></comment-form>
-            <comment-list ${ref(this.commentListRef)}></comment-list>
+            <comment-form></comment-form>
+            <comment-list></comment-list>
           `
       }
     </div>`;
