@@ -1,8 +1,7 @@
-import type { CommentVoList, User } from '@halo-dev/api-client';
+import type { User } from '@halo-dev/api-client';
 import { provide } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
 import {
   AllUserPolicy,
   AnonymousUserPolicy,
@@ -14,7 +13,6 @@ import { setAvatarProvider } from './avatar/providers';
 import './comment-form';
 import './comment-item';
 import './comment-pagination';
-import { msg } from '@lit/localize';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
@@ -30,6 +28,9 @@ import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
+import './comment-list';
+import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import type { CommentList } from './comment-list';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -69,65 +70,25 @@ export class CommentWidget extends LitElement {
   toastManager: ToastManager | undefined;
 
   @state()
-  comments: CommentVoList = {
-    page: 1,
-    size: 20,
-    total: 0,
-    items: [],
-    first: true,
-    last: false,
-    hasNext: false,
-    hasPrevious: false,
-    totalPages: 0,
-  };
+  isInitialized = false;
 
-  @state()
-  loading = false;
-
-  get shouldDisplayPagination() {
-    if (this.loading) {
-      return false;
-    }
-
-    return this.comments.hasNext || this.comments.hasPrevious;
-  }
+  commentListRef: Ref<CommentList> = createRef<CommentList>();
 
   override render() {
     return html` <div class="comment-widget">
-      <comment-form
-        @reload="${() => this.fetchComments({ page: 1, scrollIntoView: true })}"
-      ></comment-form>
       ${
-        this.loading
-          ? html` <loading-block></loading-block>`
+        !this.isInitialized
+          ? html`<loading-block></loading-block>`
           : html`
-            <div class="comment-widget__wrapper">
-              <div class="comment-widget__stats">
-                <span>${msg(html`${this.comments.total} Comments`)}</span>
-              </div>
-
-              <div class="comment-widget__list">
-                ${repeat(
-                  this.comments.items,
-                  (item) => item.metadata.name,
-                  (item) =>
-                    html` <comment-item .comment=${item}></comment-item>`
-                )}
-              </div>
-            </div>
+            <comment-form
+              @reload="${() =>
+                this.commentListRef.value?.fetchComments({
+                  page: 1,
+                  scrollIntoView: true,
+                })}"
+            ></comment-form>
+            <comment-list ${ref(this.commentListRef)}></comment-list>
           `
-      }
-      ${
-        this.shouldDisplayPagination
-          ? html`
-            <comment-pagination
-              .total=${this.comments.total}
-              .page=${this.comments.page}
-              .size=${this.comments.size}
-              @page-change=${this.onPageChange}
-            ></comment-pagination>
-          `
-          : ''
       }
     </div>`;
   }
@@ -160,64 +121,6 @@ export class CommentWidget extends LitElement {
     const data = await response.json();
     this.currentUser =
       data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
-  }
-
-  async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {
-    const { page, scrollIntoView } = options || {};
-    try {
-      if (this.comments.items.length === 0) {
-        this.loading = true;
-      }
-
-      if (page) {
-        this.comments.page = page;
-      }
-
-      const queryParams = [
-        `group=${this.group}`,
-        `kind=${this.kind}`,
-        `name=${this.name}`,
-        `page=${this.comments.page}`,
-        `size=${this.configMapData?.basic.size || 20}`,
-        `version=${this.version}`,
-        `withReplies=${this.configMapData?.basic.withReplies || false}`,
-        `replySize=${this.configMapData?.basic.replySize || 10}`,
-      ];
-
-      const response = await fetch(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join(
-          '&'
-        )}`
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          msg('Failed to load comment list, please try again later')
-        );
-      }
-
-      this.comments = await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        this.toastManager?.error(error.message);
-      }
-    } finally {
-      this.loading = false;
-
-      if (scrollIntoView) {
-        this.scrollIntoView({
-          block: 'start',
-          inline: 'start',
-          behavior: 'smooth',
-        });
-      }
-    }
-  }
-
-  async onPageChange(e: CustomEvent) {
-    const data = e.detail;
-    this.comments.page = data.page;
-    await this.fetchComments({ scrollIntoView: true });
   }
 
   initAvatarProvider() {
@@ -256,10 +159,18 @@ export class CommentWidget extends LitElement {
 
   async init() {
     this.toastManager = new ToastManager();
+    try {
+      await this.fetchGlobalInfo();
+      await this.fetchConfigMapData();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastManager?.show(error.message, 'error');
+      }
+      return;
+    } finally {
+      this.isInitialized = true;
+    }
     await this.fetchCurrentUser();
-    await this.fetchGlobalInfo();
-    await this.fetchConfigMapData();
-    await this.fetchComments();
     this.initAvatarProvider();
     this.initAvatarPolicy();
   }
@@ -276,17 +187,6 @@ export class CommentWidget extends LitElement {
 
       .comment-widget {
         width: 100%;
-      }
-
-      .comment-widget__wrapper {
-        margin-top: 1.2em;
-      }
-
-      .comment-widget__stats {
-        color: var(--base-color);
-        font-size: 0.875em;
-        margin: 0.875em 0;
-        font-weight: 500;
       }
     `,
   ];

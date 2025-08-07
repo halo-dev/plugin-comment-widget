@@ -250,7 +250,7 @@ export class BaseForm extends LitElement {
           }
           <div class="form__actions">
             ${
-              this.showCaptcha
+              this.showCaptcha && this.captcha
                 ? html`
                   <div class="form__action--captcha">
                     <input

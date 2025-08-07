@@ -15,7 +15,7 @@ import type { ConfigMapData } from './types';
 
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
-  @property({ attribute: false })
+  @state()
   baseUrl = '';
 
   @consume({ context: configMapDataContext })
