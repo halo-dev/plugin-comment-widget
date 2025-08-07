@@ -152,6 +152,7 @@ export class CommentWidget extends LitElement {
     try {
       await this.fetchGlobalInfo();
       await this.fetchConfigMapData();
+      await this.fetchCurrentUser();
     } catch (error) {
       if (error instanceof Error) {
         this.toastManager?.show(error.message, 'error');
@@ -160,7 +161,6 @@ export class CommentWidget extends LitElement {
     } finally {
       this.isInitialized = true;
     }
-    await this.fetchCurrentUser();
     this.initAvatarProvider();
     this.initAvatarPolicy();
   }

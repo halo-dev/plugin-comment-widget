@@ -1,5 +1,4 @@
 import './icons/icon-loading';
-import './icons/icon-emoji';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import en from '@emoji-mart/data/i18n/en.json';

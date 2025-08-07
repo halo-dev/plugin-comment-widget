@@ -77,6 +77,9 @@ export class CommentEditor extends LitElement {
       extensions: [
         StarterKit.configure({
           heading: false,
+          link: {
+            openOnClick: false,
+          },
         }),
         Placeholder.configure({
           placeholder: msg('Write a comment'),
@@ -104,7 +107,7 @@ export class CommentEditor extends LitElement {
   protected override render() {
     return html` ${this.renderSkeleton()}
       <div
-        class="border rounded-md border-solid border-gray-200 focus-within:border-blue-500 transition-all"
+        class="border rounded-md border-solid border-[var(--component-form-input-border-color)] focus-within:border-[var(--component-form-input-border-color-focus)] transition-all"
         ?hidden=${this.loading}
       >
         <div
