@@ -13,3 +13,6 @@ rules:
   - apiGroups: [ "api.commentwidget.halo.run" ]
     resources: [ "captcha/generate" ]
     verbs: [ "get" ]
+  - apiGroups: [ "api.commentwidget.halo.run" ]
+    resources: [ "config" ]
+    verbs: [ "list" ]

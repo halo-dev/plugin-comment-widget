@@ -149,7 +149,15 @@ export class CommentForm extends LitElement {
         );
       }
 
-      this.dispatchEvent(new CustomEvent('reload'));
+      window.dispatchEvent(
+        new CustomEvent('comment:reload', {
+          detail: {
+            page: 1,
+            scrollIntoView: true,
+          },
+        })
+      );
+
       this.baseFormRef.value?.resetForm();
     } catch (error) {
       if (error instanceof Error) {

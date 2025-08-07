@@ -12,8 +12,9 @@ import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import type { CommentReplies } from './comment-replies';
 import { LS_UPVOTED_COMMENTS_KEY } from './constant';
-import { baseUrlContext, withRepliesContext } from './context';
+import { baseUrlContext, configMapDataContext } from './context';
 import varStyles from './styles/var';
+import type { ConfigMapData } from './types';
 
 export class CommentItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -23,9 +24,9 @@ export class CommentItem extends LitElement {
   @property({ type: Object })
   comment: CommentVo | undefined;
 
-  @consume({ context: withRepliesContext, subscribe: true })
+  @consume({ context: configMapDataContext })
   @state()
-  withReplies = false;
+  configMapData: ConfigMapData | undefined;
 
   @state()
   showReplies = false;
@@ -45,7 +46,7 @@ export class CommentItem extends LitElement {
     super.connectedCallback();
     this.checkUpvotedStatus();
 
-    if (this.withReplies) {
+    if (this.configMapData?.basic.withReplies) {
       this.showReplies = true;
       this.showReplyForm = false;
     }
@@ -100,7 +101,7 @@ export class CommentItem extends LitElement {
   handleShowReplies() {
     this.showReplies = !this.showReplies;
 
-    if (!this.withReplies) {
+    if (!this.configMapData?.basic.withReplies) {
       this.showReplyForm = !this.showReplyForm;
     }
   }
@@ -138,7 +139,12 @@ export class CommentItem extends LitElement {
               height="32"
               viewBox="0 0 24 24"
             >
-              <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+              <g
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
                 <path d="M0 0h24v24H0z" />
                 <path
                   fill="red"
@@ -166,7 +172,8 @@ export class CommentItem extends LitElement {
       </base-comment-item-action>
 
       ${
-        this.withReplies && this.comment?.status?.visibleReplyCount === 0
+        this.configMapData?.basic.withReplies &&
+        this.comment?.status?.visibleReplyCount === 0
           ? ''
           : html`<base-comment-item-action
             slot="action"
@@ -192,7 +199,7 @@ export class CommentItem extends LitElement {
           </base-comment-item-action>`
       }
       ${
-        this.withReplies
+        this.configMapData?.basic.withReplies
           ? html` <base-comment-item-action
             slot="action"
             .text=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}
@@ -222,7 +229,10 @@ export class CommentItem extends LitElement {
         ${
           this.showReplyForm
             ? html`<div class="item__reply-form">
-              <reply-form @reload=${this.onReplyCreated} .comment=${this.comment}></reply-form>
+              <reply-form
+                @reload=${this.onReplyCreated}
+                .comment=${this.comment}
+              ></reply-form>
             </div>`
             : ''
         }

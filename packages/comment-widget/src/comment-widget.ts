@@ -1,8 +1,7 @@
-import type { CommentVoList, User } from '@halo-dev/api-client';
+import type { User } from '@halo-dev/api-client';
 import { provide } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
 import {
   AllUserPolicy,
   AnonymousUserPolicy,
@@ -14,27 +13,22 @@ import { setAvatarProvider } from './avatar/providers';
 import './comment-form';
 import './comment-item';
 import './comment-pagination';
-import { msg } from '@lit/localize';
 import {
   allowAnonymousCommentsContext,
-  avatarPolicyContext,
-  avatarProviderContext,
-  avatarProviderMirrorContext,
   baseUrlContext,
-  captchaEnabledContext,
+  configMapDataContext,
   currentUserContext,
   groupContext,
   kindContext,
   nameContext,
-  replySizeContext,
   toastContext,
-  useAvatarProviderContext,
   versionContext,
-  withRepliesContext,
 } from './context';
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
+import type { ConfigMapData } from './types';
+import './comment-list';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -57,36 +51,6 @@ export class CommentWidget extends LitElement {
   @property({ type: String })
   name = '';
 
-  @property({ type: Number, attribute: 'size' })
-  size: number = 20;
-
-  @provide({ context: replySizeContext })
-  @property({ type: Number, attribute: 'reply-size' })
-  replySize: number = 10;
-
-  @provide({ context: withRepliesContext })
-  @property({ type: Boolean, attribute: 'with-replies' })
-  withReplies = false;
-
-  @property({ type: Number, attribute: 'with-reply-size' })
-  withReplySize = 10;
-
-  @provide({ context: useAvatarProviderContext })
-  @property({ type: Boolean, attribute: 'use-avatar-provider' })
-  useAvatarProvider = false;
-
-  @provide({ context: avatarProviderContext })
-  @property({ type: String, attribute: 'avatar-provider' })
-  avatarProvider = '';
-
-  @provide({ context: avatarProviderMirrorContext })
-  @property({ type: String, attribute: 'avatar-provider-mirror' })
-  avatarProviderMirror = '';
-
-  @provide({ context: avatarPolicyContext })
-  @property({ type: String, attribute: 'avatar-policy' })
-  avatarPolicy = '';
-
   @provide({ context: currentUserContext })
   @state()
   currentUser: User | undefined;
@@ -95,74 +59,26 @@ export class CommentWidget extends LitElement {
   @state()
   allowAnonymousComments = false;
 
-  @provide({ context: captchaEnabledContext })
-  @property({ type: Boolean, attribute: 'enable-captcha' })
-  captchaEnabled = false;
+  @provide({ context: configMapDataContext })
+  @state()
+  configMapData: ConfigMapData | undefined;
 
   @provide({ context: toastContext })
   @state()
   toastManager: ToastManager | undefined;
 
   @state()
-  comments: CommentVoList = {
-    page: 1,
-    size: 20,
-    total: 0,
-    items: [],
-    first: true,
-    last: false,
-    hasNext: false,
-    hasPrevious: false,
-    totalPages: 0,
-  };
-
-  @state()
-  loading = false;
-
-  get shouldDisplayPagination() {
-    if (this.loading) {
-      return false;
-    }
-
-    return this.comments.hasNext || this.comments.hasPrevious;
-  }
+  isInitialized = false;
 
   override render() {
     return html` <div class="comment-widget">
-      <comment-form
-        @reload="${() => this.fetchComments({ page: 1, scrollIntoView: true })}"
-      ></comment-form>
       ${
-        this.loading
-          ? html` <loading-block></loading-block>`
+        !this.isInitialized
+          ? html`<loading-block></loading-block>`
           : html`
-            <div class="comment-widget__wrapper">
-              <div class="comment-widget__stats">
-                <span>${msg(html`${this.comments.total} Comments`)}</span>
-              </div>
-
-              <div class="comment-widget__list">
-                ${repeat(
-                  this.comments.items,
-                  (item) => item.metadata.name,
-                  (item) =>
-                    html` <comment-item .comment=${item}></comment-item>`
-                )}
-              </div>
-            </div>
+            <comment-form></comment-form>
+            <comment-list></comment-list>
           `
-      }
-      ${
-        this.shouldDisplayPagination
-          ? html`
-            <comment-pagination
-              .total=${this.comments.total}
-              .page=${this.comments.page}
-              .size=${this.comments.size}
-              @page-change=${this.onPageChange}
-            ></comment-pagination>
-          `
-          : ''
       }
     </div>`;
   }
@@ -181,6 +97,13 @@ export class CommentWidget extends LitElement {
     }
   }
 
+  async fetchConfigMapData() {
+    const response = await fetch(
+      `${this.baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/config`
+    );
+    this.configMapData = (await response.json()) as ConfigMapData;
+  }
+
   async fetchCurrentUser() {
     const response = await fetch(
       `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`
@@ -190,76 +113,22 @@ export class CommentWidget extends LitElement {
       data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
   }
 
-  async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {
-    const { page, scrollIntoView } = options || {};
-    try {
-      if (this.comments.items.length === 0) {
-        this.loading = true;
-      }
-
-      if (page) {
-        this.comments.page = page;
-      }
-
-      const queryParams = [
-        `group=${this.group}`,
-        `kind=${this.kind}`,
-        `name=${this.name}`,
-        `page=${this.comments.page}`,
-        `size=${this.size}`,
-        `version=${this.version}`,
-        `withReplies=${this.withReplies}`,
-        `replySize=${this.withReplySize}`,
-      ];
-
-      const response = await fetch(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join('&')}`
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          msg('Failed to load comment list, please try again later')
-        );
-      }
-
-      this.comments = await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        this.toastManager?.error(error.message);
-      }
-    } finally {
-      this.loading = false;
-
-      if (scrollIntoView) {
-        this.scrollIntoView({
-          block: 'start',
-          inline: 'start',
-          behavior: 'smooth',
-        });
-      }
-    }
-  }
-
-  async onPageChange(e: CustomEvent) {
-    const data = e.detail;
-    this.comments.page = data.page;
-    await this.fetchComments({ scrollIntoView: true });
-  }
-
   initAvatarProvider() {
-    if (!this.useAvatarProvider) {
+    if (!this.configMapData?.avatar.enable) {
       return;
     }
-    setAvatarProvider(this.avatarProvider, this.avatarProviderMirror);
+    setAvatarProvider(
+      this.configMapData.avatar.provider,
+      this.configMapData.avatar.providerMirror
+    );
   }
 
   initAvatarPolicy() {
-    if (!this.useAvatarProvider) {
-      console.log(this.useAvatarProvider);
+    if (!this.configMapData?.avatar.enable) {
       setPolicyInstance(undefined);
       return;
     }
-    switch (this.avatarPolicy) {
+    switch (this.configMapData.avatar.policy) {
       case AvatarPolicyEnum.ALL_USER_POLICY: {
         setPolicyInstance(new AllUserPolicy());
         break;
@@ -275,10 +144,23 @@ export class CommentWidget extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.init();
+  }
+
+  async init() {
     this.toastManager = new ToastManager();
-    this.fetchCurrentUser();
-    this.fetchComments();
-    this.fetchGlobalInfo();
+    try {
+      await this.fetchGlobalInfo();
+      await this.fetchConfigMapData();
+    } catch (error) {
+      if (error instanceof Error) {
+        this.toastManager?.show(error.message, 'error');
+      }
+      return;
+    } finally {
+      this.isInitialized = true;
+    }
+    await this.fetchCurrentUser();
     this.initAvatarProvider();
     this.initAvatarPolicy();
   }
@@ -295,17 +177,6 @@ export class CommentWidget extends LitElement {
 
       .comment-widget {
         width: 100%;
-      }
-
-      .comment-widget__wrapper {
-        margin-top: 1.2em;
-      }
-
-      .comment-widget__stats {
-        color: var(--base-color);
-        font-size: 0.875em;
-        margin: 0.875em 0;
-        font-weight: 500;
       }
     `,
   ];
