@@ -28,7 +28,9 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc -w"
+    "dev": "tsc -w",
+    "locale:extract": "lit-localize extract",
+    "locale:build": "lit-localize build"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
