@@ -1,7 +1,9 @@
 import './user-avatar';
 import { msg } from '@lit/localize';
-import { css, html, LitElement } from 'lit';
+import contentStyles from 'github-markdown-css/github-markdown-light.css?inline';
+import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 import { formatDate, timeAgo } from './utils/date';
@@ -40,7 +42,11 @@ export class BaseCommentItem extends LitElement {
         <div class="item__meta">
           ${
             this.userWebsite
-              ? html`<a class="item__author" target="_blank" href=${this.userWebsite}>
+              ? html`<a
+                class="item__author"
+                target="_blank"
+                href=${this.userWebsite}
+              >
                 ${this.userDisplayName}
               </a>`
               : html`<div class="item__author">${this.userDisplayName}</div>`
@@ -48,11 +54,15 @@ export class BaseCommentItem extends LitElement {
           <div class="item__meta-info" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </div>
-          ${!this.approved ? html`<div class="item__meta-info">${msg('Reviewing')}</div>` : ''}
+          ${
+            !this.approved
+              ? html`<div class="item__meta-info">${msg('Reviewing')}</div>`
+              : ''
+          }
         </div>
 
-        <div class="item__content">
-          <pre><slot name="pre-content"></slot>${this.content}</pre>
+        <div class="item__content markdown-body">
+          <div><slot name="pre-content"></slot>${unsafeHTML(this.content)}</div>
         </div>
 
         <div class="item__actions">
@@ -67,6 +77,7 @@ export class BaseCommentItem extends LitElement {
   static override styles = [
     varStyles,
     baseStyles,
+    unsafeCSS(contentStyles),
     css`
       .item {
         display: flex;

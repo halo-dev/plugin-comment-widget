@@ -30,7 +30,17 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "typescript": "~5.3.3",
-    "vite": "^5.1.4"
+    "vite": "^7.0.6",
+    "vite-plugin-dts": "^4.5.4"
   },
-  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39",
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@7.0.10"
+    }
+  },
+  "dependencies": {
+    "@tiptap/extensions": "^3.0.9",
+    "github-markdown-css": "^5.8.1"
+  }
 }

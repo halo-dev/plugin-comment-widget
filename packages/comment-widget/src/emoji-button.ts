@@ -10,7 +10,7 @@ import es from '@emoji-mart/data/i18n/es.json';
 //@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
 import { msg } from '@lit/localize';
-import { Picker } from 'emoji-mart';
+import type { Picker } from 'emoji-mart';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -71,6 +71,10 @@ export class EmojiButton extends LitElement {
     }
 
     this.emojiLoading = true;
+
+    const { Picker } = await import(
+      /* webpackChunkName: "emoji-mart" */ 'emoji-mart'
+    );
 
     const { default: data } = await import(
       /* webpackChunkName: "emoji-mart-data" */ '@emoji-mart/data'
