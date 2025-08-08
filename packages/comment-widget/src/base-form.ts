@@ -21,6 +21,7 @@ import baseStyles from './styles/base';
 import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 import './comment-editor';
+import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
 
 export class BaseForm extends LitElement {
@@ -112,16 +113,19 @@ export class BaseForm extends LitElement {
       return;
     }
 
-    const response = await fetch(
-      `/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`
-    );
+    try {
+      const data = await ofetch(
+        `/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`,
+        {
+          parseResponse: (txt) => txt,
+        }
+      );
 
-    if (!response.ok) {
+      this.captcha = data;
+    } catch (error) {
+      console.error(error);
       this.toastManager?.error(msg('Failed to obtain verification code'));
-      return;
     }
-
-    this.captcha = await response.text();
   }
 
   handleOpenLoginPage() {

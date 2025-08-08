@@ -5,5 +5,10 @@
       "source.fixAll.biome": "explicit",
       "source.organizeImports.biome": "explicit"
     }
-  }
+  },
+  "i18n-ally.localesPaths": [
+    "packages/comment-widget/src/locale",
+    "workplace/themes/theme-earth/i18n",
+    "packages/comment-widget/src/generated/locales"
+  ]
 }

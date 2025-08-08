@@ -8,6 +8,7 @@ import './base-comment-item-action';
 import './reply-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
+import { ofetch } from 'ofetch';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { baseUrlContext } from './context';
@@ -97,12 +98,9 @@ export class ReplyItem extends LitElement {
       group: 'content.halo.run',
     };
 
-    await fetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`, {
+    await ofetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(voteRequest),
+      body: voteRequest,
     });
 
     upvotedReplies.push(this.reply?.metadata.name);

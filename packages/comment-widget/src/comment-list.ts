@@ -19,6 +19,7 @@ import type { ConfigMapData } from './types';
 import './comment-pagination';
 import './comment-item';
 import './loading-block';
+import { ofetch } from 'ofetch';
 
 export class CommentList extends LitElement {
   @consume({ context: baseUrlContext })
@@ -106,34 +107,28 @@ export class CommentList extends LitElement {
         this.comments.page = page;
       }
 
-      const queryParams = [
-        `group=${this.group}`,
-        `kind=${this.kind}`,
-        `name=${this.name}`,
-        `page=${this.comments.page}`,
-        `size=${this.configMapData?.basic.size || 20}`,
-        `version=${this.version}`,
-        `withReplies=${this.configMapData?.basic.withReplies || false}`,
-        `replySize=${this.configMapData?.basic.replySize || 10}`,
-      ];
-
-      const response = await fetch(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments?${queryParams.join(
-          '&'
-        )}`
+      const data = await ofetch<CommentVoList>(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
+        {
+          query: {
+            group: this.group,
+            kind: this.kind,
+            name: this.name,
+            page: this.comments.page,
+            size: this.configMapData?.basic.size || 20,
+            version: this.version,
+            withReplies: this.configMapData?.basic.withReplies || false,
+            replySize: this.configMapData?.basic.replySize || 10,
+          },
+        }
       );
 
-      if (!response.ok) {
-        throw new Error(
-          msg('Failed to load comment list, please try again later')
-        );
-      }
-
-      this.comments = await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        this.toastManager?.error(error.message);
-      }
+      this.comments = data;
+    } catch (_error) {
+      console.error(_error);
+      this.toastManager?.error(
+        msg('Failed to load comment list, please try again later')
+      );
     } finally {
       this.loading = false;
 

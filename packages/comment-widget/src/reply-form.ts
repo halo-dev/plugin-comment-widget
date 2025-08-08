@@ -11,6 +11,7 @@ import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
 import { msg } from '@lit/localize';
+import { FetchError, type FetchResponse, ofetch } from 'ofetch';
 import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
@@ -19,7 +20,11 @@ import {
   toastContext,
 } from './context';
 import type { ToastManager } from './lit-toast';
-import { getCaptchaCodeHeader, isRequireCaptcha } from './utils/captcha';
+import {
+  type CaptchaRequiredResponse,
+  getCaptchaCodeHeader,
+  isRequireCaptcha,
+} from './utils/captcha';
 
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -117,32 +122,18 @@ export class ReplyForm extends LitElement {
     }
 
     try {
-      const response = await fetch(
+      const newReply = await ofetch<Reply>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             ...getCaptchaCodeHeader(data.captchaCode),
           },
-          body: JSON.stringify(replyRequest),
+          body: replyRequest,
         }
       );
 
-      if (isRequireCaptcha(response)) {
-        const { captcha, detail } = await response.json();
-        this.captcha = captcha;
-        this.toastManager?.warn(detail);
-        return;
-      }
-
       this.baseFormRef.value?.handleFetchCaptcha();
-
-      if (!response.ok) {
-        throw new Error(msg('Comment failed, please try again later'));
-      }
-
-      const newReply = (await response.json()) as Reply;
 
       if (newReply.spec.approved) {
         this.toastManager?.success(msg('Comment submitted successfully'));
@@ -155,9 +146,21 @@ export class ReplyForm extends LitElement {
       this.dispatchEvent(new CustomEvent('reload'));
       this.baseFormRef.value?.resetForm();
     } catch (error) {
-      if (error instanceof Error) {
-        this.toastManager?.error(error.message);
+      if (error instanceof FetchError) {
+        if (
+          isRequireCaptcha(
+            error.response as FetchResponse<CaptchaRequiredResponse>
+          )
+        ) {
+          const { captcha, detail } =
+            error.data as unknown as CaptchaRequiredResponse;
+          this.captcha = captcha;
+          this.toastManager?.warn(detail);
+          return;
+        }
       }
+
+      this.toastManager?.error(msg('Comment failed, please try again later'));
     } finally {
       this.submitting = false;
     }

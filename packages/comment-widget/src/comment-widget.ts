@@ -1,4 +1,4 @@
-import type { User } from '@halo-dev/api-client';
+import type { DetailedUser, User } from '@halo-dev/api-client';
 import { provide } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -29,6 +29,7 @@ import baseStyles from './styles/base';
 import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 import './comment-list';
+import { ofetch } from 'ofetch';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -84,31 +85,21 @@ export class CommentWidget extends LitElement {
   }
 
   async fetchGlobalInfo() {
-    try {
-      const response = await fetch(`${this.baseUrl}/actuator/globalinfo`, {
-        method: 'get',
-        credentials: 'same-origin',
-      });
-
-      const data = await response.json();
-      this.allowAnonymousComments = data.allowAnonymousComments;
-    } catch (error) {
-      console.error('Failed to fetch global info', error);
-    }
+    const data = await ofetch(`${this.baseUrl}/actuator/globalinfo`);
+    this.allowAnonymousComments = data.allowAnonymousComments;
   }
 
   async fetchConfigMapData() {
-    const response = await fetch(
+    const data = await ofetch<ConfigMapData>(
       `${this.baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/config`
     );
-    this.configMapData = (await response.json()) as ConfigMapData;
+    this.configMapData = data;
   }
 
   async fetchCurrentUser() {
-    const response = await fetch(
+    const data = await ofetch<DetailedUser>(
       `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`
     );
-    const data = await response.json();
     this.currentUser =
       data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
   }

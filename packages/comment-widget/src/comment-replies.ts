@@ -8,6 +8,7 @@ import './reply-item';
 import './loading-block';
 import './reply-form';
 import { msg } from '@lit/localize';
+import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
@@ -94,24 +95,17 @@ export class CommentReplies extends LitElement {
         this.page = 1;
       }
 
-      const queryParams = [
-        `page=${this.page || 1}`,
-        `size=${this.configMapData?.basic.replySize || 10}`,
-      ];
-
-      const response = await fetch(
+      const data = await ofetch<ReplyVoList>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${
           this.comment?.metadata.name
-        }/reply?${queryParams.join('&')}`
+        }/reply`,
+        {
+          query: {
+            page: this.page || 1,
+            size: this.configMapData?.basic.replySize || 10,
+          },
+        }
       );
-
-      if (!response.ok) {
-        throw new Error(
-          msg('Failed to load reply list, please try again later')
-        );
-      }
-
-      const data = (await response.json()) as ReplyVoList;
 
       if (options?.append) {
         this.replies = this.replies.concat(data.items);
@@ -122,9 +116,10 @@ export class CommentReplies extends LitElement {
       this.hasNext = data.hasNext;
       this.page = data.page;
     } catch (error) {
-      if (error instanceof Error) {
-        this.toastManager?.error(error.message);
-      }
+      console.error(error);
+      this.toastManager?.error(
+        msg('Failed to load reply list, please try again later')
+      );
     } finally {
       this.loading = false;
     }
