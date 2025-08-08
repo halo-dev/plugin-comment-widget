@@ -150,6 +150,7 @@ export class CommentEditor extends LitElement {
       <div
         class="border rounded-md border-solid border-[var(--component-form-input-border-color)] focus-within:border-[var(--component-form-input-border-color-focus)] transition-all"
         ?hidden=${this.loading}
+        @click=${this.setFocus}
       >
         <div
           id="editor-container"

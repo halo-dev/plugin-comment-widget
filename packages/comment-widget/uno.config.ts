@@ -11,7 +11,7 @@ export default defineConfig({
     'icon-button-text':
       'select-none text-xs text-[var(--base-info-color)] group-hover:text-[var(--component-comment-item-action-color-hover)]',
     'pagination-button':
-      'inline-flex items-center gap-1 hover:bg-gray-100 rounded-md py-1.5 px-2 transition-all text-gray-900 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
+      'inline-flex items-center text-sm gap-1 hover:bg-gray-100 rounded-md py-1.5 px-2 transition-all text-gray-900 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
     avatar:
       'rounded-full size-9 overflow-hidden inline-flex items-center justify-center bg-gray-100',
   },

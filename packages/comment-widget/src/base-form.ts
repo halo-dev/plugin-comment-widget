@@ -148,19 +148,21 @@ export class BaseForm extends LitElement {
   }
 
   renderAccountInfo() {
-    return html`<div class="form__account-info">
+    return html`<div class="form-account flex items-center gap-2">
+    <div class="form-account-avatar avatar">
       ${
         this.currentUser?.spec.avatar
-          ? html`<img src=${this.currentUser.spec.avatar} />`
+          ? html`<img src=${this.currentUser.spec.avatar} class="size-full object-cover" />`
           : ''
       }
-      <span>
+    </div>
+      <span class="form-account-name text-base text-gray-900 font-semibold">
         ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
       </span>
       <button
         @click=${this.handleLogout}
         type="button"
-        class="form__button--logout"
+        class="form-logout text-xs text-gray-700 hover:text-gray-900 px-2 transition-all py-1 rounded-md border border-gray-100 opacity-90 hover:border-gray-200 hover:opacity-100 border-solid"
       >
         ${msg('Logout')}
       </button>
@@ -265,11 +267,11 @@ export class BaseForm extends LitElement {
             <button
               .disabled=${this.submitting}
               type="submit"
-              class="form-submit h-10 inline-flex items-center justify-center gap-2 bg-green text-white px-2 rounded-md hover:opacity-80"
+              class="form-submit h-10 inline-flex text-sm items-center justify-center gap-2 bg-green text-white px-2 rounded-md hover:opacity-80 transition-all"
             >
               ${
                 this.submitting
-                  ? html` <icon-loading></icon-loading>`
+                  ? html`<icon-loading></icon-loading>`
                   : html`<i class="i-mingcute-send-line size-5"></i>`
               }
               ${msg('Submit')}
