@@ -3,6 +3,7 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { codeToHtml } from 'shiki/bundle/full';
 import baseStyles from './styles/base';
 import contentStyles from './styles/content.css?inline';
 import varStyles from './styles/var';
@@ -29,6 +30,47 @@ export class BaseCommentItem extends LitElement {
 
   @property({ type: String })
   content = '';
+
+  protected override firstUpdated() {
+    const codeElements = this.shadowRoot?.querySelectorAll('pre>code');
+    if (!codeElements?.length) return;
+
+    Promise.all(
+      Array.from(codeElements).map(async (codeblock) => {
+        const lang =
+          this.extractLanguageFromCodeElement(codeblock) || 'plaintext';
+        const content = codeblock.textContent || '';
+
+        try {
+          const html = await codeToHtml(content, {
+            lang,
+            theme: 'github-dark',
+          });
+
+          if (codeblock.parentElement) {
+            codeblock.parentElement.outerHTML = html;
+          }
+        } catch (error) {
+          console.error('Failed to highlight code:', error);
+        }
+      })
+    );
+  }
+
+  private extractLanguageFromCodeElement(codeElement: Element): string | null {
+    const supportedPrefixes = ['language-', 'lang-'];
+
+    const langClass = Array.from(codeElement.classList).find((className) =>
+      supportedPrefixes.some((prefix) => className.startsWith(prefix))
+    );
+
+    if (langClass) {
+      const prefix = supportedPrefixes.find((p) => langClass.startsWith(p));
+      return prefix ? langClass.substring(prefix.length) : null;
+    }
+
+    return null;
+  }
 
   override render() {
     return html`<div class="item ${this.breath ? 'item--animate-breath' : ''}">
