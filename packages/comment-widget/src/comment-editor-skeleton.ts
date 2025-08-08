@@ -5,10 +5,10 @@ import './emoji-button';
 export class CommentEditorSkeleton extends LitElement {
   protected override render() {
     return html`<div
-      class="border rounded-md border-solid border-gray-200 w-full"
+      class="border rounded-md border-solid border-muted-1 w-full"
     >
       <div class="animate-pulse p-4">
-        <div class="h-4 mt-1 mb-10px w-20 bg-gray-200 rounded"></div>
+        <div class="h-4 mt-1 mb-10px w-20 bg-muted-1 rounded"></div>
       </div>
       <div class="py-2.5 px-3 flex gap-1 m-0 items-center">
         ${repeat(
@@ -18,7 +18,7 @@ export class CommentEditorSkeleton extends LitElement {
               role="button"
               class="size-7 flex items-center justify-center cursor-pointer"
             >
-              <div class="size-5 animate-pulse bg-gray-200 rounded-md"></div>
+              <div class="size-5 animate-pulse bg-muted-1 rounded-md"></div>
             </div>
           `
         )}

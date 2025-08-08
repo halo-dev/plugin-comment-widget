@@ -156,13 +156,13 @@ export class BaseForm extends LitElement {
           : ''
       }
     </div>
-      <span class="form-account-name text-base text-gray-900 font-semibold">
+      <span class="form-account-name text-base text-text-1 font-semibold">
         ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
       </span>
       <button
         @click=${this.handleLogout}
         type="button"
-        class="form-logout text-xs text-gray-700 hover:text-gray-900 px-2 transition-all py-1 rounded-md border border-gray-100 opacity-90 hover:border-gray-200 hover:opacity-100 border-solid"
+        class="form-logout text-xs text-text-2 hover:text-text-1 px-2 transition-all py-1 rounded-md border border-muted-3 opacity-90 hover:border-muted-4 hover:opacity-100 border-solid"
       >
         ${msg('Logout')}
       </button>
@@ -224,7 +224,7 @@ export class BaseForm extends LitElement {
                 placeholder=${msg('Website')}
                 class="input"
               />
-              <a href=${this.loginUrl} rel="nofollow" class="form-login-link text-xs transition-all select-none">${msg('(Or login)')}</a>
+              <a href=${this.loginUrl} rel="nofollow" class="form-login-link text-text-2 hover:text-text-1 text-xs transition-all select-none">${msg('(Or login)')}</a>
             </div>`
             : ''
         }
@@ -267,7 +267,7 @@ export class BaseForm extends LitElement {
             <button
               .disabled=${this.submitting}
               type="submit"
-              class="form-submit h-10 inline-flex text-sm items-center justify-center gap-2 bg-green text-white px-2 rounded-md hover:opacity-80 transition-all"
+              class="form-submit h-12 text-sm inline-flex border border-primary-1 border-solid items-center justify-center gap-2 bg-primary-1 text-white px-3 rounded-md hover:opacity-80 transition-all"
             >
               ${
                 this.submitting

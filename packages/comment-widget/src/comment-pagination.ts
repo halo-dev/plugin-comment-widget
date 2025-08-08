@@ -59,7 +59,7 @@ export class CommentPagination extends LitElement {
         </li>`;
       } else {
         return html`<li>
-          <button class="pagination-button px-3.5 ${this.page === number ? 'bg-gray-100' : ''}" @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
+          <button class="pagination-button px-3.5 ${this.page === number ? 'bg-muted-3' : ''}" @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
             ${number}
           </button>
         </li>`;

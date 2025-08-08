@@ -92,12 +92,12 @@ export class BaseCommentItem extends LitElement {
               </a>`
               : html`<div class="item-author font-medium text-sm">${this.userDisplayName}</div>`
           }
-          <div class="item-meta-info text-xs text-gray-500" title=${formatDate(this.creationTime)}>
+          <div class="item-meta-info text-xs text-text-2" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </div>
           ${
             !this.approved
-              ? html`<div class="item-meta-info text-xs text-gray-500">${msg('Reviewing')}</div>`
+              ? html`<div class="item-meta-info text-xs text-text-2">${msg('Reviewing')}</div>`
               : ''
           }
         </div>

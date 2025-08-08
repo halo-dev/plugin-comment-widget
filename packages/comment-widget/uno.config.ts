@@ -1,18 +1,53 @@
-import { defineConfig, presetIcons, presetWind3 } from 'unocss';
+import { defineConfig, definePreset, presetIcons, presetWind3 } from 'unocss';
+
+const remRE = /(-?[.\d]+)rem/g;
+
+const presetRemToEm = definePreset(() => {
+  return {
+    name: '@unocss/preset-rem-to-em',
+    postprocess: (util) => {
+      util.entries.forEach((i) => {
+        const value = i[1];
+        if (typeof value === 'string' && remRE.test(value))
+          i[1] = value.replace(remRE, (_, p1) => `${p1}em`);
+      });
+    },
+  };
+});
+
 export default defineConfig({
-  presets: [presetWind3(), presetIcons()],
-  theme: {},
+  presets: [presetWind3(), presetIcons(), presetRemToEm()],
+  theme: {
+    colors: {
+      primary: {
+        1: 'var(--halo-cw-primary-1-color, #4CCBA0)',
+        2: 'var(--halo-cw-primary-2-color, #6EE7B7)',
+        3: 'var(--halo-cw-primary-3-color, #99F6E4)',
+      },
+      background: 'var(--halo-cw-background-color, transparent)',
+      text: {
+        1: 'var(--halo-cw-text-1-color, #111827)',
+        2: 'var(--halo-cw-text-2-color, #374151)',
+        3: 'var(--halo-cw-text-3-color, #6B7280)',
+      },
+      muted: {
+        1: 'var(--halo-cw-muted-1-color, #D1D5DB)',
+        2: 'var(--halo-cw-muted-2-color, #E5E7EB)',
+        3: 'var(--halo-cw-muted-3-color, #F3F4F6)',
+      },
+    },
+  },
   shortcuts: {
     input:
-      'px-2.5 py-0 rounded-md bg-transparent border h-10 border-gray-200 border-solid',
+      'px-3 py-0 text-sm rounded-md bg-transparent border h-12 border-muted-1 border-solid outline-none focus:border-primary-1 transition-all',
     'icon-button': 'inline-flex items-center gap-[0.1em] cursor-pointer',
     'icon-button-icon':
-      'inline-flex items-center justify-center rounded-full transition-all duration-150 p-2 group-hover:bg-[var(--component-comment-item-action-bg-color-hover)]',
+      'inline-flex items-center justify-center rounded-full transition-all duration-150 p-2 text-text-3 group-hover:bg-muted-3 group-hover:text-text-1',
     'icon-button-text':
-      'select-none text-xs text-[var(--base-info-color)] group-hover:text-[var(--component-comment-item-action-color-hover)]',
+      'select-none text-xs text-text-3 group-hover:text-text-1',
     'pagination-button':
-      'inline-flex items-center text-sm gap-1 hover:bg-gray-100 rounded-md py-1.5 px-2 transition-all text-gray-900 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
+      'inline-flex h-10 items-center text-sm gap-1 hover:bg-muted-3 rounded-md px-3 transition-all text-text-1 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
     avatar:
-      'rounded-full size-9 overflow-hidden inline-flex items-center justify-center bg-gray-100',
+      'rounded-full size-9 overflow-hidden inline-flex items-center justify-center bg-muted-2',
   },
 });

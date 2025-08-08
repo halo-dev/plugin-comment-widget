@@ -1,20 +1,15 @@
 /* forked from https://github.com/sindresorhus/github-markdown-css/blob/main/github-markdown.css */
 .markdown-body {
-  /* light */
   --focus-outlineColor: #0969da;
   --fgColor-accent: #0969da;
-  --bgColor-muted: #f6f8fa;
-  --bgColor-neutral-muted: #818b981f;
   --bgColor-attention-muted: #fff8c5;
-  --borderColor-default: #d1d9e0;
-  --borderColor-muted: #d1d9e0b3;
 }
 
 .markdown-body {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   margin: 0;
-  color: var(--base-color);
+  color: var(--halo-cw-text-1-color);
   font-family: var(--base-font-family);
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
@@ -44,7 +39,7 @@
 
 .markdown-body mark {
   background-color: var(--bgColor-attention-muted);
-  color: var(--base-color);
+  color: var(--halo-cw-text-1-color);
 }
 
 .markdown-body sub,
@@ -83,11 +78,11 @@
   box-sizing: content-box;
   overflow: hidden;
   background: transparent;
-  border-bottom: 1px solid var(--borderColor-muted);
+  border-bottom: 1px solid var(--halo-cw-muted-1-color);
   height: 0.25em;
   padding: 0;
   margin: 1.4em 0;
-  background-color: var(--borderColor-default);
+  background-color: var(--halo-cw-muted-1-color);
   border: 0;
 }
 
@@ -160,6 +155,14 @@
 .markdown-body ol ul ol,
 .markdown-body ol ol ol {
   list-style-type: lower-alpha;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
 }
 
 .markdown-body code {
@@ -253,7 +256,7 @@
   margin: 0;
   font-size: 85%;
   white-space: break-spaces;
-  background-color: var(--bgColor-neutral-muted);
+  background-color: var(--halo-cw-muted-1-color);
   border-radius: 6px;
 }
 

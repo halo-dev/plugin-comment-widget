@@ -175,7 +175,7 @@ export class EmojiButton extends LitElement {
         this.emojiLoading
           ? html`<icon-loading></icon-loading>`
           : html`<div
-            class="i-mdi-sticker-emoji size-5 text-gray-500 hover:text-gray-900"
+            class="i-mdi-sticker-emoji size-5 text-text-3 hover:text-text-1"
             @click=${this.handleOpenEmojiPicker}
           ></div>`
       }

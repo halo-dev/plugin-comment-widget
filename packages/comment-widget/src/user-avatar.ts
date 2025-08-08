@@ -82,7 +82,7 @@ export class UserAvatar extends LitElement {
     }
 
     return html`<div class="avatar">
-      <span class="avatar-placeholder text-sm font-medium text-gray-900 select-none">${this.getPlaceholderText()}</span>
+      <span class="avatar-placeholder text-sm font-medium text-text-1 select-none">${this.getPlaceholderText()}</span>
     </div>`;
   }
 

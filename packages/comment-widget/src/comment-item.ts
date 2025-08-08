@@ -121,7 +121,7 @@ export class CommentItem extends LitElement {
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
-        <div class="icon-button-icon ">
+        <div class="icon-button-icon">
         ${
           this.upvoted
             ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500"></i>`

@@ -149,7 +149,7 @@ export class CommentList extends LitElement {
         ? html` <loading-block></loading-block>`
         : html`
           <div class="comment-list-main mt-5">
-            <div class="comment-stats font-medium my-3 text-sm">
+            <div class="comment-stats font-medium my-3 text-sm text-text-1">
               <span>${msg(html`${this.comments.total} Comments`)}</span>
             </div>
 
