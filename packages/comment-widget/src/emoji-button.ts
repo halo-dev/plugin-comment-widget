@@ -8,6 +8,14 @@ import es from '@emoji-mart/data/i18n/es.json';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
+import {
+  autoUpdate,
+  computePosition,
+  flip,
+  offset,
+  type Placement,
+  shift,
+} from '@floating-ui/dom';
 import { msg } from '@lit/localize';
 import type { Picker } from 'emoji-mart';
 import { css, html, LitElement } from 'lit';
@@ -36,6 +44,12 @@ export class EmojiButton extends LitElement {
 
   emojiPickerWrapperRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
 
+  buttonRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
+
+  cleanupAutoUpdate: (() => void) | null = null;
+
+  placement: Placement = 'bottom';
+
   constructor() {
     super();
     this.emojiPickerVisible = false;
@@ -49,7 +63,15 @@ export class EmojiButton extends LitElement {
 
   override disconnectedCallback() {
     document.removeEventListener('click', this.handleClickOutside, true);
+    this.cleanupFloating();
     super.disconnectedCallback();
+  }
+
+  cleanupFloating() {
+    if (this.cleanupAutoUpdate) {
+      this.cleanupAutoUpdate();
+      this.cleanupAutoUpdate = null;
+    }
   }
 
   handleClickOutside(event: Event) {
@@ -61,11 +83,13 @@ export class EmojiButton extends LitElement {
   async handleOpenEmojiPicker() {
     if (this.emojiPickerVisible) {
       this.emojiPickerVisible = false;
+      this.cleanupFloating();
       return;
     }
 
     if (this.emojiPickerWrapperRef.value?.children.length) {
       this.emojiPickerVisible = true;
+      this.setupFloating();
       return;
     }
 
@@ -95,6 +119,50 @@ export class EmojiButton extends LitElement {
 
     this.emojiPickerVisible = true;
     this.emojiLoading = false;
+    this.setupFloating();
+  }
+
+  setupFloating() {
+    if (!this.buttonRef.value || !this.emojiPickerWrapperRef.value) return;
+
+    this.cleanupFloating();
+
+    if (this.emojiPickerWrapperRef.value) {
+      this.emojiPickerWrapperRef.value.style.zIndex = '1000';
+    }
+
+    this.cleanupAutoUpdate = autoUpdate(
+      this.buttonRef.value,
+      this.emojiPickerWrapperRef.value,
+      () => this.updatePosition()
+    );
+
+    this.updatePosition();
+  }
+
+  async updatePosition() {
+    const reference = this.buttonRef.value;
+    const floating = this.emojiPickerWrapperRef.value;
+
+    if (!reference || !floating) return;
+
+    const { x, y } = await computePosition(reference, floating, {
+      placement: this.placement,
+      middleware: [
+        offset({
+          mainAxis: 8,
+          crossAxis: 0,
+          alignmentAxis: 0,
+        }),
+        flip(),
+        shift({ padding: 8 }),
+      ],
+    });
+
+    Object.assign(floating.style, {
+      left: `${x}px`,
+      top: `${y}px`,
+    });
   }
 
   override render() {
@@ -102,6 +170,7 @@ export class EmojiButton extends LitElement {
       role="button"
       class="relative size-7 flex items-center justify-center cursor-pointer"
       aria-label=${msg('Select emoticon')}
+      ${ref(this.buttonRef)}
     >
       ${
         this.emojiLoading
@@ -111,12 +180,12 @@ export class EmojiButton extends LitElement {
             @click=${this.handleOpenEmojiPicker}
           ></div>`
       }
-      <div
-        class="form__emoji-panel"
-        ?hidden=${!this.emojiPickerVisible}
-        ${ref(this.emojiPickerWrapperRef)}
-      ></div>
-    </div>`;
+    </div>
+    <div
+      class="form__emoji-panel"
+      ?hidden=${!this.emojiPickerVisible}
+      ${ref(this.emojiPickerWrapperRef)}
+    ></div>`;
   }
 
   static override styles = [
@@ -140,19 +209,14 @@ export class EmojiButton extends LitElement {
 
       .form__emoji-panel {
         position: absolute;
-        top: 2em;
-        right: 0;
         box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
         border-radius: 0.875em;
         overflow: hidden;
         animation: fadeInUp 0.3s both;
+        z-index: 1000;
       }
+      
 
-      @media (max-width: 640px) {
-        .form__emoji-panel {
-          right: -7.8em;
-        }
-      }
 
       @keyframes fadeInUp {
         from {

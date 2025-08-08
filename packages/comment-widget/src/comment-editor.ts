@@ -152,7 +152,7 @@ export class CommentEditor extends LitElement {
           id="editor-container"
           class="p-4 markdown-body !bg-transparent"
         ></div>
-        <ul class="list-none p-2.5 flex gap-1 m-0 items-center">
+        <ul class="list-none p-2.5 flex gap-1 m-0 items-center overflow-x-auto">
           ${repeat(actionItems, (item) =>
             this.renderActionItem(item, this.editor)
           )}
