@@ -62,7 +62,7 @@ export class BaseCommentItem extends LitElement {
         </div>
 
         <div class="item__content markdown-body">
-          <div><slot name="pre-content"></slot>${unsafeHTML(this.content)}</div>
+          <slot name="pre-content"></slot>${unsafeHTML(this.content)}
         </div>
 
         <div class="item__actions">
@@ -85,8 +85,14 @@ export class BaseCommentItem extends LitElement {
         padding: 1em 0;
       }
 
+      .item__avatar {
+        flex: none;
+      }
+
       .item__main {
-        flex: 1;
+        flex: 1 1 auto;
+        min-width: 0;
+        width: 100%;
       }
 
       .item__meta {
@@ -109,13 +115,6 @@ export class BaseCommentItem extends LitElement {
 
       .item__content {
         margin-top: 0.5em;
-      }
-
-      .item__content pre {
-        color: var(--base-color);
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-        word-break: break-all;
       }
 
       .item__actions {
