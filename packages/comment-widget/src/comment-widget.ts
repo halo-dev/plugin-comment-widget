@@ -30,6 +30,7 @@ import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 import './comment-list';
 import { ofetch } from 'ofetch';
+import './comment-editor-skeleton';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -75,7 +76,7 @@ export class CommentWidget extends LitElement {
     return html` <div class="comment-widget">
       ${
         !this.isInitialized
-          ? html`<loading-block></loading-block>`
+          ? html`<comment-editor-skeleton></comment-editor-skeleton>`
           : html`
             <comment-form></comment-form>
             <comment-list></comment-list>

@@ -4,9 +4,8 @@ import { css, html, LitElement, type PropertyValues, unsafeCSS } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
-import { CharacterCount } from '@tiptap/extensions';
-import CodeBlockShiki from 'tiptap-extension-code-block-shiki';
 import contentStyles from './styles/content.css?inline';
+import './comment-editor-skeleton';
 
 interface ActionItem {
   name?: string;
@@ -87,6 +86,10 @@ export class CommentEditor extends LitElement {
     const { Editor } = await import('@tiptap/core');
     const { Placeholder } = await import('@tiptap/extensions');
     const { StarterKit } = await import('@tiptap/starter-kit');
+    const { CodeBlockShiki } = await import(
+      'tiptap-extension-code-block-shiki'
+    );
+    const { CharacterCount } = await import('@tiptap/extensions');
 
     this.loading = false;
 
@@ -139,7 +142,7 @@ export class CommentEditor extends LitElement {
   }
 
   protected override render() {
-    return html` ${this.renderSkeleton()}
+    return html` ${this.loading ? html`<comment-editor-skeleton></comment-editor-skeleton>` : ''}
       <div
         class="border rounded-md border-solid border-[var(--component-form-input-border-color)] focus-within:border-[var(--component-form-input-border-color-focus)] transition-all"
         ?hidden=${this.loading}
@@ -158,30 +161,6 @@ export class CommentEditor extends LitElement {
           </li>
         </ul>
       </div>`;
-  }
-
-  private renderSkeleton() {
-    return html`<div
-      class="border rounded-md border-solid border-gray-200"
-      ?hidden=${!this.loading}
-    >
-      <div class="animate-pulse p-4">
-        <div class="h-4 my-1 w-20 bg-gray-200 rounded"></div>
-      </div>
-      <div class="py-2.5 px-3 flex gap-1 m-0 items-center">
-        ${repeat(
-          Array(7),
-          () => html`
-            <div
-              role="button"
-              class="size-7 flex items-center justify-center cursor-pointer"
-            >
-              <div class="size-5 animate-pulse bg-gray-200 rounded-md"></div>
-            </div>
-          `
-        )}
-      </div>
-    </div>`;
   }
 
   private renderActionItem(item: ActionItem, editor?: Editor) {
