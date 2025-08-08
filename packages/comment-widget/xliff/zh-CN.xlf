@@ -114,6 +114,34 @@
   <source>Please enter content</source>
   <target>请输入内容</target>
 </trans-unit>
+<trans-unit id="sf7c0eba7c822e3d6">
+  <source>Bold</source>
+  <target>粗体</target>
+</trans-unit>
+<trans-unit id="s523eb9043213ff0d">
+  <source>Italic</source>
+  <target>斜体</target>
+</trans-unit>
+<trans-unit id="sb206d700d26b14ff">
+  <source>Underline</source>
+  <target>下划线</target>
+</trans-unit>
+<trans-unit id="s58a3c1ecd4dd06cf">
+  <source>Strike</source>
+  <target>删除线</target>
+</trans-unit>
+<trans-unit id="s3643189d1abbb7f4">
+  <source>Code</source>
+  <target>代码</target>
+</trans-unit>
+<trans-unit id="s35c3125c7750681e">
+  <source>Blockquote</source>
+  <target>引用</target>
+</trans-unit>
+<trans-unit id="s6cb61eeccda272d5">
+  <source>Code Block</source>
+  <target>代码块</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

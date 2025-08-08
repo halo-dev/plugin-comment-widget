@@ -9,6 +9,8 @@ import CodeBlockShiki from 'tiptap-extension-code-block-shiki';
 import contentStyles from './styles/content.css?inline';
 
 interface ActionItem {
+  name?: string;
+  displayName?: () => string;
   type: 'action' | 'separator';
   icon?: string;
   run?: (editor?: Editor) => void;
@@ -16,26 +18,36 @@ interface ActionItem {
 
 const actionItems: ActionItem[] = [
   {
+    name: 'bold',
+    displayName: () => msg('Bold'),
     type: 'action',
     icon: 'i-mingcute-bold-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleBold().run(),
   },
   {
+    name: 'italic',
+    displayName: () => msg('Italic'),
     type: 'action',
     icon: 'i-mingcute-italic-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleItalic().run(),
   },
   {
+    name: 'underline',
+    displayName: () => msg('Underline'),
     type: 'action',
     icon: 'i-mingcute-underline-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleUnderline().run(),
   },
   {
+    name: 'strike',
+    displayName: () => msg('Strike'),
     type: 'action',
     icon: 'i-mingcute-strikethrough-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleStrike().run(),
   },
   {
+    name: 'code',
+    displayName: () => msg('Code'),
     type: 'action',
     icon: 'i-mingcute-code-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleCode().run(),
@@ -44,11 +56,15 @@ const actionItems: ActionItem[] = [
     type: 'separator',
   },
   {
+    name: 'blockquote',
+    displayName: () => msg('Blockquote'),
     type: 'action',
     icon: 'i-mingcute-quote-left-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleBlockquote().run(),
   },
   {
+    name: 'codeBlock',
+    displayName: () => msg('Code Block'),
     type: 'action',
     icon: 'i-mingcute-code-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleCodeBlock().run(),
@@ -94,6 +110,15 @@ export class CommentEditor extends LitElement {
 
         CharacterCount,
       ],
+      onUpdate: () => {
+        this.requestUpdate();
+      },
+      onSelectionUpdate: () => {
+        this.requestUpdate();
+      },
+      onTransaction: () => {
+        this.requestUpdate();
+      },
     });
   }
 
@@ -161,18 +186,21 @@ export class CommentEditor extends LitElement {
 
   private renderActionItem(item: ActionItem, editor?: Editor) {
     if (item.type === 'separator') {
-      return html`<li class="flex items-center">
+      return html`<li class="flex items-center" aria-hidden="true">
         <div class="w-1px bg-gray-100 rounded-full h-3"></div>
       </li>`;
     }
 
     if (item.type === 'action') {
+      const isActive = item.name ? editor?.isActive(item.name) : false;
       return html`
         <li>
           <div
+            aria-label=${item.displayName?.()}
+            title=${item.displayName?.()}
             @click=${() => item.run?.(editor)}
             role="button"
-            class="size-7 hover:bg-gray-100 text-gray-500 hover:text-gray-900 rounded-md flex items-center justify-center cursor-pointer"
+            class="size-7 hover:bg-gray-100 active:bg-gray-200 ${isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900'} rounded-md flex items-center justify-center cursor-pointer"
           >
             <i class="size-5 ${item.icon}"></i>
           </div>
