@@ -27,16 +27,19 @@
     "var.css"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w",
-    "locale:extract": "lit-localize extract",
-    "locale:build": "lit-localize build"
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "locale:build": "lit-localize build",
+    "locale:extract": "lit-localize extract"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
     "@halo-dev/api-client": "^2.21.1",
     "@lit/context": "^1.1.6",
     "@lit/localize": "^0.12.2",
+    "@tiptap/core": "^3.0.9",
+    "@tiptap/pm": "^3.0.9",
+    "@tiptap/starter-kit": "^3.0.9",
     "dayjs": "^1.11.13",
     "emoji-mart": "^5.6.0",
     "es-toolkit": "^1.39.8",
@@ -44,7 +47,9 @@
     "lit": "^3.3.1"
   },
   "devDependencies": {
+    "@iconify/json": "^2.2.367",
     "@lit/localize-tools": "^0.8.0",
-    "lit-analyzer": "^2.0.3"
+    "lit-analyzer": "^2.0.3",
+    "unocss": "^66.4.1"
   }
 }

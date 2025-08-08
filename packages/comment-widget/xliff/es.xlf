@@ -110,6 +110,38 @@
   <source>Click OK to jump to the logout page, Please make sure the content being edited has been saved.</source>
   <target>Haga clic en OK para ir a la página de cierre de sesión, Por favor, asegúrese de que el contenido editado haya sido guardado.</target>
 </trans-unit>
+<trans-unit id="s26e4d65f2801ac9c">
+  <source>Please enter content</source>
+  <target>Por favor, ingrese el contenido</target>
+</trans-unit>
+<trans-unit id="sf7c0eba7c822e3d6">
+  <source>Bold</source>
+  <target>Negrita</target>
+</trans-unit>
+<trans-unit id="s523eb9043213ff0d">
+  <source>Italic</source>
+  <target>Itálica</target>
+</trans-unit>
+<trans-unit id="sb206d700d26b14ff">
+  <source>Underline</source>
+  <target>Subrayado</target>
+</trans-unit>
+<trans-unit id="s58a3c1ecd4dd06cf">
+  <source>Strike</source>
+  <target>Tachado</target>
+</trans-unit>
+<trans-unit id="s3643189d1abbb7f4">
+  <source>Code</source>
+  <target>Código</target>
+</trans-unit>
+<trans-unit id="s35c3125c7750681e">
+  <source>Blockquote</source>
+  <target>Cita</target>
+</trans-unit>
+<trans-unit id="s6cb61eeccda272d5">
+  <source>Code Block</source>
+  <target>Bloque de código</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

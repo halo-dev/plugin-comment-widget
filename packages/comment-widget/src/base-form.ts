@@ -14,13 +14,14 @@ import {
   nameContext,
   toastContext,
 } from './context';
-import './emoji-button';
 import './icons/icon-loading';
 import { msg } from '@lit/localize';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
+import './comment-editor';
+import type { CommentEditor } from './comment-editor';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -63,6 +64,8 @@ export class BaseForm extends LitElement {
   toastManager: ToastManager | undefined;
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
+
+  editorRef: Ref<CommentEditor> = createRef<CommentEditor>();
 
   get customAccount() {
     return JSON.parse(
@@ -168,14 +171,6 @@ export class BaseForm extends LitElement {
     target.style.height = `${target.scrollHeight}px`;
   }
 
-  onEmojiSelect(e: CustomEvent) {
-    const data = e.detail;
-    if (this.textareaRef.value) {
-      this.textareaRef.value.value += data.native;
-      this.textareaRef.value.focus();
-    }
-  }
-
   onKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       const form = this.shadowRoot?.querySelector('form');
@@ -197,15 +192,7 @@ export class BaseForm extends LitElement {
   override render() {
     return html`
       <form class="form" @submit="${this.onSubmit}">
-        <textarea
-          class="form__editor"
-          ${ref(this.textareaRef)}
-          placeholder=${msg('Write a comment')}
-          rows="4"
-          name="content"
-          required
-          @input=${this.onContentInput}
-        ></textarea>
+        <comment-editor ${ref(this.editorRef)}></comment-editor>
 
         ${
           !this.currentUser && this.allowAnonymousComments
@@ -269,7 +256,6 @@ export class BaseForm extends LitElement {
                 : ''
             }
 
-            <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
             <button
               .disabled=${this.submitting}
               type="submit"
@@ -299,8 +285,21 @@ export class BaseForm extends LitElement {
   }
 
   private debouncedSubmit = debounce((data: Record<string, unknown>) => {
+    const content = this.editorRef.value?.editor?.getHTML() || '';
+    const characterCount =
+      this.editorRef.value?.editor?.storage.characterCount.characters();
+
+    if (!characterCount) {
+      this.toastManager?.warn(msg('Please enter content'));
+      this.editorRef.value?.setFocus();
+      return;
+    }
+
     const event = new CustomEvent('submit', {
-      detail: data,
+      detail: {
+        ...data,
+        content,
+      },
     });
     this.dispatchEvent(event);
   }, 300);
@@ -327,10 +326,12 @@ export class BaseForm extends LitElement {
   resetForm() {
     const form = this.shadowRoot?.querySelector('form');
     form?.reset();
+    this.editorRef.value?.reset();
   }
 
   setFocus() {
     this.textareaRef.value?.focus();
+    this.editorRef.value?.setFocus();
   }
 
   static override styles = [

@@ -1,5 +1,4 @@
 import './icons/icon-loading';
-import './icons/icon-emoji';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import en from '@emoji-mart/data/i18n/en.json';
@@ -10,7 +9,7 @@ import es from '@emoji-mart/data/i18n/es.json';
 //@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
 import { msg } from '@lit/localize';
-import { Picker } from 'emoji-mart';
+import type { Picker } from 'emoji-mart';
 import { css, html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -72,6 +71,10 @@ export class EmojiButton extends LitElement {
 
     this.emojiLoading = true;
 
+    const { Picker } = await import(
+      /* webpackChunkName: "emoji-mart" */ 'emoji-mart'
+    );
+
     const { default: data } = await import(
       /* webpackChunkName: "emoji-mart-data" */ '@emoji-mart/data'
     );
@@ -95,22 +98,25 @@ export class EmojiButton extends LitElement {
   }
 
   override render() {
-    return html`<button
-      class="emoji-button"
-      type="button"
+    return html`<div
+      role="button"
+      class="relative size-7 flex items-center justify-center cursor-pointer"
       aria-label=${msg('Select emoticon')}
     >
       ${
         this.emojiLoading
           ? html`<icon-loading></icon-loading>`
-          : html`<icon-emoji @click=${this.handleOpenEmojiPicker}></icon-emoji>`
+          : html`<div
+            class="i-mdi-sticker-emoji size-5 text-gray-500 hover:text-gray-900"
+            @click=${this.handleOpenEmojiPicker}
+          ></div>`
       }
       <div
         class="form__emoji-panel"
-        style="display: ${this.emojiPickerVisible ? 'block' : 'none'}"
+        ?hidden=${!this.emojiPickerVisible}
         ${ref(this.emojiPickerWrapperRef)}
       ></div>
-    </button>`;
+    </div>`;
   }
 
   static override styles = [
@@ -121,6 +127,8 @@ export class EmojiButton extends LitElement {
         display: inline-flex;
       }
 
+      @unocss-placeholder;
+
       em-emoji-picker {
         --rgb-color: var(--component-emoji-picker-rgb-color);
         --rgb-accent: var(--component-emoji-picker-rgb-accent);
@@ -128,16 +136,6 @@ export class EmojiButton extends LitElement {
         --rgb-input: var(--component-emoji-picker-rgb-input);
         --color-border: var(--component-emoji-picker-color-border);
         --color-border-over: var(--component-emoji-picker-color-border-over);
-      }
-
-      .emoji-button {
-        color: var(--base-color);
-        display: inline-flex;
-        position: relative;
-      }
-
-      .emoji-button:hover icon-emoji {
-        opacity: 0.8;
       }
 
       .form__emoji-panel {

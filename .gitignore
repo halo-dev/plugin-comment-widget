@@ -62,9 +62,6 @@ nbdist/
 *.tar.gz
 *.rar
 
-### VSCode
-.vscode
-
 ### Local file
 application-local.yml
 application-local.yaml
