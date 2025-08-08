@@ -24,28 +24,8 @@ export class LitToast extends LitElement {
     >
       ${
         this.type === 'success'
-          ? html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-            <g
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            >
-              <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0" />
-              <path d="m9 12l2 2l4-4" />
-            </g>
-          </svg>`
-          : html`<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-            <path
-              fill="none"
-              stroke="#fff"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0m9-3v4m0 3v.01"
-            />
-          </svg>`
+          ? html`<i class="i-tabler:circle-check size-4 text-white"></i>`
+          : html`<i class="i-tabler:alert-circle size-4 text-white"></i>`
       } <span>${this.message}</span>
     </div>`;
   }
@@ -111,6 +91,8 @@ export class LitToast extends LitElement {
           opacity: 0;
         }
       }
+
+      @unocss-placeholder;
     `,
   ];
 }

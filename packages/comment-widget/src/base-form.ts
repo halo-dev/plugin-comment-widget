@@ -268,17 +268,7 @@ export class BaseForm extends LitElement {
               ${
                 this.submitting
                   ? html` <icon-loading></icon-loading>`
-                  : html` <svg
-                    viewBox="0 0 24 24"
-                    width="1.25em"
-                    height="1.25em"
-                    class="h-full w-full"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M8 7.71L18 12L8 16.29v-3.34l7.14-.95L8 11.05V7.71M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8Z"
-                    ></path>
-                  </svg>`
+                  : html`<i class="i-mingcute-send-line size-5"></i>`
               }
               ${msg('Submit')}
             </button>
@@ -342,6 +332,7 @@ export class BaseForm extends LitElement {
     varStyles,
     baseStyles,
     css`
+
       .form {
         width: 100%;
         display: flex;
@@ -502,6 +493,7 @@ export class BaseForm extends LitElement {
         cursor: not-allowed;
         opacity: 0.5;
       }
+      @unocss-placeholder;
     `,
   ];
 }

@@ -130,42 +130,8 @@ export class CommentItem extends LitElement {
       >
         ${
           this.upvoted
-            ? html`<svg
-              slot="icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-            >
-              <g
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
-                <path d="M0 0h24v24H0z" />
-                <path
-                  fill="red"
-                  d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037.033l.034-.03a6 6 0 0 1 4.733-1.44l.246.036a6 6 0 0 1 3.364 10.008l-.18.185l-.048.041l-7.45 7.379a1 1 0 0 1-1.313.082l-.094-.082l-7.493-7.422A6 6 0 0 1 6.979 3.074z"
-                />
-              </g>
-            </svg>`
-            : html`<svg
-              slot="icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19.5 12.572L12 20l-7.5-7.428A5 5 0 1 1 12 6.006a5 5 0 1 1 7.5 6.572"
-              />
-            </svg>`
+            ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500"></i>`
+            : html`<i slot="icon" class="i-mingcute-heart-line size-4"></i>`
         }
       </base-comment-item-action>
 
@@ -178,22 +144,7 @@ export class CommentItem extends LitElement {
             .text="${`${this.comment?.status?.visibleReplyCount || 0}`}"
             @click="${this.handleShowReplies}"
           >
-            <svg
-              slot="icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m3 20l1.3-3.9C1.976 12.663 2.874 8.228 6.4 5.726c3.526-2.501 8.59-2.296 11.845.48c3.255 2.777 3.695 7.266 1.029 10.501C16.608 19.942 11.659 20.922 7.7 19L3 20"
-              />
-            </svg>
+            <i slot="icon" class="i-tabler:message-circle size-4"></i>
           </base-comment-item-action>`
       }
       ${
@@ -203,22 +154,7 @@ export class CommentItem extends LitElement {
             .text=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}
             @click="${this.handleToggleReplyForm}"
           >
-            <svg
-              slot="icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12.007 19.98A9.869 9.869 0 0 1 7.7 19L3 20l1.3-3.9C1.976 12.663 2.874 8.228 6.4 5.726c3.526-2.501 8.59-2.296 11.845.48c1.992 1.7 2.93 4.04 2.747 6.34M16 19h6m-3-3v6"
-              />
-            </svg>
+            <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
           </base-comment-item-action>`
           : ''
       }
@@ -251,6 +187,7 @@ export class CommentItem extends LitElement {
     varStyles,
     baseStyles,
     css`
+
       .item__action--upvote {
         margin-left: -0.5em;
       }
@@ -258,6 +195,7 @@ export class CommentItem extends LitElement {
       .item__reply-form {
         margin-top: 0.5em;
       }
+      @unocss-placeholder;
     `,
   ];
 }
