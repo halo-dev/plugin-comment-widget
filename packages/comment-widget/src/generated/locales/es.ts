@@ -16,6 +16,7 @@
 's0fbf6dc6a1966408': `Siguiente`,
 's1c6fefb092506753': `Error al cargar la lista de comentarios, por favor intente más tarde`,
 's1e3e30a26025484c': `Error al cargar la lista de respuestas, por favor intente más tarde`,
+'s26e4d65f2801ac9c': `Por favor, ingrese el contenido`,
 's299b10f3a58a09fd': `Haga clic en OK para ir a la página de cierre de sesión, Por favor, asegúrese de que el contenido editado haya sido guardado.`,
 's3fb33d17bad61aa9': `Comentario enviado con éxito, pendiente de revisión`,
 's4c0e15f9073382e6': `Error al obtener el código de verificación`,

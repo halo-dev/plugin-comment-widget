@@ -286,6 +286,14 @@ export class BaseForm extends LitElement {
 
   private debouncedSubmit = debounce((data: Record<string, unknown>) => {
     const content = this.editorRef.value?.editor?.getHTML() || '';
+    const characterCount =
+      this.editorRef.value?.editor?.storage.characterCount.characters();
+
+    if (!characterCount) {
+      this.toastManager?.warn(msg('Please enter content'));
+      this.editorRef.value?.setFocus();
+      return;
+    }
 
     const event = new CustomEvent('submit', {
       detail: {

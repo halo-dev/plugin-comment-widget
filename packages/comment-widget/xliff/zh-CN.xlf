@@ -110,6 +110,10 @@
   <source>Click OK to jump to the logout page, Please make sure the content being edited has been saved.</source>
   <target>点击确定将跳转至退出登录页面，请确保正在编辑的内容已保存。</target>
 </trans-unit>
+<trans-unit id="s26e4d65f2801ac9c">
+  <source>Please enter content</source>
+  <target>请输入内容</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -4,6 +4,7 @@ import { css, html, LitElement, type PropertyValues, unsafeCSS } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
+import { CharacterCount } from '@tiptap/extensions';
 import CodeBlockShiki from 'tiptap-extension-code-block-shiki';
 import contentStyles from './styles/content.css?inline';
 
@@ -90,6 +91,8 @@ export class CommentEditor extends LitElement {
         CodeBlockShiki.configure({
           defaultTheme: 'github-dark',
         }),
+
+        CharacterCount,
       ],
     });
   }

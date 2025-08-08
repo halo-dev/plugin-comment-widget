@@ -110,6 +110,10 @@
   <source>Click OK to jump to the logout page, Please make sure the content being edited has been saved.</source>
   <target>Haga clic en OK para ir a la página de cierre de sesión, Por favor, asegúrese de que el contenido editado haya sido guardado.</target>
 </trans-unit>
+<trans-unit id="s26e4d65f2801ac9c">
+  <source>Please enter content</source>
+  <target>Por favor, ingrese el contenido</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
