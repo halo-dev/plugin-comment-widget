@@ -8,7 +8,7 @@ export class CommentEditorSkeleton extends LitElement {
       class="border rounded-md border-solid border-gray-200"
     >
       <div class="animate-pulse p-4">
-        <div class="h-4 my-1 w-20 bg-gray-200 rounded"></div>
+        <div class="h-4 mt-1 mb-14px w-20 bg-gray-200 rounded"></div>
       </div>
       <div class="py-2.5 px-3 flex gap-1 m-0 items-center">
         ${repeat(
