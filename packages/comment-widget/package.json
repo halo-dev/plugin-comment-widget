@@ -38,6 +38,7 @@
     "@lit/context": "^1.1.6",
     "@lit/localize": "^0.12.2",
     "@tiptap/core": "^3.0.9",
+    "@tiptap/extensions": "^3.0.9",
     "@tiptap/pm": "^3.0.9",
     "@tiptap/starter-kit": "^3.0.9",
     "dayjs": "^1.11.13",
@@ -45,7 +46,8 @@
     "es-toolkit": "^1.39.8",
     "javascript-time-ago": "^2.5.11",
     "lit": "^3.3.1",
-    "ofetch": "^1.4.1"
+    "ofetch": "^1.4.1",
+    "tiptap-extension-code-block-shiki": "file:lib/tiptap-extension-code-block-shiki-0.5.1.tgz"
   },
   "devDependencies": {
     "@iconify/json": "^2.2.367",

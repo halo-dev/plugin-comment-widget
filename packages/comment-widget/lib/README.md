@@ -1,0 +1,1 @@
+Temporarily modify the tiptap-extension-code-block-shiki library and manually package it, while waiting for https://github.com/timomeh/tiptap-extension-code-block-shiki/pull/10 to be merged and a new version to be released.

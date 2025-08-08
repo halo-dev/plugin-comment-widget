@@ -390,9 +390,6 @@
   padding: var(--base-size-16);
   overflow: auto;
   font-size: 85%;
-  line-height: 1.45;
-  color: var(--fgColor-default);
-  background-color: var(--bgColor-muted);
   border-radius: 6px;
 }
 

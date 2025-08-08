@@ -11,15 +11,9 @@ importers:
 
   .:
     dependencies:
-      '@tiptap/extensions':
-        specifier: ^3.0.9
-        version: 3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)
       shiki:
         specifier: ^3.9.2
         version: 3.9.2
-      tiptap-extension-code-block-shiki:
-        specifier: ^0.5.1
-        version: 0.5.1(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/extension-code-block@3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)(shiki@3.9.2)
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.1.2
@@ -63,6 +57,9 @@ importers:
       '@tiptap/core':
         specifier: ^3.0.9
         version: 3.0.9(@tiptap/pm@3.0.9)
+      '@tiptap/extensions':
+        specifier: ^3.0.9
+        version: 3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)
       '@tiptap/pm':
         specifier: ^3.0.9
         version: 3.0.9
@@ -87,6 +84,9 @@ importers:
       ofetch:
         specifier: ^1.4.1
         version: 1.4.1
+      tiptap-extension-code-block-shiki:
+        specifier: file:lib/tiptap-extension-code-block-shiki-0.5.1.tgz
+        version: file:packages/comment-widget/lib/tiptap-extension-code-block-shiki-0.5.1.tgz(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/extension-code-block@3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)(shiki@3.9.2)
     devDependencies:
       '@iconify/json':
         specifier: ^2.2.367
@@ -2252,8 +2252,9 @@ packages:
     resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
     engines: {node: '>=12.0.0'}
 
-  tiptap-extension-code-block-shiki@0.5.1:
-    resolution: {integrity: sha512-8KAH5vWve5dzToOpH2R3lVyMWihNBfzI4V9HwFxif7yCTWrSA+7SjOWoDIPTHMzz4UcLhgsH6LeQni9M4RmreA==}
+  tiptap-extension-code-block-shiki@file:packages/comment-widget/lib/tiptap-extension-code-block-shiki-0.5.1.tgz:
+    resolution: {integrity: sha512-KY0Brz+VMdy6ltESKHX3YnNOv4NrBaXjelUt5OgIkVeTjpZA5wxbtR4acumcx1QeSC0SbSc6uwTyoO9bWhACjw==, tarball: file:packages/comment-widget/lib/tiptap-extension-code-block-shiki-0.5.1.tgz}
+    version: 0.5.1
     peerDependencies:
       '@tiptap/core': ^2.3.0
       '@tiptap/extension-code-block': ^2.3.0
@@ -4626,7 +4627,7 @@ snapshots:
       fdir: 6.4.6(picomatch@4.0.3)
       picomatch: 4.0.3
 
-  tiptap-extension-code-block-shiki@0.5.1(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/extension-code-block@3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)(shiki@3.9.2):
+  tiptap-extension-code-block-shiki@file:packages/comment-widget/lib/tiptap-extension-code-block-shiki-0.5.1.tgz(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/extension-code-block@3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)(shiki@3.9.2):
     dependencies:
       '@tiptap/core': 3.0.9(@tiptap/pm@3.0.9)
       '@tiptap/extension-code-block': 3.0.9(@tiptap/core@3.0.9(@tiptap/pm@3.0.9))(@tiptap/pm@3.0.9)
