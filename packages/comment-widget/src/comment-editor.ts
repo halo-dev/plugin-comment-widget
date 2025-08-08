@@ -4,8 +4,8 @@ import { css, html, LitElement, type PropertyValues, unsafeCSS } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
-import contentStyles from 'github-markdown-css/github-markdown-light.css?inline';
 import CodeBlockShiki from 'tiptap-extension-code-block-shiki';
+import contentStyles from './styles/content.css?inline';
 
 interface ActionItem {
   type: 'action' | 'separator';

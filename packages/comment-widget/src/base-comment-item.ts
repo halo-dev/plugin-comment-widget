@@ -1,10 +1,10 @@
 import './user-avatar';
 import { msg } from '@lit/localize';
-import contentStyles from 'github-markdown-css/github-markdown-light.css?inline';
 import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import baseStyles from './styles/base';
+import contentStyles from './styles/content.css?inline';
 import varStyles from './styles/var';
 import { formatDate, timeAgo } from './utils/date';
 
