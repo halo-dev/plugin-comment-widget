@@ -53,6 +53,7 @@
   "devDependencies": {
     "@iconify/json": "^2.2.367",
     "@lit/localize-tools": "^0.8.0",
+    "@unocss/reset": "^66.4.2",
     "lit-analyzer": "^2.0.3",
     "unocss": "^66.4.1"
   }

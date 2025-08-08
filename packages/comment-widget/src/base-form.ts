@@ -18,7 +18,6 @@ import './icons/icon-loading';
 import { msg } from '@lit/localize';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 import './comment-editor';
 import { ofetch } from 'ofetch';
@@ -195,18 +194,18 @@ export class BaseForm extends LitElement {
 
   override render() {
     return html`
-      <form class="form" @submit="${this.onSubmit}">
+      <form class="form w-full flex flex-col gap-4" @submit="${this.onSubmit}">
         <comment-editor ${ref(this.editorRef)}></comment-editor>
-
         ${
           !this.currentUser && this.allowAnonymousComments
-            ? html`<div class="form__anonymous-inputs">
+            ? html`<div class="form-inputs grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
               <input
                 name="displayName"
                 value=${this.customAccount.displayName}
                 type="text"
                 placeholder=${msg('Nicename')}
                 required
+                class="input"
               />
               <input
                 name="email"
@@ -214,14 +213,16 @@ export class BaseForm extends LitElement {
                 type="email"
                 placeholder=${msg('Email')}
                 required
+                class="input"
               />
               <input
                 name="website"
                 value=${this.customAccount.website}
                 type="url"
                 placeholder=${msg('Website')}
+                class="input"
               />
-              <a href=${this.loginUrl} rel="nofollow">${msg('(Or login)')}</a>
+              <a href=${this.loginUrl} rel="nofollow" class="form-login-link text-xs transition-all select-none">${msg('(Or login)')}</a>
             </div>`
             : ''
         }
@@ -239,21 +240,22 @@ export class BaseForm extends LitElement {
               </button> `
               : ''
           }
-          <div class="form__actions">
+          <div class="form-actions justify-end flex gap-2 flex-wrap items-center">
             ${
               this.showCaptcha && this.captcha
                 ? html`
-                  <div class="form__action--captcha">
-                    <input
-                      name="captchaCode"
-                      type="text"
-                      placeholder=${msg('Please enter the verification code')}
-                    />
+                  <div class="form-captcha gap-2 flex items-center">
                     <img
                       @click=${this.handleFetchCaptcha}
                       src="${this.captcha}"
                       alt="captcha"
-                      width="100%"
+                      class="h-10 rounded-md border border-gray-100 border-solid"
+                    />
+                    <input
+                      name="captchaCode"
+                      type="text"
+                      placeholder=${msg('Please enter the verification code')}
+                      class="input "
                     />
                   </div>
                 `
@@ -263,7 +265,7 @@ export class BaseForm extends LitElement {
             <button
               .disabled=${this.submitting}
               type="submit"
-              class="form__button--submit"
+              class="form-submit h-10 inline-flex items-center justify-center gap-2 bg-green text-white px-2 rounded-md hover:opacity-80"
             >
               ${
                 this.submitting
@@ -329,170 +331,8 @@ export class BaseForm extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
-
-      .form {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 1em;
-      }
-
-      .form__editor {
-        height: auto;
-      }
-
-      .form__anonymous-inputs {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 0.5em;
-        align-items: center;
-      }
-
-      @media (max-width: 640px) {
-        .form__anonymous-inputs {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      .form__anonymous-inputs a {
-        font-size: 0.75em;
-        line-height: 1em;
-        color: darkcyan;
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-        user-select: none;
-      }
-
-      .form__anonymous-inputs a:hover {
-        color: var(--base-color);
-      }
-
-      input,
-      textarea {
-        border-radius: var(--base-border-radius);
-        background: var(--component-form-input-bg-color);
-        color: var(--component-form-input-color);
-        border: 0.05em solid var(--component-form-input-border-color);
-        font-size: 0.875em;
-        display: block;
-        height: 2.65em;
-        max-width: 100%;
-        outline: 0;
-        padding: 0.4em 0.75em;
-        width: 100%;
-        transition: background 0.2s, border 0.2s, box-shadow 0.2s, color 0.2s;
-      }
-
-      input:focus,
-      textarea:focus {
-        border-color: var(--component-form-input-border-color-focus);
-        box-shadow: var(--component-form-input-box-shadow-focus);
-      }
-
-      .form__account-info {
-        color: var(--base-color);
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.75em;
-      }
-
-      .form__account-info img {
-        height: 2em;
-        width: 2em;
-        border-radius: 9999px;
-      }
-
-      .form__account-info span {
-        font-weight: 500;
-        font-size: 0.9em;
-      }
-
-      .form__button--logout,
-      .form__button--login {
-        border-radius: var(--base-border-radius);
-        background: var(--component-form-button-login-bg-color);
-        border: 1px solid var(--component-form-button-login-border-color);
-        font-size: 0.75em;
-        outline: none;
-        padding: 0.2rem 0.75em;
-        user-select: none;
-      }
-
-      .form__button--logout:hover,
-      .form__button--login:hover {
-        background: var(--component-form-button-login-bg-color-hover);
-      }
-
-      .form__footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 0.75em;
-      }
-
-      .form__actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.75em;
-        width: 100%;
-        justify-content: flex-end;
-      }
-
-      .form__action--captcha {
-        display: flex;
-        align-items: center;
-        gap: 0.3em;
-        flex-direction: row-reverse;
-      }
-
-      .form__action--captcha img {
-        height: 2.25em;
-        width: auto;
-        border-radius: var(--base-border-radius);
-      }
-
-      .form__button--submit {
-        border-radius: var(--base-border-radius);
-        background-color: var(--component-form-button-submit-bg-color);
-        color: var(--component-form-button-submit-color);
-        border: 1px solid var(--component-form-button-submit-border-color);
-        font-size: 0.875em;
-        display: inline-flex;
-        flex-shrink: 0;
-        user-select: none;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5em 1em;
-        text-align: center;
-        vertical-align: middle;
-        text-decoration-line: none;
-        outline-width: 0px;
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 0.15s;
-        gap: 0.5em;
-      }
-
-      .form__button--submit:hover {
-        opacity: 0.8;
-        border-color: var(--component-form-button-submit-border-color-hover);
-      }
-
-      .form__button--submit:active {
-        opacity: 0.7;
-      }
-
-      .form__button--submit:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
       @unocss-placeholder;
     `,
   ];

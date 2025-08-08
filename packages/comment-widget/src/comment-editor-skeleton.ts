@@ -5,10 +5,10 @@ import './emoji-button';
 export class CommentEditorSkeleton extends LitElement {
   protected override render() {
     return html`<div
-      class="border rounded-md border-solid border-gray-200"
+      class="border rounded-md border-solid border-gray-200 w-full"
     >
       <div class="animate-pulse p-4">
-        <div class="h-4 mt-1 mb-14px w-20 bg-gray-200 rounded"></div>
+        <div class="h-4 mt-1 mb-10px w-20 bg-gray-200 rounded"></div>
       </div>
       <div class="py-2.5 px-3 flex gap-1 m-0 items-center">
         ${repeat(
@@ -29,11 +29,6 @@ export class CommentEditorSkeleton extends LitElement {
   static override styles = [
     css`
       @unocss-placeholder;
-
-      :host {
-        display: block;
-        width: 100%;
-      }
     `,
   ];
 }

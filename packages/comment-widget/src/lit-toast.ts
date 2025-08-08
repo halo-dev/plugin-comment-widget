@@ -3,7 +3,6 @@ import { property } from 'lit/decorators.js';
 import './icons/icon-loading';
 import { classMap } from 'lit/directives/class-map.js';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 
 type ToastType = 'success' | 'error' | 'warn';
 
@@ -31,8 +30,7 @@ export class LitToast extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
       .toast {
         border-radius: var(--base-border-radius);
@@ -103,8 +101,7 @@ export class LitToastContainer extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
       :host {
         position: fixed;

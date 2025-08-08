@@ -2,7 +2,6 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 
 export class CommentPagination extends LitElement {
   @property({ type: Number })
@@ -55,12 +54,12 @@ export class CommentPagination extends LitElement {
 
     return pageNumbers.map((number) => {
       if (number === '...') {
-        return html`<li class="pagination__dot">
+        return html`<li class="px-3.5 inline-flex items-center justify-center">
           <i class="i-tabler:dots size-4"></i>
         </li>`;
       } else {
-        return html`<li class="pagination__number ${this.page === number ? 'active' : ''}">
-          <button @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
+        return html`<li>
+          <button class="pagination-button px-3.5 ${this.page === number ? 'bg-gray-100' : ''}" @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
             ${number}
           </button>
         </li>`;
@@ -82,18 +81,28 @@ export class CommentPagination extends LitElement {
 
   override render() {
     return html`
-      <ul class="pagination">
-        <li class="pagination__button">
-          <button @click=${() => this.gotoPage(this.page - 1)} ?disabled=${this.page === 1}>
+      <ul class="pagination flex items-center gap-2" role="navigation">
+        <li>
+          <button
+            rel="prev"
+            type="button"
+            aria-label=${msg('Previous')}
+            @click=${() => this.gotoPage(this.page - 1)} ?disabled=${this.page === 1}
+            class="pagination-button"
+          >
             <i class="i-tabler:chevron-left size-4"></i>
             ${msg('Previous')}
           </button>
         </li>
         ${this.renderPageNumbers()}
-        <li class="pagination__button">
+        <li>
           <button
+            rel="next"
+            type="button"
+            aria-label=${msg('Next')}
             @click=${() => this.gotoPage(this.page + 1)}
             ?disabled=${this.page === this.totalPages}
+            class="pagination-button"
           >
             ${msg('Next')}
             <i class="i-tabler:chevron-right size-4"></i>
@@ -104,84 +113,11 @@ export class CommentPagination extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
       :host {
         display: flex;
         justify-content: center;
-      }
-
-      .pagination {
-        display: flex;
-        align-items: center;
-        list-style: none;
-        gap: 0.2em;
-      }
-
-      .pagination li {
-        display: inline-flex;
-        align-items: center;
-        user-select: none;
-      }
-
-      .pagination__button button,
-      .pagination__number button {
-        border-radius: var(--base-border-radius);
-        color: var(--base-color);
-        font-size: 0.875em;
-        display: inline-flex;
-        align-items: center;
-        font-weight: 600;
-        padding: 0.4em 0.875em;
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 0.15s;
-        border: 1px solid transparent;
-      }
-
-      .pagination__button button {
-        gap: 0.5em;
-      }
-
-      .pagination__number button {
-        font-weight: normal;
-      }
-
-      .pagination__button button:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
-
-      .pagination__button button:hover,
-      .pagination__number button:hover {
-        background-color: var(--component-pagination-button-bg-color-hover);
-      }
-
-      .pagination__number.active button {
-        background-color: var(--component-pagination-button-bg-color-active);
-        border: 1px solid var(--component-pagination-button-border-color-active);
-      }
-
-      .pagination__dot {
-        padding: 0.4em 0.875em;
-      }
-
-      @media (max-width: 768px) {
-        .pagination__number:not(.active) {
-          display: none;
-        }
-        .pagination__number.active button {
-          border: none;
-          background-color: inherit;
-        }
-        .pagination__dot {
-          display: none !important;
-        }
-        .pagination {
-          justify-content: space-between;
-          width: 100%;
-        }
       }
 
       @unocss-placeholder;

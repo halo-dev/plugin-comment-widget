@@ -26,7 +26,6 @@ import {
 } from './context';
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 import './comment-list';
 import { ofetch } from 'ofetch';
@@ -73,7 +72,7 @@ export class CommentWidget extends LitElement {
   isInitialized = false;
 
   override render() {
-    return html` <div class="comment-widget">
+    return html` <div class="comment-widget w-full">
       ${
         !this.isInitialized
           ? html`<comment-editor-skeleton></comment-editor-skeleton>`
@@ -158,8 +157,7 @@ export class CommentWidget extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
       :host {
         width: 100%;
@@ -167,9 +165,7 @@ export class CommentWidget extends LitElement {
         justify-content: center;
       }
 
-      .comment-widget {
-        width: 100%;
-      }
+      @unocss-placeholder;
     `,
   ];
 }

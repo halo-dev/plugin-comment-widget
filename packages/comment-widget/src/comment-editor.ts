@@ -6,6 +6,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
 import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
+import baseStyles from './styles/base';
 
 interface ActionItem {
   name?: string;
@@ -131,7 +132,9 @@ export class CommentEditor extends LitElement {
   }
 
   setFocus() {
-    this.editor?.chain().focus().run();
+    setTimeout(() => {
+      this.editor?.chain().focus().run();
+    }, 100);
   }
 
   reset() {
@@ -192,6 +195,7 @@ export class CommentEditor extends LitElement {
   }
 
   static override styles = [
+    ...baseStyles,
     unsafeCSS(contentStyles),
     css`
       @unocss-placeholder;

@@ -6,7 +6,6 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { codeToHtml } from 'shiki/bundle/full';
 import baseStyles from './styles/base';
 import contentStyles from './styles/content.css?inline';
-import varStyles from './styles/var';
 import { formatDate, timeAgo } from './utils/date';
 
 export class BaseCommentItem extends LitElement {
@@ -73,41 +72,41 @@ export class BaseCommentItem extends LitElement {
   }
 
   override render() {
-    return html`<div class="item ${this.breath ? 'item--animate-breath' : ''}">
-      <div class="item__avatar">
+    return html`<div class="item flex gap-3 py-4 ${this.breath ? 'animate-breath' : ''}">
+      <div class="item-avatar flex-none">
         <user-avatar
           src="${this.userAvatar || ''}"
           alt="${this.userDisplayName || ''}"
         ></user-avatar>
       </div>
-      <div class="item__main">
-        <div class="item__meta">
+      <div class="item-main flex-[1_1_auto] min-w-0 w-full">
+        <div class="item-meta flex items-center gap-3">
           ${
             this.userWebsite
               ? html`<a
-                class="item__author"
+                class="item-author font-medium text-sm"
                 target="_blank"
                 href=${this.userWebsite}
               >
                 ${this.userDisplayName}
               </a>`
-              : html`<div class="item__author">${this.userDisplayName}</div>`
+              : html`<div class="item-author font-medium text-sm">${this.userDisplayName}</div>`
           }
-          <div class="item__meta-info" title=${formatDate(this.creationTime)}>
+          <div class="item-meta-info text-xs text-gray-500" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </div>
           ${
             !this.approved
-              ? html`<div class="item__meta-info">${msg('Reviewing')}</div>`
+              ? html`<div class="item-meta-info text-xs text-gray-500">${msg('Reviewing')}</div>`
               : ''
           }
         </div>
 
-        <div class="item__content markdown-body">
+        <div class="item-content mt-2 markdown-body">
           <slot name="pre-content"></slot>${unsafeHTML(this.content)}
         </div>
 
-        <div class="item__actions">
+        <div class="item-actions mt-2 flex items-center gap-3">
           <slot name="action"></slot>
         </div>
 
@@ -117,56 +116,10 @@ export class BaseCommentItem extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     unsafeCSS(contentStyles),
     css`
-      .item {
-        display: flex;
-        gap: 0.75em;
-        padding: 1em 0;
-      }
-
-      .item__avatar {
-        flex: none;
-      }
-
-      .item__main {
-        flex: 1 1 auto;
-        min-width: 0;
-        width: 100%;
-      }
-
-      .item__meta {
-        display: flex;
-        align-items: center;
-        gap: 0.75em;
-      }
-
-      .item__author {
-        color: var(--base-color);
-        font-weight: 500;
-        font-size: 0.875em;
-      }
-
-      .item__meta-info {
-        color: var(--base-info-color);
-        font-size: 0.75em;
-        line-height: 1em;
-      }
-
-      .item__content {
-        margin-top: 0.5em;
-      }
-
-      .item__actions {
-        margin-top: 0.5em;
-        display: flex;
-        align-items: center;
-        gap: 0.7em;
-      }
-
-      .item--animate-breath {
+      .animate-breath {
         animation: breath 1s ease-in-out infinite;
       }
 
@@ -181,6 +134,8 @@ export class BaseCommentItem extends LitElement {
           transform: scale(1);
         }
       }
+
+        @unocss-placeholder;
     `,
   ];
 }

@@ -2,7 +2,6 @@ import './icons/icon-loading';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 
 export class UserAvatar extends LitElement {
   @property({ type: String })
@@ -66,62 +65,30 @@ export class UserAvatar extends LitElement {
   override render() {
     if (this.src) {
       if (this.loading) {
-        return html`<div class="avatar avatar--loading">
+        return html`<div class="avatar">
           <icon-loading></icon-loading>
         </div>`;
       }
 
       if (this.error) {
-        return html`<div class="avatar avatar--error">
-          <i class="i-tabler:alert-circle"></i>
+        return html`<div class="avatar">
+          <i class="i-tabler:alert-circle size-5"></i>
         </div>`;
       }
 
       return html`<div class="avatar">
-        <img src="${this.src}" alt="${this.alt || ''}" loading="lazy" />
+        <img class="avatar-image size-full object-cover" src="${this.src}" alt="${this.alt || ''}" loading="lazy" />
       </div>`;
     }
 
     return html`<div class="avatar">
-      <span class="avatar__placeholder">${this.getPlaceholderText()}</span>
+      <span class="avatar-placeholder text-sm font-medium text-gray-900 select-none">${this.getPlaceholderText()}</span>
     </div>`;
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
-      .avatar {
-        border-radius: var(--component-avatar-rounded);
-        height: var(--component-avatar-size);
-        width: var(--component-avatar-size);
-        overflow: hidden;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: rgb(243 244 246);
-      }
-
-      .avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .avatar--error svg {
-        height: 1.15em;
-        width: 1.15em;
-        color: rgb(255 59 48);
-      }
-
-      .avatar__placeholder {
-        font-weight: 500;
-        color: rgb(31 41 55);
-        font-size: 0.75em;
-        line-height: 1em;
-        user-select: none;
-      }
-
       @unocss-placeholder;
     `,
   ];

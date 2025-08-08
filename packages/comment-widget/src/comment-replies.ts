@@ -11,7 +11,6 @@ import { msg } from '@lit/localize';
 import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 
 export class CommentReplies extends LitElement {
@@ -49,11 +48,11 @@ export class CommentReplies extends LitElement {
   toastManager: ToastManager | undefined;
 
   override render() {
-    return html` <div class="replies__wrapper">
+    return html` <div class="replies-main">
       ${
         this.replies.length
           ? html`
-            <div class="replies__list">
+            <div class="replies-list mt-3">
               ${repeat(
                 this.replies,
                 (item) => item.metadata.name,
@@ -74,8 +73,8 @@ export class CommentReplies extends LitElement {
       ${this.loading ? html` <loading-block></loading-block>` : ''}
       ${
         this.hasNext && !this.loading
-          ? html` <div class="replies__next-wrapper">
-            <button @click=${this.fetchNext}>${msg('Load more')}</button>
+          ? html` <div class="replies-next flex justify-center my-2">
+            <button class="replies-next-button" @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
           : ''
       }
@@ -157,36 +156,9 @@ export class CommentReplies extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
-      .replies__list {
-        margin-top: 0.875em;
-      }
-
-      .replies__next-wrapper {
-        display: flex;
-        justify-content: center;
-        margin: 0.5em 0;
-      }
-
-      .replies__next-wrapper button {
-        border-radius: var(--base-border-radius);
-        color: var(--base-color);
-        font-size: 0.875em;
-        display: inline-flex;
-        align-items: center;
-        font-weight: 600;
-        padding: 0.4em 0.875em;
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 0.15s;
-        border: 1px solid transparent;
-      }
-
-      .replies__next-wrapper button:hover {
-        background-color: var(--component-pagination-button-bg-color-hover);
-      }
+      @unocss-placeholder;
     `,
   ];
 }

@@ -3,18 +3,13 @@ import './icons/icon-loading';
 
 export class LoadingBlock extends LitElement {
   override render() {
-    return html` <div class="loading-block">
+    return html` <div class="loading-block flex items-center justify-center p-4">
       <icon-loading></icon-loading>
     </div>`;
   }
 
   static override styles = css`
-    .loading-block {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1em;
-    }
+    @unocss-placeholder;
   `;
 }
 

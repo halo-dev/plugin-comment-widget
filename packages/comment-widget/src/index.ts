@@ -1,5 +1,4 @@
 import { BaseCommentItem } from './base-comment-item';
-import { BaseCommentItemAction } from './base-comment-item-action';
 import { BaseForm } from './base-form';
 import { CommentItem } from './comment-item';
 import { CommentList } from './comment-list';
@@ -17,7 +16,6 @@ export {
   CommentWidget,
   BaseForm,
   BaseCommentItem,
-  BaseCommentItemAction,
   CommentItem,
   CommentPagination,
   CommentReplies,

@@ -1,8 +1,9 @@
 import { css, html, LitElement } from 'lit';
+import baseStyles from '../styles/base';
 
 export class IconLoading extends LitElement {
   override render() {
-    return html`<svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    return html`<svg class="size-5 animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <circle
         style="opacity: 0.25;"
         cx="12"
@@ -19,22 +20,15 @@ export class IconLoading extends LitElement {
     </svg>`;
   }
 
-  static override styles = css`
+  static override styles = [
+    ...baseStyles,
+    css`
     :host {
       display: inline-flex;
     }
-    svg {
-      height: 1.25em;
-      width: 1.25em;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  `;
+    @unocss-placeholder;
+  `,
+  ];
 }
 
 customElements.get('icon-loading') ||

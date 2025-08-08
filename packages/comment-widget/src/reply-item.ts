@@ -4,7 +4,6 @@ import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
-import './base-comment-item-action';
 import './reply-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
@@ -12,7 +11,6 @@ import { ofetch } from 'ofetch';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import { LS_UPVOTED_REPLIES_KEY } from './constant';
 import { baseUrlContext } from './context';
-import varStyles from './styles/var';
 
 export class ReplyItem extends LitElement {
   @consume({ context: baseUrlContext })
@@ -125,31 +123,26 @@ export class ReplyItem extends LitElement {
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
       >
-        <base-comment-item-action
-          slot="action"
-          class="item-action__upvote"
-          .text="${`${this.upvoteCount}`}"
-          @click="${this.handleUpvote}"
-        >
+        <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
+          <div class="icon-button-icon ">
           ${
             this.upvoted
               ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500"></i>`
               : html`<i slot="icon" class="i-mingcute-heart-line size-4"></i>`
           }
-        </base-comment-item-action>
-
-        <base-comment-item-action
-          slot="action"
-          @click="${this.handleToggleReplyForm}"
-          .text=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}
-        >
-          <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
-        </base-comment-item-action>
-
+          </div>
+          <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
+        </button>
+        <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}">
+          <div class="icon-button-icon ">
+            <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
+          </div>
+          <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}</span>
+        </button>
         ${
           this.showReplyForm
             ? html`
-              <div class="form__wrapper" slot="footer">
+              <div class="reply-form mt-2" slot="footer">
                 <reply-form
                   .comment=${this.comment}
                   .quoteReply=${this.reply}
@@ -165,7 +158,7 @@ export class ReplyItem extends LitElement {
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
-                class="item__quote-badge"
+                class="quote-badge inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-900 text-sm font-medium"
                 ><i class="i-ic:round-reply"></i><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`
@@ -176,36 +169,8 @@ export class ReplyItem extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
-      .item-action__upvote {
-        margin-left: -0.5em;
-      }
-
-      .form__wrapper {
-        margin-top: 0.5em;
-      }
-
-      .item__quote-badge {
-        display: inline-flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 0.25em;
-        padding: 0 0.3em;
-        font-weight: 500;
-        font-size: 0.75em;
-        border-radius: 0.3em;
-        background-color: #e5e7eb;
-        color: #4b5563;
-        cursor: pointer;
-      }
-
-      .item__quote-badge:hover {
-        text-decoration: underline;
-        color: #3b82f6;
-      }
-
       @unocss-placeholder;
     `,
   ];

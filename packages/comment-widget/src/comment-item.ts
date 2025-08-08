@@ -5,7 +5,6 @@ import baseStyles from './styles/base';
 import './comment-replies';
 import './user-avatar';
 import './base-comment-item';
-import './base-comment-item-action';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -14,7 +13,6 @@ import { getPolicyInstance } from './avatar/avatar-policy';
 import type { CommentReplies } from './comment-replies';
 import { LS_UPVOTED_COMMENTS_KEY } from './constant';
 import { baseUrlContext, configMapDataContext } from './context';
-import varStyles from './styles/var';
 import type { ConfigMapData } from './types';
 
 export class CommentItem extends LitElement {
@@ -122,47 +120,45 @@ export class CommentItem extends LitElement {
       .approved=${this.comment?.spec.approved}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
     >
-      <base-comment-item-action
-        slot="action"
-        class="item__action--upvote"
-        .text="${`${this.upvoteCount}`}"
-        @click="${this.handleUpvote}"
-      >
+      <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
+        <div class="icon-button-icon ">
         ${
           this.upvoted
             ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500"></i>`
             : html`<i slot="icon" class="i-mingcute-heart-line size-4"></i>`
         }
-      </base-comment-item-action>
+        </div>
+        <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
+      </button>
 
       ${
         this.configMapData?.basic.withReplies &&
         this.comment?.status?.visibleReplyCount === 0
           ? ''
-          : html`<base-comment-item-action
-            slot="action"
-            .text="${`${this.comment?.status?.visibleReplyCount || 0}`}"
-            @click="${this.handleShowReplies}"
-          >
-            <i slot="icon" class="i-tabler:message-circle size-4"></i>
-          </base-comment-item-action>`
+          : html`
+          <button slot="action" class="icon-button group" type="button" @click="${this.handleShowReplies}">
+            <div class="icon-button-icon ">
+              <i slot="icon" class="i-tabler:message-circle size-4"></i>
+            </div>
+            <span class="icon-button-text">${this.comment?.status?.visibleReplyCount || 0}</span>
+          </button>`
       }
       ${
         this.configMapData?.basic.withReplies
-          ? html` <base-comment-item-action
-            slot="action"
-            .text=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}
-            @click="${this.handleToggleReplyForm}"
-          >
-            <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
-          </base-comment-item-action>`
+          ? html`
+          <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}">
+            <div class="icon-button-icon ">
+              <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
+            </div>
+            <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}</span>
+          </button>`
           : ''
       }
 
       <div slot="footer">
         ${
           this.showReplyForm
-            ? html`<div class="item__reply-form">
+            ? html`<div class="mt-2">
               <reply-form
                 @reload=${this.onReplyCreated}
                 .comment=${this.comment}
@@ -184,17 +180,8 @@ export class CommentItem extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
-
-      .item__action--upvote {
-        margin-left: -0.5em;
-      }
-
-      .item__reply-form {
-        margin-top: 0.5em;
-      }
       @unocss-placeholder;
     `,
   ];

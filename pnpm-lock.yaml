@@ -97,6 +97,9 @@ importers:
       '@lit/localize-tools':
         specifier: ^0.8.0
         version: 0.8.0
+      '@unocss/reset':
+        specifier: ^66.4.2
+        version: 66.4.2
       lit-analyzer:
         specifier: ^2.0.3
         version: 2.0.3
@@ -1121,6 +1124,9 @@ packages:
 
   '@unocss/reset@66.4.1':
     resolution: {integrity: sha512-f0t2YIRF7uVUwEB0aDR6yPMqBO+QgGdgACWQmCrZ84Kir9HV+5d50tK5tXDflHmFTu9mqS9MUG4Ba3sPp44vZw==}
+
+  '@unocss/reset@66.4.2':
+    resolution: {integrity: sha512-s3Kq4Q6a/d3/jYe6HTCfXUx7zYAYufetId5n66DZHzQxpeu6CoBS83+b37STTKsw27SOgV28cPJlJtZ6/D6Bhw==}
 
   '@unocss/rule-utils@66.4.1':
     resolution: {integrity: sha512-iYbx4ab3aTMrcJSyBoGvwsbUM5BmRQef4rzGOjL312r/0RDZM+i2ikPxcFXpp/9P+Gp22gSXDMlzwY+VfJ2Llw==}
@@ -3447,6 +3453,8 @@ snapshots:
       '@unocss/preset-wind3': 66.4.1
 
   '@unocss/reset@66.4.1': {}
+
+  '@unocss/reset@66.4.2': {}
 
   '@unocss/rule-utils@66.4.1':
     dependencies:

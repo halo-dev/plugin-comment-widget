@@ -23,7 +23,6 @@ import { state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import { getLocale } from './locale';
 import baseStyles from './styles/base';
-import varStyles from './styles/var';
 
 const localeMap = {
   'zh-CN': zh,
@@ -189,14 +188,11 @@ export class EmojiButton extends LitElement {
   }
 
   static override styles = [
-    varStyles,
-    baseStyles,
+    ...baseStyles,
     css`
       :host {
         display: inline-flex;
       }
-
-      @unocss-placeholder;
 
       em-emoji-picker {
         --rgb-color: var(--component-emoji-picker-rgb-color);
@@ -215,8 +211,6 @@ export class EmojiButton extends LitElement {
         animation: fadeInUp 0.3s both;
         z-index: 1000;
       }
-      
-
 
       @keyframes fadeInUp {
         from {
@@ -229,6 +223,7 @@ export class EmojiButton extends LitElement {
           transform: translate3d(0, 0, 0);
         }
       }
+      @unocss-placeholder;
     `,
   ];
 }

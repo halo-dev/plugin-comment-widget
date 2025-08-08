@@ -20,6 +20,7 @@ import './comment-pagination';
 import './comment-item';
 import './loading-block';
 import { ofetch } from 'ofetch';
+import baseStyles from './styles/base';
 
 export class CommentList extends LitElement {
   @consume({ context: baseUrlContext })
@@ -147,12 +148,12 @@ export class CommentList extends LitElement {
       this.loading
         ? html` <loading-block></loading-block>`
         : html`
-          <div class="comment-widget__wrapper">
-            <div class="comment-widget__stats">
+          <div class="comment-list-main mt-5">
+            <div class="comment-stats font-medium my-3 text-sm">
               <span>${msg(html`${this.comments.total} Comments`)}</span>
             </div>
 
-            <div class="comment-widget__list">
+            <div class="comment-list">
               ${repeat(
                 this.comments.items,
                 (item) => item.metadata.name,
@@ -176,18 +177,12 @@ export class CommentList extends LitElement {
     }`;
   }
 
-  static override styles = css`
-    .comment-widget__wrapper {
-      margin-top: 1.2em;
-    }
-
-    .comment-widget__stats {
-      color: var(--base-color);
-      font-size: 0.875em;
-      margin: 0.875em 0;
-      font-weight: 500;
-    }
-  `;
+  static override styles = [
+    ...baseStyles,
+    css`
+    @unocss-placeholder;
+  `,
+  ];
 }
 
 customElements.get('comment-list') ||
