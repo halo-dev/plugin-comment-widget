@@ -48,7 +48,7 @@ const actionItems: ActionItem[] = [
     name: 'code',
     displayName: () => msg('Code'),
     type: 'action',
-    icon: 'i-mingcute-code-line',
+    icon: 'i-mingcute-braces-line',
     run: (editor?: Editor) => editor?.chain().focus().toggleCode().run(),
   },
   {
@@ -103,6 +103,7 @@ export class CommentEditor extends LitElement {
           },
           codeBlock: false,
         }),
+
         Placeholder.configure({
           placeholder: msg('Write a comment'),
         }),
