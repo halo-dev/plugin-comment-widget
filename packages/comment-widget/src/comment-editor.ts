@@ -207,7 +207,6 @@ export class CommentEditor extends LitElement {
     ...baseStyles,
     unsafeCSS(contentStyles),
     css`
-      @unocss-placeholder;
 
       :host {
         display: block;
@@ -225,16 +224,18 @@ export class CommentEditor extends LitElement {
       }
 
       .tiptap p.is-editor-empty:first-child::before {
-        color: var(--halo-cw-text-3-color, #6B7280);
         content: attr(data-placeholder);
         float: left;
         height: 0;
         pointer-events: none;
+        color: var(--halo-cw-text-3-color, #334155);
       }
 
       .tiptap code br {
         display: block;
       }
+
+      @unocss-placeholder;
     `,
   ];
 }

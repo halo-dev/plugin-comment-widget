@@ -9,11 +9,11 @@
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   margin: 0;
-  color: var(--halo-cw-text-1-color, #111827);
   font-family: var(--base-font-family);
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
   word-wrap: break-word;
+  @apply text-text-1;
 }
 
 .markdown-body details,
@@ -39,7 +39,7 @@
 
 .markdown-body mark {
   background-color: var(--bgColor-attention-muted);
-  color: var(--halo-cw-text-1-color, #111827);
+  @apply text-text-1;
 }
 
 .markdown-body sub,
@@ -78,12 +78,11 @@
   box-sizing: content-box;
   overflow: hidden;
   background: transparent;
-  border-bottom: 1px solid var(--halo-cw-muted-1-color, #d1d5db);
   height: 0.25em;
   padding: 0;
   margin: 1.4em 0;
-  background-color: var(--halo-cw-muted-1-color, #d1d5db);
   border: 0;
+  @apply bg-muted-1;
 }
 
 .markdown-body a:hover {
@@ -134,8 +133,9 @@
 .markdown-body blockquote {
   margin: 0;
   padding: 0 1em;
-  color: var(--halo-cw-text-1-color, #111827);
-  border-left: 0.25em solid var(--halo-cw-muted-1-color, #d1d5db);
+  border-left: 0.25em;
+  border-style: solid;
+  @apply text-text-1 border-muted-1;
 }
 
 .markdown-body ul,
@@ -256,8 +256,8 @@
   margin: 0;
   font-size: 85%;
   white-space: break-spaces;
-  background-color: var(--halo-cw-muted-2-color, #e5e7eb);
   border-radius: 6px;
+  @apply bg-muted-2;
 }
 
 .markdown-body code br {

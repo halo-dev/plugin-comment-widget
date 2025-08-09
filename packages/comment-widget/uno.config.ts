@@ -1,4 +1,10 @@
-import { defineConfig, definePreset, presetIcons, presetWind3 } from 'unocss';
+import {
+  defineConfig,
+  definePreset,
+  presetIcons,
+  presetWind3,
+  transformerDirectives,
+} from 'unocss';
 
 const remRE = /(-?[.\d]+)rem/g;
 
@@ -26,14 +32,14 @@ export default defineConfig({
       },
       background: 'var(--halo-cw-background-color, transparent)',
       text: {
-        1: 'var(--halo-cw-text-1-color, #111827)',
-        2: 'var(--halo-cw-text-2-color, #374151)',
-        3: 'var(--halo-cw-text-3-color, #6B7280)',
+        1: 'var(--halo-cw-text-1-color, #0f172a)',
+        2: 'var(--halo-cw-text-2-color, #1e293b)',
+        3: 'var(--halo-cw-text-3-color, #334155)',
       },
       muted: {
-        1: 'var(--halo-cw-muted-1-color, #D1D5DB)',
-        2: 'var(--halo-cw-muted-2-color, #E5E7EB)',
-        3: 'var(--halo-cw-muted-3-color, #F3F4F6)',
+        1: 'var(--halo-cw-muted-1-color, #cbd5e1)',
+        2: 'var(--halo-cw-muted-2-color, #e2e8f0)',
+        3: 'var(--halo-cw-muted-3-color, #f1f5f9)',
       },
     },
   },
@@ -50,4 +56,5 @@ export default defineConfig({
     avatar:
       'rounded-full size-9 overflow-hidden inline-flex items-center justify-center bg-muted-2',
   },
+  transformers: [transformerDirectives()],
 });
