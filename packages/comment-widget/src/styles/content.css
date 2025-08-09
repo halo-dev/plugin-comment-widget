@@ -1,11 +1,10 @@
-/* forked from https://github.com/sindresorhus/github-markdown-css/blob/main/github-markdown.css */
-.markdown-body {
+.content {
   --focus-outlineColor: #0969da;
   --fgColor-accent: #0969da;
   --bgColor-attention-muted: #fff8c5;
 }
 
-.markdown-body {
+.content {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   margin: 0;
@@ -16,65 +15,65 @@
   @apply text-text-1;
 }
 
-.markdown-body details,
-.markdown-body figcaption,
-.markdown-body figure {
+.content details,
+.content figcaption,
+.content figure {
   display: block;
 }
 
-.markdown-body summary {
+.content summary {
   display: list-item;
 }
 
-.markdown-body a {
+.content a {
   background-color: transparent;
   color: var(--fgColor-accent);
   text-decoration: none;
 }
 
-.markdown-body b,
-.markdown-body strong {
+.content b,
+.content strong {
   font-weight: 600;
 }
 
-.markdown-body mark {
+.content mark {
   background-color: var(--bgColor-attention-muted);
   @apply text-text-1;
 }
 
-.markdown-body sub,
-.markdown-body sup {
+.content sub,
+.content sup {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-.markdown-body sub {
+.content sub {
   bottom: -0.25em;
 }
 
-.markdown-body sup {
+.content sup {
   top: -0.5em;
 }
 
-.markdown-body img {
+.content img {
   border-style: none;
   max-width: 100%;
   box-sizing: content-box;
 }
 
-.markdown-body code,
-.markdown-body pre {
+.content code,
+.content pre {
   font-family: monospace;
   font-size: 1em;
 }
 
-.markdown-body figure {
+.content figure {
   margin: 1em 2.5em;
 }
 
-.markdown-body hr {
+.content hr {
   box-sizing: content-box;
   overflow: hidden;
   background: transparent;
@@ -85,52 +84,52 @@
   @apply bg-muted-1;
 }
 
-.markdown-body a:hover {
+.content a:hover {
   text-decoration: underline;
 }
 
-.markdown-body hr::before {
+.content hr::before {
   display: table;
   content: "";
 }
 
-.markdown-body hr::after {
+.content hr::after {
   display: table;
   clear: both;
   content: "";
 }
 
-.markdown-body details summary {
+.content details summary {
   cursor: pointer;
 }
 
-.markdown-body a:focus {
+.content a:focus {
   outline: 2px solid var(--focus-outlineColor);
   outline-offset: -2px;
   box-shadow: none;
 }
 
-.markdown-body a:focus:not(:focus-visible) {
+.content a:focus:not(:focus-visible) {
   outline: solid 1px transparent;
 }
 
-.markdown-body a:focus-visible {
+.content a:focus-visible {
   outline: 2px solid var(--focus-outlineColor);
   outline-offset: -2px;
   box-shadow: none;
 }
 
-.markdown-body a:not([class]):focus,
-.markdown-body a:not([class]):focus-visible {
+.content a:not([class]):focus,
+.content a:not([class]):focus-visible {
   outline-offset: 0;
 }
 
-.markdown-body p {
+.content p {
   margin-top: 0;
   margin-bottom: 10px;
 }
 
-.markdown-body blockquote {
+.content blockquote {
   margin: 0;
   padding: 0 1em;
   border-left: 0.25em;
@@ -138,34 +137,34 @@
   @apply text-text-1 border-muted-1;
 }
 
-.markdown-body ul,
-.markdown-body ol {
+.content ul,
+.content ol {
   margin-top: 0;
   margin-bottom: 0;
   padding-left: 2em;
 }
 
-.markdown-body ol ol,
-.markdown-body ul ol {
+.content ol ol,
+.content ul ol {
   list-style-type: lower-roman;
 }
 
-.markdown-body ul ul ol,
-.markdown-body ul ol ol,
-.markdown-body ol ul ol,
-.markdown-body ol ol ol {
+.content ul ul ol,
+.content ul ol ol,
+.content ol ul ol,
+.content ol ol ol {
   list-style-type: lower-alpha;
 }
 
-.markdown-body ul {
+.content ul {
   list-style-type: disc;
 }
 
-.markdown-body ol {
+.content ol {
   list-style-type: decimal;
 }
 
-.markdown-body code {
+.content code {
   font-family:
     ui-monospace,
     SFMono-Regular,
@@ -177,7 +176,7 @@
   font-size: 12px;
 }
 
-.markdown-body pre {
+.content pre {
   margin-top: 0;
   margin-bottom: 0;
   font-family:
@@ -192,66 +191,66 @@
   word-wrap: normal;
 }
 
-.markdown-body::before {
+.content::before {
   display: table;
   content: "";
 }
 
-.markdown-body::after {
+.content::after {
   display: table;
   clear: both;
   content: "";
 }
 
-.markdown-body > *:first-child {
+.content > *:first-child {
   margin-top: 0 !important;
 }
 
-.markdown-body > *:last-child {
+.content > *:last-child {
   margin-bottom: 0 !important;
 }
 
-.markdown-body a:not([href]) {
+.content a:not([href]) {
   color: inherit;
   text-decoration: none;
 }
 
-.markdown-body p,
-.markdown-body blockquote,
-.markdown-body ul,
-.markdown-body ol,
-.markdown-body dl,
-.markdown-body pre,
-.markdown-body details {
+.content p,
+.content blockquote,
+.content ul,
+.content ol,
+.content dl,
+.content pre,
+.content details {
   margin-top: 0;
   margin-bottom: 1em;
 }
 
-.markdown-body blockquote > :first-child {
+.content blockquote > :first-child {
   margin-top: 0;
 }
 
-.markdown-body blockquote > :last-child {
+.content blockquote > :last-child {
   margin-bottom: 0;
 }
 
-.markdown-body ul ul,
-.markdown-body ul ol,
-.markdown-body ol ol,
-.markdown-body ol ul {
+.content ul ul,
+.content ul ol,
+.content ol ol,
+.content ol ul {
   margin-top: 0;
   margin-bottom: 0;
 }
 
-.markdown-body li > p {
+.content li > p {
   margin-top: 1em;
 }
 
-.markdown-body li + li {
+.content li + li {
   margin-top: 0.25em;
 }
 
-.markdown-body code {
+.content code {
   padding: 0.2em 0.4em;
   margin: 0;
   font-size: 85%;
@@ -260,19 +259,19 @@
   @apply bg-muted-2;
 }
 
-.markdown-body code br {
+.content code br {
   display: none;
 }
 
-.markdown-body del code {
+.content del code {
   text-decoration: inherit;
 }
 
-.markdown-body pre code {
+.content pre code {
   font-size: 100%;
 }
 
-.markdown-body pre > code {
+.content pre > code {
   padding: 0;
   margin: 0;
   word-break: normal;
@@ -282,14 +281,14 @@
   color: #fff;
 }
 
-.markdown-body pre {
+.content pre {
   padding: 1em;
   overflow: auto;
   font-size: 85%;
   border-radius: 6px;
 }
 
-.markdown-body pre code {
+.content pre code {
   display: inline;
   max-width: auto;
   padding: 0;
@@ -301,12 +300,12 @@
   border: 0;
 }
 
-.markdown-body summary:focus:not(:focus-visible),
-.markdown-body a:focus:not(:focus-visible) {
+.content summary:focus:not(:focus-visible),
+.content a:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
 }
 
-.markdown-body > *:first-child > .heading-element:first-child {
+.content > *:first-child > .heading-element:first-child {
   margin-top: 0 !important;
 }

@@ -119,7 +119,7 @@ export class BaseCommentItem extends LitElement {
           }
         </div>
 
-        <div class="item-content mt-2 markdown-body">
+        <div class="item-content mt-2 content">
           <slot name="pre-content"></slot>${unsafeHTML(this.content)}
         </div>
 
