@@ -2,6 +2,7 @@ export interface ConfigMapData {
   basic: BasicConfig;
   security: SecurityConfig;
   avatar: AvatarConfig;
+  editor?: EditorConfig;
 }
 
 interface BasicConfig {
@@ -25,4 +26,8 @@ interface AvatarConfig {
   enable: boolean;
   providerMirror: string;
   policy: 'anonymousUser' | 'allUser' | 'noAvatarUser';
+}
+
+interface EditorConfig {
+  placeholder?: string;
 }

@@ -6,7 +6,10 @@ import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
 import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
+import { consume } from '@lit/context';
+import { configMapDataContext } from './context';
 import baseStyles from './styles/base';
+import type { ConfigMapData } from './types';
 
 interface ActionItem {
   name?: string;
@@ -78,6 +81,10 @@ export class CommentEditor extends LitElement {
   @state()
   loading = true;
 
+  @consume({ context: configMapDataContext })
+  @state()
+  configMapData: ConfigMapData | undefined;
+
   protected override firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
     this.createEditor();
@@ -106,7 +113,8 @@ export class CommentEditor extends LitElement {
         }),
 
         Placeholder.configure({
-          placeholder: msg('Write a comment'),
+          placeholder:
+            this.configMapData?.editor?.placeholder || msg('Write a comment'),
         }),
 
         CodeBlockShiki.configure({
