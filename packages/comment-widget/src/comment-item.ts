@@ -119,6 +119,7 @@ export class CommentItem extends LitElement {
       .creationTime="${this.comment?.spec.creationTime}"
       .approved=${this.comment?.spec.approved}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
+      .ua=${this.comment?.spec.userAgent}
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
         <div class="icon-button-icon">

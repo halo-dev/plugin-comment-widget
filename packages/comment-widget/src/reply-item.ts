@@ -122,6 +122,7 @@ export class ReplyItem extends LitElement {
         .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
+        .ua=${this.reply?.spec.userAgent}
       >
         <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
           <div class="icon-button-icon ">

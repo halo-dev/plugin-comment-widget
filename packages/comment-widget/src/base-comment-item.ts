@@ -1,12 +1,16 @@
 import './user-avatar';
 import { msg } from '@lit/localize';
 import { css, html, LitElement, unsafeCSS } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { codeToHtml } from 'shiki/bundle/full';
 import baseStyles from './styles/base';
 import contentStyles from './styles/content.css?inline';
 import { formatDate, timeAgo } from './utils/date';
+import './commenter-ua-bar';
+import { consume } from '@lit/context';
+import { configMapDataContext } from './context';
+import type { ConfigMapData } from './types';
 
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
@@ -29,6 +33,13 @@ export class BaseCommentItem extends LitElement {
 
   @property({ type: String })
   content = '';
+
+  @property({ type: String })
+  ua: string = '';
+
+  @consume({ context: configMapDataContext })
+  @state()
+  configMapData: ConfigMapData | undefined;
 
   protected override firstUpdated() {
     const codeElements = this.shadowRoot?.querySelectorAll('pre>code');
@@ -81,22 +92,26 @@ export class BaseCommentItem extends LitElement {
         ></user-avatar>
       </div>
       <div class="item-main flex-[1_1_auto] min-w-0 w-full">
-        <div class="item-meta flex items-center gap-3">
+        <div class="item-meta flex items-center gap-3 flex-wrap">
           ${
             this.userWebsite
               ? html`<a
-                class="item-author font-medium text-sm"
+                class="item-author font-medium text-sm text-text-1"
                 target="_blank"
                 href=${this.userWebsite}
                 rel="noopener noreferrer"
               >
                 ${this.userDisplayName}
               </a>`
-              : html`<div class="item-author font-medium text-sm">${this.userDisplayName}</div>`
+              : html`<span class="item-author font-medium text-sm text-text-1">${this.userDisplayName}</span>`
           }
-          <div class="item-meta-info text-xs text-text-2" title=${formatDate(this.creationTime)}>
+          
+          ${this.ua && this.configMapData?.basic.showCommenterDevice ? html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>` : ''}
+
+          <time class="item-meta-info text-xs text-text-2" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
-          </div>
+          </time>
+
           ${
             !this.approved
               ? html`<div class="item-meta-info text-xs text-text-2">${msg('Reviewing')}</div>`
