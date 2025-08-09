@@ -122,3 +122,9 @@ spec:
             - label: "匿名&无头像用户"
               value: "noAvatarUser"
           value: "anonymousUser"
+    - group: editor
+      label: 编辑器
+      formSchema:
+        - $formkit: text
+          name: placeholder
+          label: 自定义评论框占位符
