@@ -9,7 +9,7 @@
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
   margin: 0;
-  color: var(--halo-cw-text-1-color);
+  color: var(--halo-cw-text-1-color, #111827);
   font-family: var(--base-font-family);
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
@@ -39,7 +39,7 @@
 
 .markdown-body mark {
   background-color: var(--bgColor-attention-muted);
-  color: var(--halo-cw-text-1-color);
+  color: var(--halo-cw-text-1-color, #111827);
 }
 
 .markdown-body sub,
@@ -78,11 +78,11 @@
   box-sizing: content-box;
   overflow: hidden;
   background: transparent;
-  border-bottom: 1px solid var(--halo-cw-muted-1-color);
+  border-bottom: 1px solid var(--halo-cw-muted-1-color, #d1d5db);
   height: 0.25em;
   padding: 0;
   margin: 1.4em 0;
-  background-color: var(--halo-cw-muted-1-color);
+  background-color: var(--halo-cw-muted-1-color, #d1d5db);
   border: 0;
 }
 
@@ -134,8 +134,8 @@
 .markdown-body blockquote {
   margin: 0;
   padding: 0 1em;
-  color: var(--base-info-color);
-  border-left: 0.25em solid var(--borderColor-default);
+  color: var(--halo-cw-text-1-color, #111827);
+  border-left: 0.25em solid var(--halo-cw-muted-1-color, #d1d5db);
 }
 
 .markdown-body ul,
@@ -256,7 +256,7 @@
   margin: 0;
   font-size: 85%;
   white-space: break-spaces;
-  background-color: var(--halo-cw-muted-1-color);
+  background-color: var(--halo-cw-muted-2-color, #e5e7eb);
   border-radius: 6px;
 }
 
