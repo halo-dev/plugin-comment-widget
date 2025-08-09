@@ -79,7 +79,10 @@ export class EmojiButton extends LitElement {
     }
   }
 
-  async handleOpenEmojiPicker() {
+  async handleOpenEmojiPicker(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+
     if (this.emojiPickerVisible) {
       this.emojiPickerVisible = false;
       this.cleanupFloating();
