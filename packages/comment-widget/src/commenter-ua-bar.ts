@@ -64,19 +64,38 @@ export class CommenterUABar extends LitElement {
       return this.renderSkeleton();
     }
 
-    const osIcon = this.getOSIcon(this.parser.getOS().name);
-    const browserIcon = this.getBrowserIcon(this.parser.getBrowser().name);
+    const os = this.parser.getOS();
+    const browser = this.parser.getBrowser();
+
+    if (!os.name && !browser.name) {
+      return html``;
+    }
+
+    const osIcon = this.getOSIcon(os?.name);
+    const browserIcon = this.getBrowserIcon(browser?.name);
 
     return html`
     <div class="inline-flex gap-2 items-center">
-      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-        ${osIcon ? html`<i class="${osIcon} opacity-90 size-3"></i>` : ''}
-        <span class="text-xs text-text-2">${this.parser.getOS().name}</span>
-      </div>
-      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-        ${browserIcon ? html`<i class="${browserIcon} opacity-90 size-3"></i>` : ''}
-        <span class="text-xs text-text-2">${this.parser.getBrowser().name}</span>
-      </div>
+      ${
+        os
+          ? html`
+            <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+              ${osIcon ? html`<i class="${osIcon} opacity-90 size-3"></i>` : ''}
+              <span class="text-xs text-text-2">${[os.name, os.version].filter(Boolean).join(' ')}</span>
+            </div>
+            `
+          : ''
+      }
+      ${
+        browser
+          ? html`
+            <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+              ${browserIcon ? html`<i class="${browserIcon} opacity-90 size-3"></i>` : ''}
+              <span class="text-xs text-text-2">${[browser.name, browser.major].filter(Boolean).join(' ')}</span>
+            </div>
+            `
+          : ''
+      }
     </div>`;
   }
 
