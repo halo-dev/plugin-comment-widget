@@ -10,6 +10,9 @@ export class UserAvatar extends LitElement {
   @property({ type: String })
   alt: string | undefined;
 
+  @property({ type: String })
+  href: string | undefined;
+
   @state()
   error = false;
 
@@ -63,27 +66,31 @@ export class UserAvatar extends LitElement {
   }
 
   override render() {
-    if (this.src) {
-      if (this.loading) {
-        return html`<div class="avatar">
-          <icon-loading></icon-loading>
-        </div>`;
-      }
-
-      if (this.error) {
-        return html`<div class="avatar">
-          <i class="i-tabler:alert-circle size-5"></i>
-        </div>`;
-      }
-
-      return html`<div class="avatar">
-        <img class="avatar-image size-full object-cover" src="${this.src}" alt="${this.alt || ''}" loading="lazy" />
-      </div>`;
+    if (this.href) {
+      return html`<a class="avatar" href="${this.href}" target="_blank" rel="noopener noreferrer">
+        ${this.renderAvatarContent()}
+      </a>`;
     }
 
     return html`<div class="avatar">
-      <span class="avatar-placeholder text-sm font-medium text-text-1 select-none">${this.getPlaceholderText()}</span>
+      ${this.renderAvatarContent()}
     </div>`;
+  }
+
+  renderAvatarContent() {
+    if (!this.src) {
+      return html`<span class="avatar-placeholder text-sm font-medium text-text-1 select-none">${this.getPlaceholderText()}</span>`;
+    }
+
+    if (this.loading) {
+      return html`<icon-loading></icon-loading>`;
+    }
+
+    if (this.error) {
+      return html`<i class="i-tabler:alert-circle size-5"></i>`;
+    }
+
+    return html`<img class="avatar-image size-full object-cover" src="${this.src}" alt="${this.alt || ''}" loading="lazy" />`;
   }
 
   static override styles = [
