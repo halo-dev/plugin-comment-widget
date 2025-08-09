@@ -77,6 +77,7 @@ export class BaseCommentItem extends LitElement {
         <user-avatar
           src="${this.userAvatar || ''}"
           alt="${this.userDisplayName || ''}"
+          href=${this.userWebsite}
         ></user-avatar>
       </div>
       <div class="item-main flex-[1_1_auto] min-w-0 w-full">
@@ -87,6 +88,7 @@ export class BaseCommentItem extends LitElement {
                 class="item-author font-medium text-sm"
                 target="_blank"
                 href=${this.userWebsite}
+                rel="noopener noreferrer"
               >
                 ${this.userDisplayName}
               </a>`
