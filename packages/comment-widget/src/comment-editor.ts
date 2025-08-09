@@ -156,7 +156,7 @@ export class CommentEditor extends LitElement {
   protected override render() {
     return html` ${this.loading ? html`<comment-editor-skeleton></comment-editor-skeleton>` : ''}
       <div
-        class="border rounded-md border-solid border-muted-1 focus-within:border-primary-1 transition-all"
+        class="border rounded-md border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-all"
         ?hidden=${this.loading}
         @click=${this.setFocus}
       >

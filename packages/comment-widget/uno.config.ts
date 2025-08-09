@@ -43,9 +43,17 @@ export default defineConfig({
       },
     },
   },
+  rules: [
+    [
+      'shadow-input',
+      {
+        'box-shadow': '0 0 0 3px var(--halo-cw-primary-3-color, #99F6E4)',
+      },
+    ],
+  ],
   shortcuts: {
     input:
-      'px-3 py-0 text-sm rounded-md bg-transparent border h-12 border-muted-1 border-solid outline-none focus:border-primary-1 transition-all',
+      'px-3 py-0 text-sm rounded-md bg-transparent border h-12 border-muted-1 border-solid outline-none transition-all focus:border-primary-1 focus:shadow-input',
     'icon-button': 'inline-flex items-center gap-[0.1em] cursor-pointer',
     'icon-button-icon':
       'inline-flex items-center justify-center rounded-full transition-all duration-150 p-2 text-text-3 group-hover:bg-muted-3 group-hover:text-text-1',
