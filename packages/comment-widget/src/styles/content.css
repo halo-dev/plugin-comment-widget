@@ -1,17 +1,4 @@
 .content {
-  --focus-outlineColor: #0969da;
-  --fgColor-accent: #0969da;
-  --bgColor-attention-muted: #fff8c5;
-}
-
-.content {
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  margin: 0;
-  font-family: var(--base-font-family);
-  font-size: var(--base-font-size);
-  line-height: var(--base-line-height);
-  word-wrap: break-word;
   @apply text-text-1;
 }
 
@@ -27,8 +14,8 @@
 
 .content a {
   background-color: transparent;
-  color: var(--fgColor-accent);
   text-decoration: none;
+  @apply text-primary-1;
 }
 
 .content b,
@@ -37,7 +24,7 @@
 }
 
 .content mark {
-  background-color: var(--bgColor-attention-muted);
+  background-color: #fff8c5;
   @apply text-text-1;
 }
 
@@ -104,9 +91,10 @@
 }
 
 .content a:focus {
-  outline: 2px solid var(--focus-outlineColor);
+  outline: 2px solid;
   outline-offset: -2px;
   box-shadow: none;
+  @apply outline-primary-1;
 }
 
 .content a:focus:not(:focus-visible) {
@@ -114,9 +102,10 @@
 }
 
 .content a:focus-visible {
-  outline: 2px solid var(--focus-outlineColor);
+  outline: 2px solid;
   outline-offset: -2px;
   box-shadow: none;
+  @apply outline-primary-1;
 }
 
 .content a:not([class]):focus,
@@ -256,7 +245,7 @@
   font-size: 85%;
   white-space: break-spaces;
   border-radius: 6px;
-  @apply bg-muted-2;
+  @apply bg-muted-3;
 }
 
 .content code br {

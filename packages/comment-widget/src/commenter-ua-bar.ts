@@ -69,11 +69,11 @@ export class CommenterUABar extends LitElement {
 
     return html`
     <div class="inline-flex gap-2 items-center">
-      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
+      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
         ${osIcon ? html`<i class="${osIcon} opacity-90 size-3"></i>` : ''}
         <span class="text-xs text-text-2">${this.parser.getOS().name}</span>
       </div>
-      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
+      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
         ${browserIcon ? html`<i class="${browserIcon} opacity-90 size-3"></i>` : ''}
         <span class="text-xs text-text-2">${this.parser.getBrowser().name}</span>
       </div>
@@ -83,13 +83,13 @@ export class CommenterUABar extends LitElement {
   private renderSkeleton() {
     return html`
       <div class="inline-flex gap-2 items-center">
-        <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
-          <div class="size-3 animate-pulse bg-muted-1 rounded-md"></div>
-          <span class="w-10 h-3 animate-pulse bg-muted-1 rounded-md"></span>
+        <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+          <div class="size-3 animate-pulse bg-muted-1 rounded-base"></div>
+          <span class="w-10 h-3 animate-pulse bg-muted-1 rounded-base"></span>
         </div>
-        <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
-          <div class="size-3 animate-pulse bg-muted-1 rounded-md"></div>
-          <span class="w-10 h-3 animate-pulse bg-muted-1 rounded-md"></span>
+        <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+          <div class="size-3 animate-pulse bg-muted-1 rounded-base"></div>
+          <span class="w-10 h-3 animate-pulse bg-muted-1 rounded-base"></span>
         </div>
       </div>
     `;

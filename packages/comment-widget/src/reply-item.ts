@@ -159,7 +159,7 @@ export class ReplyItem extends LitElement {
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
-                class="quote-badge inline-flex items-center gap-1 px-2 py-1 rounded-md bg-muted-2 text-text-1 text-sm font-medium"
+                class="quote-badge inline-flex items-center gap-1 px-2 py-1 rounded-base bg-muted-2 text-text-1 text-sm font-medium"
                 ><i class="i-ic:round-reply"></i><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`

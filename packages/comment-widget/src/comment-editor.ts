@@ -156,7 +156,7 @@ export class CommentEditor extends LitElement {
   protected override render() {
     return html` ${this.loading ? html`<comment-editor-skeleton></comment-editor-skeleton>` : ''}
       <div
-        class="border rounded-md border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-all"
+        class="border rounded-base border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-all"
         ?hidden=${this.loading}
         @click=${this.setFocus}
       >
@@ -192,7 +192,7 @@ export class CommentEditor extends LitElement {
             title=${item.displayName?.()}
             @click=${() => item.run?.(editor)}
             role="button"
-            class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-md flex items-center justify-center cursor-pointer transition-all"
+            class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-all"
           >
             <i class="size-5 ${item.icon}"></i>
           </div>
@@ -228,7 +228,7 @@ export class CommentEditor extends LitElement {
         float: left;
         height: 0;
         pointer-events: none;
-        color: var(--halo-cw-text-3-color, #334155);
+        color: var(--halo-cw-text-3-color, #475569);
       }
 
       .tiptap code br {

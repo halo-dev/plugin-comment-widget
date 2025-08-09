@@ -34,13 +34,16 @@ export default defineConfig({
       text: {
         1: 'var(--halo-cw-text-1-color, #0f172a)',
         2: 'var(--halo-cw-text-2-color, #1e293b)',
-        3: 'var(--halo-cw-text-3-color, #334155)',
+        3: 'var(--halo-cw-text-3-color, #475569)',
       },
       muted: {
         1: 'var(--halo-cw-muted-1-color, #cbd5e1)',
         2: 'var(--halo-cw-muted-2-color, #e2e8f0)',
         3: 'var(--halo-cw-muted-3-color, #f1f5f9)',
       },
+    },
+    borderRadius: {
+      base: 'var(--halo-cw-base-rounded, 0.5em)',
     },
   },
   rules: [
@@ -53,14 +56,14 @@ export default defineConfig({
   ],
   shortcuts: {
     input:
-      'px-3 py-0 text-sm rounded-md bg-transparent border h-12 border-muted-1 border-solid outline-none transition-all focus:border-primary-1 focus:shadow-input',
+      'px-3 py-0 text-sm rounded-base bg-transparent border h-12 border-muted-1 border-solid outline-none transition-all focus:border-primary-1 focus:shadow-input placeholder:text-text-3',
     'icon-button': 'inline-flex items-center gap-[0.1em] cursor-pointer',
     'icon-button-icon':
       'inline-flex items-center justify-center rounded-full transition-all duration-150 p-2 text-text-3 group-hover:bg-muted-3 group-hover:text-text-1',
     'icon-button-text':
       'select-none text-xs text-text-3 group-hover:text-text-1',
     'pagination-button':
-      'inline-flex h-10 items-center text-sm gap-1 hover:bg-muted-3 rounded-md px-3 transition-all text-text-1 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
+      'inline-flex h-10 items-center text-sm gap-1 hover:bg-muted-3 rounded-base px-3 transition-all text-text-1 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
     avatar:
       'rounded-full size-9 overflow-hidden inline-flex items-center justify-center bg-muted-2',
   },

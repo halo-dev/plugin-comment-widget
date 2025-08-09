@@ -5,7 +5,7 @@ import './emoji-button';
 export class CommentEditorSkeleton extends LitElement {
   protected override render() {
     return html`<div
-      class="border rounded-md border-solid border-muted-1 w-full"
+      class="border rounded-base border-solid border-muted-1 w-full"
     >
       <div class="animate-pulse p-4">
         <div class="h-4 mt-1 mb-10px w-20 bg-muted-1 rounded"></div>
@@ -18,7 +18,7 @@ export class CommentEditorSkeleton extends LitElement {
               role="button"
               class="size-7 flex items-center justify-center cursor-pointer"
             >
-              <div class="size-5 animate-pulse bg-muted-1 rounded-md"></div>
+              <div class="size-5 animate-pulse bg-muted-1 rounded-base"></div>
             </div>
           `
         )}

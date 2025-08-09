@@ -33,7 +33,7 @@ export class LitToast extends LitElement {
     ...baseStyles,
     css`
       .toast {
-        border-radius: var(--base-border-radius);
+        border-radius: var(--halo-cw-base-rounded, 0.5em);
         font-size: 0.875em;
         display: inline-flex;
         align-items: center;
