@@ -8,11 +8,11 @@ export class CommentEditorSkeleton extends LitElement {
       class="border rounded-base border-solid border-muted-1 w-full"
     >
       <div class="animate-pulse p-4">
-        <div class="h-4 mt-1 mb-10px w-20 bg-muted-1 rounded"></div>
+        <div class="h-4 mt-1 mb-14px w-20 bg-muted-1 rounded"></div>
       </div>
       <div class="py-2.5 px-3 flex gap-1 m-0 items-center">
         ${repeat(
-          Array(7),
+          Array(8),
           () => html`
             <div
               role="button"
