@@ -37,6 +37,9 @@ export class CommenterUABar extends LitElement {
   @state()
   parser: UAParser | undefined;
 
+  @state()
+  isInitialized = false;
+
   getOSIcon(os?: string) {
     return OS_ICON_MAP[os as keyof typeof OS_ICON_MAP];
   }
@@ -53,17 +56,19 @@ export class CommenterUABar extends LitElement {
   async init() {
     const { UAParser } = await import('ua-parser-js');
     this.parser = new UAParser(this.ua);
+    this.isInitialized = true;
   }
 
   protected override render() {
     if (!this.parser) {
-      return html``;
+      return this.renderSkeleton();
     }
 
     const osIcon = this.getOSIcon(this.parser.getOS().name);
     const browserIcon = this.getBrowserIcon(this.parser.getBrowser().name);
 
-    return html`<div class="inline-flex gap-2 items-center">
+    return html`
+    <div class="inline-flex gap-2 items-center">
       <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
         ${osIcon ? html`<i class="${osIcon} opacity-90 size-3"></i>` : ''}
         <span class="text-xs text-text-2">${this.parser.getOS().name}</span>
@@ -73,6 +78,21 @@ export class CommenterUABar extends LitElement {
         <span class="text-xs text-text-2">${this.parser.getBrowser().name}</span>
       </div>
     </div>`;
+  }
+
+  private renderSkeleton() {
+    return html`
+      <div class="inline-flex gap-2 items-center">
+        <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
+          <div class="size-3 animate-pulse bg-muted-1 rounded-md"></div>
+          <span class="w-10 h-3 animate-pulse bg-muted-1 rounded-md"></span>
+        </div>
+        <div class="inline-flex items-center gap-1 bg-muted-3 rounded-md px-1.5 py-1">
+          <div class="size-3 animate-pulse bg-muted-1 rounded-md"></div>
+          <span class="w-10 h-3 animate-pulse bg-muted-1 rounded-md"></span>
+        </div>
+      </div>
+    `;
   }
 
   static override styles = [
