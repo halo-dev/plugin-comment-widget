@@ -31,6 +31,10 @@ spec:
           key: withReplySize
           validation: required
           value: 5
+        - $formkit: checkbox
+          label: 显示评论者设备信息
+          name: showCommenterDevice
+          value: false
     - group: security
       label: 安全设置
       formSchema:

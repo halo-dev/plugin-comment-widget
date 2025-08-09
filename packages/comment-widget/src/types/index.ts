@@ -10,6 +10,7 @@ interface BasicConfig {
   size: number;
   withReplySize: number;
   replySize: number;
+  showCommenterDevice?: boolean;
 }
 
 interface SecurityConfig {
