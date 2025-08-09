@@ -1,4 +1,5 @@
 .content {
+  word-wrap: break-word;
   @apply text-text-1;
 }
 
