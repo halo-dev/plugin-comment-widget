@@ -120,7 +120,7 @@ export class BaseCommentItem extends LitElement {
           }
         </div>
 
-        <div class="item-content mt-2 content">
+        <div class="item-content mt-2.5 space-y-2.5 content">
           <slot name="pre-content"></slot>${unsafeHTML(sanitizeHtml(this.content))}
         </div>
 

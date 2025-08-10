@@ -1,6 +1,6 @@
 .content {
   word-wrap: break-word;
-  @apply text-text-1 text-sm;
+  @apply text-text-1 text-sm leading-relaxed;
 }
 
 .content details,
