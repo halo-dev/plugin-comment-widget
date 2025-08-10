@@ -68,7 +68,11 @@ export class CommenterUABar extends LitElement {
     const browser = this.parser.getBrowser();
 
     if (!os.name && !browser.name) {
-      return html``;
+      return html`
+      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+        <span class="text-xs text-text-3">${this.ua}</span>
+      </div>
+      `;
     }
 
     const osIcon = this.getOSIcon(os?.name);
