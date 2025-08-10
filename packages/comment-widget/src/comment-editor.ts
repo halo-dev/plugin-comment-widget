@@ -194,7 +194,7 @@ export class CommentEditor extends LitElement {
             role="button"
             class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-all"
           >
-            <i class="size-5 ${item.icon}"></i>
+            <i class="size-5 ${item.icon}" aria-hidden="true"></i>
           </div>
         </li>
       `;

@@ -55,7 +55,7 @@ export class CommentPagination extends LitElement {
     return pageNumbers.map((number) => {
       if (number === '...') {
         return html`<li class="px-3.5 inline-flex items-center justify-center">
-          <i class="i-tabler:dots size-4"></i>
+          <i class="i-tabler:dots size-4" aria-hidden="true"></i>
         </li>`;
       } else {
         return html`<li>
@@ -90,7 +90,7 @@ export class CommentPagination extends LitElement {
             @click=${() => this.gotoPage(this.page - 1)} ?disabled=${this.page === 1}
             class="pagination-button"
           >
-            <i class="i-tabler:chevron-left size-4"></i>
+            <i class="i-tabler:chevron-left size-4" aria-hidden="true"></i>
             ${msg('Previous')}
           </button>
         </li>
@@ -105,7 +105,7 @@ export class CommentPagination extends LitElement {
             class="pagination-button"
           >
             ${msg('Next')}
-            <i class="i-tabler:chevron-right size-4"></i>
+            <i class="i-tabler:chevron-right size-4" aria-hidden="true"></i>
           </button>
         </li>
       </ul>

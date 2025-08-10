@@ -124,19 +124,19 @@ export class ReplyItem extends LitElement {
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
         .ua=${this.reply?.spec.userAgent}
       >
-        <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
+        <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
           <div class="icon-button-icon ">
           ${
             this.upvoted
-              ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500"></i>`
-              : html`<i slot="icon" class="i-mingcute-heart-line size-4"></i>`
+              ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`
+              : html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
           }
           </div>
           <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
         </button>
-        <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}">
+        <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
           <div class="icon-button-icon ">
-            <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
+            <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
           </div>
           <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}</span>
         </button>
@@ -160,7 +160,7 @@ export class ReplyItem extends LitElement {
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
                 class="quote-badge cursor-pointer inline-flex items-center gap-1 px-2 py-1.5 rounded-base bg-muted-3 text-text-2 hover:-translate-y-0.5 hover:text-text-1 hover:bg-muted-2 transition-all text-sm font-medium"
-                ><i class="i-ic:round-reply"></i><span>${this.quoteReply?.owner.displayName}</span>
+                ><i class="i-ic:round-reply" aria-hidden="true"></i><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`
             : ''

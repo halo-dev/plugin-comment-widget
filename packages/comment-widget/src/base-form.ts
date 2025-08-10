@@ -272,7 +272,7 @@ export class BaseForm extends LitElement {
               ${
                 this.submitting
                   ? html`<icon-loading></icon-loading>`
-                  : html`<i class="i-mingcute-send-line size-5"></i>`
+                  : html`<i class="i-mingcute-send-line size-5" aria-hidden="true"></i>`
               }
               ${msg('Submit')}
             </button>

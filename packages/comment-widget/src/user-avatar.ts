@@ -87,7 +87,7 @@ export class UserAvatar extends LitElement {
     }
 
     if (this.error) {
-      return html`<i class="i-tabler:alert-circle size-5"></i>`;
+      return html`<i class="i-tabler:alert-circle size-5" aria-hidden="true"></i>`;
     }
 
     return html`<img class="avatar-image size-full object-cover" src="${this.src}" alt="${this.alt || ''}" loading="lazy" />`;

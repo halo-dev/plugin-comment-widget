@@ -23,8 +23,8 @@ export class LitToast extends LitElement {
     >
       ${
         this.type === 'success'
-          ? html`<i class="i-tabler:circle-check size-4 text-white"></i>`
-          : html`<i class="i-tabler:alert-circle size-4 text-white"></i>`
+          ? html`<i class="i-tabler:circle-check size-4 text-white" aria-hidden="true"></i>`
+          : html`<i class="i-tabler:alert-circle size-4 text-white" aria-hidden="true"></i>`
       } <span>${this.message}</span>
     </div>`;
   }

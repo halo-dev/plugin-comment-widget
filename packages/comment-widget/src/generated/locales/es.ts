@@ -33,6 +33,7 @@
 's98a5f7789c49dd3f': `En revisión`,
 's9f2ed66340f019c6': `Escribir un comentario`,
 'sa10fbe3fcd6ae148': `Agregar respuesta`,
+'sa82fbb7f361c6f44': `Mostrar respuestas`,
 'sa8dddacbaa66f8e0': `Por favor, inicie sesión primero`,
 'sb206d700d26b14ff': `Subrayado`,
 'sb3d4f79d9d8b71e5': `Enviar comentario`,
@@ -44,5 +45,6 @@
 'sf3ff78cc329d3528': `Anterior`,
 'sf77128b082955d42': `(O iniciar sesión)`,
 'sf7c0eba7c822e3d6': `Negrita`,
+'sf9709983d4da2c54': `Me gusta`,
     };
   

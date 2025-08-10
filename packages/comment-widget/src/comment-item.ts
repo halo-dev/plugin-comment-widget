@@ -121,12 +121,12 @@ export class CommentItem extends LitElement {
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
       .ua=${this.comment?.spec.userAgent}
     >
-      <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}">
+      <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
         <div class="icon-button-icon">
         ${
           this.upvoted
-            ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500"></i>`
-            : html`<i slot="icon" class="i-mingcute-heart-line size-4"></i>`
+            ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`
+            : html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
         }
         </div>
         <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
@@ -137,9 +137,9 @@ export class CommentItem extends LitElement {
         this.comment?.status?.visibleReplyCount === 0
           ? ''
           : html`
-          <button slot="action" class="icon-button group" type="button" @click="${this.handleShowReplies}">
+          <button slot="action" class="icon-button group" type="button" @click="${this.handleShowReplies}" aria-label=${msg('Show replies')}>
             <div class="icon-button-icon ">
-              <i slot="icon" class="i-tabler:message-circle size-4"></i>
+              <i slot="icon" class="i-tabler:message-circle size-4" aria-hidden="true"></i>
             </div>
             <span class="icon-button-text">${this.comment?.status?.visibleReplyCount || 0}</span>
           </button>`
@@ -147,9 +147,9 @@ export class CommentItem extends LitElement {
       ${
         this.configMapData?.basic.withReplies
           ? html`
-          <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}">
+          <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
             <div class="icon-button-icon ">
-              <i slot="icon" class="i-tabler:message-circle-plus size-4"></i>
+              <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
             </div>
             <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}</span>
           </button>`
