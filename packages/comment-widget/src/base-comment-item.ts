@@ -97,7 +97,7 @@ export class BaseCommentItem extends LitElement {
           ${
             this.userWebsite
               ? html`<a
-                class="item-author font-medium text-sm text-text-1"
+                class="item-author font-medium text-sm text-text-1 hover:underline"
                 target="_blank"
                 href=${this.userWebsite}
                 rel="noopener noreferrer"
