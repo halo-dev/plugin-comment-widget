@@ -81,7 +81,7 @@ export class CommenterUABar extends LitElement {
           ? html`
             <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
               ${osIcon ? html`<i class="${osIcon} opacity-90 size-3"></i>` : ''}
-              <span class="text-xs text-text-2">${[os.name, os.version].filter(Boolean).join(' ')}</span>
+              <span class="text-xs text-text-3">${[os.name, os.version].filter(Boolean).join(' ')}</span>
             </div>
             `
           : ''
@@ -91,7 +91,7 @@ export class CommenterUABar extends LitElement {
           ? html`
             <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
               ${browserIcon ? html`<i class="${browserIcon} opacity-90 size-3"></i>` : ''}
-              <span class="text-xs text-text-2">${[browser.name, browser.major].filter(Boolean).join(' ')}</span>
+              <span class="text-xs text-text-3">${[browser.name, browser.major].filter(Boolean).join(' ')}</span>
             </div>
             `
           : ''

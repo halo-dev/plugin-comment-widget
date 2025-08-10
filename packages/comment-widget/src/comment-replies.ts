@@ -74,7 +74,7 @@ export class CommentReplies extends LitElement {
       ${
         this.hasNext && !this.loading
           ? html` <div class="replies-next flex justify-center my-2">
-            <button class="replies-next-button" @click=${this.fetchNext}>${msg('Load more')}</button>
+            <button class="replies-next-button pagination-button" @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
           : ''
       }

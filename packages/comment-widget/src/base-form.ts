@@ -162,7 +162,7 @@ export class BaseForm extends LitElement {
       <button
         @click=${this.handleLogout}
         type="button"
-        class="form-logout text-xs text-text-2 hover:text-text-1 px-2 transition-all py-1.5 rounded-base border border-muted-3 opacity-90 hover:border-muted-4 hover:opacity-100 border-solid"
+        class="form-logout text-xs text-text-3 hover:text-text-1 px-3 transition-all py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
       >
         ${msg('Logout')}
       </button>
@@ -224,7 +224,7 @@ export class BaseForm extends LitElement {
                 placeholder=${msg('Website')}
                 class="input"
               />
-              <a tabindex="-1" href=${this.loginUrl} rel="nofollow" class="form-login-link text-text-2 hover:text-text-1 text-xs transition-all select-none">${msg('(Or login)')}</a>
+              <a tabindex="-1" href=${this.loginUrl} rel="nofollow" class="form-login-link text-text-3 hover:text-text-1 text-xs transition-all select-none">${msg('(Or login)')}</a>
             </div>`
             : ''
         }
@@ -235,7 +235,7 @@ export class BaseForm extends LitElement {
             !this.currentUser && !this.allowAnonymousComments
               ? html`<button
                 @click=${this.handleOpenLoginPage}
-                class="form-login text-xs text-text-2 hover:text-text-1 px-2 transition-all py-1.5 rounded-base border border-muted-3 opacity-90 hover:border-muted-4 hover:opacity-100 border-solid"
+                class="form-login text-xs text-text-3 hover:text-text-1 px-3 transition-all py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
                 type="button"
               >
                 ${msg('Login')}

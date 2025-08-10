@@ -109,13 +109,13 @@ export class BaseCommentItem extends LitElement {
           
           ${this.ua && this.configMapData?.basic.showCommenterDevice ? html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>` : ''}
 
-          <time class="item-meta-info text-xs text-text-2" title=${formatDate(this.creationTime)}>
+          <time class="item-meta-info text-xs text-text-3" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </time>
 
           ${
             !this.approved
-              ? html`<div class="item-meta-info text-xs text-text-2">${msg('Reviewing')}</div>`
+              ? html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`
               : ''
           }
         </div>
