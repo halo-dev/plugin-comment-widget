@@ -9,6 +9,7 @@ import contentStyles from './styles/content.css?inline';
 import { formatDate, timeAgo } from './utils/date';
 import './commenter-ua-bar';
 import { consume } from '@lit/context';
+import sanitizeHtml from 'sanitize-html';
 import { configMapDataContext } from './context';
 import type { ConfigMapData } from './types';
 
@@ -120,7 +121,7 @@ export class BaseCommentItem extends LitElement {
         </div>
 
         <div class="item-content mt-2 content">
-          <slot name="pre-content"></slot>${unsafeHTML(this.content)}
+          <slot name="pre-content"></slot>${unsafeHTML(sanitizeHtml(this.content))}
         </div>
 
         <div class="item-actions mt-2 flex items-center gap-3">
