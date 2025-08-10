@@ -19,5 +19,6 @@ export default defineConfig({
       formats: ['es'],
       fileName: 'index',
     },
+    minify: false,
   },
 });

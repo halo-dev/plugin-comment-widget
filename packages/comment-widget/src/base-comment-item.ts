@@ -3,7 +3,6 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { codeToHtml } from 'shiki/bundle/full';
 import baseStyles from './styles/base';
 import contentStyles from './styles/content.css?inline';
 import { formatDate, timeAgo } from './utils/date';
@@ -53,6 +52,8 @@ export class BaseCommentItem extends LitElement {
         const content = codeblock.textContent || '';
 
         try {
+          const { codeToHtml } = await import('shiki/bundle/full');
+
           const html = await codeToHtml(content, {
             lang,
             theme: 'github-dark',
