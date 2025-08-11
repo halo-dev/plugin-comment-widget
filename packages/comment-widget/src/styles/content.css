@@ -1,5 +1,6 @@
 .content {
   word-wrap: break-word;
+  white-space: pre-wrap;
   @apply text-text-1 text-sm leading-relaxed;
 }
 
