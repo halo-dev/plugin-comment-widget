@@ -73,17 +73,15 @@ export class BaseForm extends LitElement {
     );
   }
 
-  get loginUrl() {
-    const parentDomId = `#comment-${[
-      this.group?.replaceAll('.', '-'),
-      this.kind,
-      this.name,
-    ]
+  get parentDomId() {
+    return `#comment-${[this.group?.replaceAll('.', '-'), this.kind, this.name]
       .join('-')
       .replaceAll(/-+/g, '-')}`;
+  }
 
+  get loginUrl() {
     return `/login?redirect_uri=${encodeURIComponent(
-      window.location.pathname + parentDomId
+      window.location.pathname + this.parentDomId
     )}`;
   }
 
@@ -140,7 +138,9 @@ export class BaseForm extends LitElement {
       )
     ) {
       try {
-        window.location.href = '/logout';
+        window.location.href = `/logout?redirect_uri=${encodeURIComponent(
+          window.location.pathname + this.parentDomId
+        )}`;
       } catch (error) {
         console.error('Failed to logout', error);
       }
@@ -168,13 +168,6 @@ export class BaseForm extends LitElement {
         ${msg('Logout')}
       </button>
     </div>`;
-  }
-
-  onContentInput(e: Event) {
-    const target = e.target as HTMLTextAreaElement;
-    // reset height to auto to make sure it can grow
-    target.style.height = 'auto';
-    target.style.height = `${target.scrollHeight}px`;
   }
 
   onKeydown(e: KeyboardEvent) {
