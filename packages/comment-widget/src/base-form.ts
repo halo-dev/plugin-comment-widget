@@ -163,6 +163,7 @@ export class BaseForm extends LitElement {
         @click=${this.handleLogout}
         type="button"
         class="form-logout text-xs text-text-3 hover:text-text-1 px-3 transition-all py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
+        tabindex="-1"
       >
         ${msg('Logout')}
       </button>
@@ -237,6 +238,7 @@ export class BaseForm extends LitElement {
                 @click=${this.handleOpenLoginPage}
                 class="form-login text-xs text-text-3 hover:text-text-1 px-3 transition-all py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
                 type="button"
+                tabindex="-1"
               >
                 ${msg('Login')}
               </button> `
