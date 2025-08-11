@@ -128,8 +128,7 @@ export class BaseCommentItem extends LitElement {
               code: ['class'],
             },
           })
-        )}
-        </div>
+        )}</div>
 
         <div class="item-actions mt-2 flex items-center gap-3">
           <slot name="action"></slot>
