@@ -198,14 +198,14 @@ export class EmojiButton extends LitElement {
       }
 
       em-emoji-picker {
-        --rgb-color: var(--component-emoji-picker-rgb-color);
-        --rgb-accent: var(--component-emoji-picker-rgb-accent);
-        --rgb-background: var(--component-emoji-picker-rgb-background);
-        --rgb-input: var(--component-emoji-picker-rgb-input);
-        --color-border: var(--component-emoji-picker-color-border);
-        --color-border-over: var(--component-emoji-picker-color-border-over);
+        --rgb-color: var(--halo-cw-emoji-picker-rgb-color, 34, 36, 39);
+        --rgb-accent: var(--halo-cw-emoji-picker-rgb-accent, 34, 102, 237);
+        --rgb-background: var(--halo-cw-emoji-picker-rgb-background, 255, 255, 255);
+        --rgb-input: var(--halo-cw-emoji-picker-rgb-input, 255, 255, 255);
+        --color-border: var(--halo-cw-emoji-picker-color-border, rgba(0, 0, 0, .05));
+        --color-border-over: var(--halo-cw-emoji-picker-color-border-over, rgba(0, 0, 0, .1));
       }
-
+      
       .form__emoji-panel {
         position: absolute;
         box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);

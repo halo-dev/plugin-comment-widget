@@ -1,6 +1,6 @@
 @media (prefers-color-scheme: dark) {
   .color-scheme-auto,
-  [data-color-scheme="auto"] comment-widget {
+  [data-color-scheme="auto"] {
     color-scheme: dark;
 
     /* --halo-comment-widget-base-color: #ffffff;
@@ -24,23 +24,14 @@
     --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
     --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
     --halo-comment-widget-component-pagination-button-border-color-active: #475569;
+    */
 
-    --halo-comment-widget-component-emoji-picker-rgb-color: 222, 222, 221;
-    --halo-comment-widget-component-emoji-picker-rgb-accent: 58, 130, 247;
-    --halo-comment-widget-component-emoji-picker-rgb-background: 21, 22, 23;
-    --halo-comment-widget-component-emoji-picker-rgb-input: 0, 0, 0;
-    --halo-comment-widget-component-emoji-picker-color-border: rgba(
-      255,
-      255,
-      255,
-      0.1
-    );
-    --halo-comment-widget-component-emoji-picker-color-border-over: rgba(
-      255,
-      255,
-      255,
-      0.2
-    ); */
+    --halo-cw-emoji-picker-rgb-color: 222, 222, 221;
+    --halo-cw-emoji-picker-rgb-accent: 58, 130, 247;
+    --halo-cw-emoji-picker-rgb-background: 21, 22, 23;
+    --halo-cw-emoji-picker-rgb-input: 0, 0, 0;
+    --halo-cw-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
+    --halo-cw-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
 
     --halo-cw-primary-1-color: #059669; /* green-600 */
     --halo-cw-primary-2-color: #047857; /* green-700 */
@@ -58,7 +49,7 @@
 
 .color-scheme-dark,
 .dark,
-[data-color-scheme="dark"] comment-widget {
+[data-color-scheme="dark"] {
   color-scheme: dark;
 
   /* --halo-comment-widget-base-color: #ffffff;
@@ -82,23 +73,14 @@
   --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
   --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
   --halo-comment-widget-component-pagination-button-border-color-active: #475569;
+  */
 
-  --halo-comment-widget-component-emoji-picker-rgb-color: 222, 222, 221;
-  --halo-comment-widget-component-emoji-picker-rgb-accent: 58, 130, 247;
-  --halo-comment-widget-component-emoji-picker-rgb-background: 21, 22, 23;
-  --halo-comment-widget-component-emoji-picker-rgb-input: 0, 0, 0;
-  --halo-comment-widget-component-emoji-picker-color-border: rgba(
-    255,
-    255,
-    255,
-    0.1
-  );
-  --halo-comment-widget-component-emoji-picker-color-border-over: rgba(
-    255,
-    255,
-    255,
-    0.2
-  ); */
+  --halo-cw-emoji-picker-rgb-color: 222, 222, 221;
+  --halo-cw-emoji-picker-rgb-accent: 58, 130, 247;
+  --halo-cw-emoji-picker-rgb-background: 21, 22, 23;
+  --halo-cw-emoji-picker-rgb-input: 0, 0, 0;
+  --halo-cw-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
+  --halo-cw-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
 
   --halo-cw-primary-1-color: #059669; /* green-600 */
   --halo-cw-primary-2-color: #047857; /* green-700 */
