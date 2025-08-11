@@ -14,6 +14,7 @@ const OS_ICON_MAP = {
   Manjaro: 'i-logos:manjaro',
   Ubuntu: 'i-logos:ubuntu',
   Fedora: 'i-logos:fedora',
+  HarmonyOS: 'i-simple-icons:harmonyos',
 };
 
 const BROWSER_ICON_MAP = {
@@ -28,6 +29,8 @@ const BROWSER_ICON_MAP = {
   'Edge WebView': 'i-logos:microsoft-edge',
   'Edge WebView2': 'i-logos:microsoft-edge',
   Opera: 'i-logos:opera',
+  'Huawei Browser': 'i-simple-icons:huawei text-[#D6000B]',
+  'MIUI Browser': 'i-simple-icons:xiaomi text-[#FF6901]',
 };
 
 export class CommenterUABar extends LitElement {
