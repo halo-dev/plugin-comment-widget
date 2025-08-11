@@ -1,5 +1,6 @@
 import { BaseCommentItem } from './base-comment-item';
 import { BaseForm } from './base-form';
+import { CommentEditor } from './comment-editor';
 import { CommentItem } from './comment-item';
 import { CommentList } from './comment-list';
 import { CommentPagination } from './comment-pagination';
@@ -25,4 +26,5 @@ export {
   UserAvatar,
   CommentList,
   LitToast,
+  CommentEditor,
 };

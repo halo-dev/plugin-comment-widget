@@ -191,7 +191,7 @@ export class BaseForm extends LitElement {
   override render() {
     return html`
       <form class="form w-full flex flex-col gap-4" @submit="${this.onSubmit}">
-        <comment-editor ${ref(this.editorRef)}></comment-editor>
+        <comment-editor ${ref(this.editorRef)} .placeholder=${this.configMapData?.editor?.placeholder}></comment-editor>
         ${
           !this.currentUser && this.allowAnonymousComments
             ? html`<div class="form-inputs grid grid-cols-1 md:grid-cols-4 gap-2 items-center">

@@ -71,3 +71,4 @@ application-local.properties
 node_modules
 /workplace/
 /src/main/resources/static/
+/src/main/resources/console/

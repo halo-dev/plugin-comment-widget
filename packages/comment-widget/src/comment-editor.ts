@@ -6,10 +6,8 @@ import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
 import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
-import { consume } from '@lit/context';
-import { configMapDataContext } from './context';
+import { property } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import type { ConfigMapData } from './types';
 
 interface ActionItem {
   name?: string;
@@ -75,15 +73,17 @@ const actionItems: ActionItem[] = [
 ];
 
 export class CommentEditor extends LitElement {
+  @property({ type: String })
+  placeholder: string | undefined;
+
+  @property({ type: Boolean, attribute: 'keep-alive' })
+  keepAlive = false;
+
   @state()
   editor: Editor | undefined;
 
   @state()
   loading = true;
-
-  @consume({ context: configMapDataContext })
-  @state()
-  configMapData: ConfigMapData | undefined;
 
   protected override firstUpdated(_changedProperties: PropertyValues): void {
     super.firstUpdated(_changedProperties);
@@ -113,8 +113,7 @@ export class CommentEditor extends LitElement {
         }),
 
         Placeholder.configure({
-          placeholder:
-            this.configMapData?.editor?.placeholder || msg('Write a comment'),
+          placeholder: this.placeholder || msg('Write a comment'),
         }),
 
         CodeBlockShiki.configure({
@@ -133,10 +132,25 @@ export class CommentEditor extends LitElement {
         this.requestUpdate();
       },
     });
+
+    this.editor.on('update', () => {
+      this.dispatchEvent(
+        new CustomEvent('update', {
+          detail: {
+            content: this.editor?.getHTML(),
+            characterCount: this.editor?.storage.characterCount.characters(),
+          },
+        })
+      );
+    });
   }
 
   override disconnectedCallback(): void {
-    this.editor?.destroy();
+    if (!this.keepAlive) {
+      this.editor?.destroy();
+      this.editor = undefined;
+    }
+    super.disconnectedCallback();
   }
 
   setFocus() {
