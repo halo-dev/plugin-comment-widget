@@ -16,5 +16,14 @@ export default definePlugin({
         ),
       };
     },
+    'comment:list-item:content:replace': () => {
+      return {
+        component: markRaw(
+          defineAsyncComponent({
+            loader: () => import('./components/Content.vue'),
+          })
+        ),
+      };
+    },
   },
 });

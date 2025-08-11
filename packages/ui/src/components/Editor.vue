@@ -29,5 +29,5 @@ onMounted(() => {
 });
 </script>
 <template>
-  <comment-editor ref="editorRef"></comment-editor>
+  <comment-editor ref="editorRef" keep-alive></comment-editor>
 </template>

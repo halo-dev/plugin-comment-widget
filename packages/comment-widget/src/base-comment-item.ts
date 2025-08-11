@@ -1,16 +1,14 @@
 import './user-avatar';
 import { msg } from '@lit/localize';
-import { css, html, LitElement, unsafeCSS } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import baseStyles from './styles/base';
-import contentStyles from './styles/content.css?inline';
 import { formatDate, timeAgo } from './utils/date';
 import './commenter-ua-bar';
 import { consume } from '@lit/context';
-import sanitizeHtml from 'sanitize-html';
 import { configMapDataContext } from './context';
 import type { ConfigMapData } from './types';
+import './comment-content';
 
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
@@ -40,49 +38,6 @@ export class BaseCommentItem extends LitElement {
   @consume({ context: configMapDataContext })
   @state()
   configMapData: ConfigMapData | undefined;
-
-  protected override firstUpdated() {
-    const codeElements = this.shadowRoot?.querySelectorAll('pre>code');
-    if (!codeElements?.length) return;
-
-    Promise.all(
-      Array.from(codeElements).map(async (codeblock) => {
-        const lang =
-          this.extractLanguageFromCodeElement(codeblock) || 'plaintext';
-        const content = codeblock.textContent || '';
-
-        try {
-          const { codeToHtml } = await import('shiki/bundle/full');
-
-          const html = await codeToHtml(content, {
-            lang,
-            theme: 'github-dark',
-          });
-
-          if (codeblock.parentElement) {
-            codeblock.parentElement.outerHTML = html;
-          }
-        } catch (error) {
-          console.error('Failed to highlight code:', error);
-        }
-      })
-    );
-  }
-
-  private extractLanguageFromCodeElement(codeElement: Element): string | null {
-    const supportedPrefixes = ['language-', 'lang-'];
-
-    const langClass = Array.from(codeElement.classList).find((className) =>
-      supportedPrefixes.some((prefix) => className.startsWith(prefix))
-    );
-
-    if (langClass) {
-      const prefix = supportedPrefixes.find((p) => langClass.startsWith(p));
-      return prefix ? langClass.substring(prefix.length) : null;
-    }
-
-    return null;
-  }
 
   override render() {
     return html`<div class="item flex gap-3 py-4 ${this.breath ? 'animate-breath' : ''}">
@@ -121,14 +76,7 @@ export class BaseCommentItem extends LitElement {
           }
         </div>
 
-        <div class="item-content mt-2.5 space-y-2.5 content"><slot name="pre-content"></slot>${unsafeHTML(
-          sanitizeHtml(this.content, {
-            allowedAttributes: {
-              ...sanitizeHtml.defaults.allowedAttributes,
-              code: ['class'],
-            },
-          })
-        )}</div>
+        <div class="item-content mt-2.5 space-y-2.5"><slot name="pre-content"></slot><comment-content .content=${this.content}></comment-content></div>
 
         <div class="item-actions mt-2 flex items-center gap-3">
           <slot name="action"></slot>
@@ -141,7 +89,6 @@ export class BaseCommentItem extends LitElement {
 
   static override styles = [
     ...baseStyles,
-    unsafeCSS(contentStyles),
     css`
       .animate-breath {
         animation: breath 1s ease-in-out infinite;

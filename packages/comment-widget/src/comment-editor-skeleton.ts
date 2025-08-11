@@ -1,6 +1,5 @@
 import { css, html, LitElement } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
-import './emoji-button';
 
 export class CommentEditorSkeleton extends LitElement {
   protected override render() {

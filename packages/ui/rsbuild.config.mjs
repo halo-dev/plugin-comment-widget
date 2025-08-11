@@ -21,7 +21,7 @@ export default rsbuildConfig({
         pluginVue({
           vueLoaderOptions: {
             compilerOptions: {
-              isCustomElement: (tag) => tag === 'comment-editor',
+              isCustomElement: (tag) => tag.startsWith('comment-'),
             },
           },
         }),
