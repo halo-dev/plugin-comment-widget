@@ -1,12 +1,6 @@
 import './icons/icon-loading';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 import en from '@emoji-mart/data/i18n/en.json';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 import es from '@emoji-mart/data/i18n/es.json';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 import zh from '@emoji-mart/data/i18n/zh.json';
 import {
   autoUpdate,
@@ -31,17 +25,78 @@ const localeMap = {
   es: es,
 };
 
+const sharedEmojiPanel = {
+  wrapper: null as HTMLDivElement | null,
+  picker: null as Picker | null,
+  activeButton: null as EmojiButton | null,
+
+  init() {
+    if (this.wrapper) return this.wrapper;
+
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      .form__emoji-panel {
+        box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
+        border-radius: 0.875em;
+        overflow: hidden;
+        display: none;
+      }
+      
+      .form__emoji-panel.visible {
+        display: block;
+        animation: fadeInUp 0.3s both;
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 5%, 0);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+        }
+      }
+      
+      em-emoji-picker {
+        --rgb-color: var(--halo-cw-emoji-picker-rgb-color, 34, 36, 39);
+        --rgb-accent: var(--halo-cw-emoji-picker-rgb-accent, 34, 102, 237);
+        --rgb-background: var(--halo-cw-emoji-picker-rgb-background, 255, 255, 255);
+        --rgb-input: var(--halo-cw-emoji-picker-rgb-input, 255, 255, 255);
+        --color-border: var(--halo-cw-emoji-picker-color-border, rgba(0, 0, 0, .05));
+        --color-border-over: var(--halo-cw-emoji-picker-color-border-over, rgba(0, 0, 0, .1));
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    this.wrapper = document.createElement('div');
+    this.wrapper.className = 'form__emoji-panel';
+    this.wrapper.style.position = 'absolute';
+    this.wrapper.style.zIndex = '9999';
+    document.body.appendChild(this.wrapper);
+
+    return this.wrapper;
+  },
+
+  show() {
+    if (this.wrapper) {
+      this.wrapper.classList.add('visible');
+    }
+  },
+
+  hide() {
+    if (this.wrapper) {
+      this.wrapper.classList.remove('visible');
+    }
+  },
+};
+
 export class EmojiButton extends LitElement {
   @state()
   emojiPickerVisible = false;
 
   @state()
   emojiLoading = false;
-
-  @state()
-  emojiPicker: Picker | null = null;
-
-  emojiPickerWrapperRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
 
   buttonRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
 
@@ -58,11 +113,16 @@ export class EmojiButton extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     document.addEventListener('click', this.handleClickOutside, true);
+    sharedEmojiPanel.init();
   }
 
   override disconnectedCallback() {
     document.removeEventListener('click', this.handleClickOutside, true);
     this.cleanupFloating();
+    if (sharedEmojiPanel.activeButton === this) {
+      sharedEmojiPanel.activeButton = null;
+      sharedEmojiPanel.hide();
+    }
     super.disconnectedCallback();
   }
 
@@ -74,8 +134,22 @@ export class EmojiButton extends LitElement {
   }
 
   handleClickOutside(event: Event) {
-    if (this.emojiPickerVisible && !event.composedPath().includes(this)) {
-      this.emojiPickerVisible = false;
+    if (
+      this.emojiPickerVisible &&
+      !event.composedPath().includes(this) &&
+      sharedEmojiPanel.wrapper &&
+      !event.composedPath().includes(sharedEmojiPanel.wrapper)
+    ) {
+      this.closeEmojiPicker();
+    }
+  }
+
+  closeEmojiPicker() {
+    this.emojiPickerVisible = false;
+    this.cleanupFloating();
+    sharedEmojiPanel.hide();
+    if (sharedEmojiPanel.activeButton === this) {
+      sharedEmojiPanel.activeButton = null;
     }
   }
 
@@ -84,40 +158,51 @@ export class EmojiButton extends LitElement {
     e.preventDefault();
 
     if (this.emojiPickerVisible) {
-      this.emojiPickerVisible = false;
-      this.cleanupFloating();
+      this.closeEmojiPicker();
       return;
     }
 
-    if (this.emojiPickerWrapperRef.value?.children.length) {
+    if (
+      sharedEmojiPanel.activeButton &&
+      sharedEmojiPanel.activeButton !== this
+    ) {
+      sharedEmojiPanel.activeButton.closeEmojiPicker();
+    }
+
+    sharedEmojiPanel.activeButton = this;
+
+    if (sharedEmojiPanel.wrapper?.children.length) {
       this.emojiPickerVisible = true;
+      sharedEmojiPanel.show();
       this.setupFloating();
       return;
     }
 
     this.emojiLoading = true;
 
-    const { Picker } = await import(
-      /* webpackChunkName: "emoji-mart" */ 'emoji-mart'
-    );
+    const { Picker } = await import('emoji-mart');
+    const { default: data } = await import('@emoji-mart/data');
 
-    const { default: data } = await import(
-      /* webpackChunkName: "emoji-mart-data" */ '@emoji-mart/data'
-    );
-
-    const emojiPicker = new Picker({
+    sharedEmojiPanel.picker = new Picker({
       data,
       onEmojiSelect: ({ native }: { native: string }) => {
-        this.dispatchEvent(
-          new CustomEvent('emoji-select', { detail: { native } })
-        );
+        const activeButton = sharedEmojiPanel.activeButton;
+        if (activeButton) {
+          activeButton.dispatchEvent(
+            new CustomEvent('emoji-select', { detail: { native } })
+          );
+          activeButton.closeEmojiPicker();
+        }
       },
       i18n: localeMap[getLocale()],
     });
 
-    this.emojiPickerWrapperRef.value?.appendChild(
-      emojiPicker as unknown as Node
-    );
+    if (sharedEmojiPanel.wrapper) {
+      sharedEmojiPanel.wrapper.appendChild(
+        sharedEmojiPanel.picker as unknown as Node
+      );
+      sharedEmojiPanel.show();
+    }
 
     this.emojiPickerVisible = true;
     this.emojiLoading = false;
@@ -125,17 +210,13 @@ export class EmojiButton extends LitElement {
   }
 
   setupFloating() {
-    if (!this.buttonRef.value || !this.emojiPickerWrapperRef.value) return;
+    if (!this.buttonRef.value || !sharedEmojiPanel.wrapper) return;
 
     this.cleanupFloating();
 
-    if (this.emojiPickerWrapperRef.value) {
-      this.emojiPickerWrapperRef.value.style.zIndex = '1000';
-    }
-
     this.cleanupAutoUpdate = autoUpdate(
       this.buttonRef.value,
-      this.emojiPickerWrapperRef.value,
+      sharedEmojiPanel.wrapper,
       () => this.updatePosition()
     );
 
@@ -144,7 +225,7 @@ export class EmojiButton extends LitElement {
 
   async updatePosition() {
     const reference = this.buttonRef.value;
-    const floating = this.emojiPickerWrapperRef.value;
+    const floating = sharedEmojiPanel.wrapper;
 
     if (!reference || !floating) return;
 
@@ -182,12 +263,7 @@ export class EmojiButton extends LitElement {
             @click=${this.handleOpenEmojiPicker}
           ></div>`
       }
-    </div>
-    <div
-      class="form__emoji-panel"
-      ?hidden=${!this.emojiPickerVisible}
-      ${ref(this.emojiPickerWrapperRef)}
-    ></div>`;
+    </div>`;
   }
 
   static override styles = [
@@ -195,36 +271,6 @@ export class EmojiButton extends LitElement {
     css`
       :host {
         display: inline-flex;
-      }
-
-      em-emoji-picker {
-        --rgb-color: var(--halo-cw-emoji-picker-rgb-color, 34, 36, 39);
-        --rgb-accent: var(--halo-cw-emoji-picker-rgb-accent, 34, 102, 237);
-        --rgb-background: var(--halo-cw-emoji-picker-rgb-background, 255, 255, 255);
-        --rgb-input: var(--halo-cw-emoji-picker-rgb-input, 255, 255, 255);
-        --color-border: var(--halo-cw-emoji-picker-color-border, rgba(0, 0, 0, .05));
-        --color-border-over: var(--halo-cw-emoji-picker-color-border-over, rgba(0, 0, 0, .1));
-      }
-      
-      .form__emoji-panel {
-        position: absolute;
-        box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
-        border-radius: 0.875em;
-        overflow: hidden;
-        animation: fadeInUp 0.3s both;
-        z-index: 1000;
-      }
-
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translate3d(0, 5%, 0);
-        }
-
-        to {
-          opacity: 1;
-          transform: translate3d(0, 0, 0);
-        }
       }
       @unocss-placeholder;
     `,
