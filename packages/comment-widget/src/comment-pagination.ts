@@ -15,58 +15,6 @@ export class CommentPagination extends LitElement {
     return Math.ceil(this.total / this.size);
   }
 
-  renderPageNumbers() {
-    const pageNumbers = [];
-    const currentPage = this.page;
-    const totalPageNumbersToShow = 3;
-    let startPage: number;
-    let endPage: number;
-
-    if (this.totalPages <= totalPageNumbersToShow) {
-      startPage = 1;
-      endPage = this.totalPages;
-    } else {
-      if (currentPage <= 3) {
-        startPage = 1;
-        endPage = totalPageNumbersToShow;
-      } else if (currentPage + 2 >= this.totalPages) {
-        startPage = this.totalPages - (totalPageNumbersToShow - 1);
-        endPage = this.totalPages;
-      } else {
-        startPage = currentPage - 2;
-        endPage = currentPage + 2;
-      }
-    }
-
-    if (startPage > 1) {
-      pageNumbers.push(1);
-      if (startPage > 2) pageNumbers.push('...');
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    if (endPage < this.totalPages) {
-      if (endPage < this.totalPages - 1) pageNumbers.push('...');
-      pageNumbers.push(this.totalPages);
-    }
-
-    return pageNumbers.map((number) => {
-      if (number === '...') {
-        return html`<li class="px-3.5 inline-flex items-center justify-center">
-          <i class="i-tabler:dots size-4" aria-hidden="true"></i>
-        </li>`;
-      } else {
-        return html`<li>
-          <button class="pagination-button px-3.5 ${this.page === number ? 'bg-muted-3' : ''}" @click=${() => this.gotoPage(number)} ?disabled=${number === this.page}>
-            ${number}
-          </button>
-        </li>`;
-      }
-    });
-  }
-
   gotoPage(page: number | string) {
     if (page !== this.page) {
       this.dispatchEvent(
@@ -81,7 +29,7 @@ export class CommentPagination extends LitElement {
 
   override render() {
     return html`
-      <ul class="pagination flex items-center gap-2" role="navigation">
+      <ul class="pagination flex items-center gap-4" role="navigation">
         <li>
           <button
             rel="prev"
@@ -94,7 +42,12 @@ export class CommentPagination extends LitElement {
             ${msg('Previous')}
           </button>
         </li>
-        ${this.renderPageNumbers()}
+        <li class="inline-flex items-center gap-1 text-sm text-text-3 hover:text-text-1 transition-all">
+          <select name="pagination-value" id="pagination-value" class="pagination-select appearance-none outline-none bg-transparent" @change=${(e: Event) => this.gotoPage((e.target as HTMLSelectElement).value)}>
+            ${Array.from({ length: this.totalPages }, (_, i) => i + 1).map((page) => html`<option .selected=${page === this.page} value=${page}>${page} / ${this.totalPages}</option>`)}
+          </select>
+          <i class="i-tabler:chevron-down size-4" aria-hidden="true"></i>
+        </li>
         <li>
           <button
             rel="next"
