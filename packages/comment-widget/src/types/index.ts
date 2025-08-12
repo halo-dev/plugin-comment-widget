@@ -32,3 +32,13 @@ interface AvatarConfig {
 interface EditorConfig {
   placeholder?: string;
 }
+
+export interface ProblemDetail {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance: string;
+  requestId: string;
+  timestamp: string;
+}

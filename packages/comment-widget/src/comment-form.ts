@@ -18,6 +18,7 @@ import {
   versionContext,
 } from './context';
 import type { ToastManager } from './lit-toast';
+import type { ProblemDetail } from './types';
 import {
   type CaptchaRequiredResponse,
   getCaptchaCodeHeader,
@@ -156,8 +157,14 @@ export class CommentForm extends LitElement {
           this.toastManager?.warn(detail);
           return;
         }
-      }
 
+        const problemDetail = error.data as unknown as ProblemDetail;
+        this.toastManager?.error(
+          [problemDetail?.title, problemDetail?.detail].join(' - ') ||
+            msg('Comment failed, please try again later')
+        );
+        return;
+      }
       this.toastManager?.error(msg('Comment failed, please try again later'));
     } finally {
       this.submitting = false;
