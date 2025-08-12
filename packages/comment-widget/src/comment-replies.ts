@@ -57,7 +57,7 @@ export class CommentReplies extends LitElement {
                 this.replies,
                 (item) => item.metadata.name,
                 (item) =>
-                  html` <reply-item
+                  html`<reply-item
                     .comment=${this.comment}
                     .reply="${item}"
                     .replies=${this.replies}

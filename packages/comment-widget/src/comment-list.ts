@@ -85,15 +85,12 @@ export class CommentList extends LitElement {
     super.connectedCallback();
     this.fetchComments();
 
-    // Handle comment:reload event
-    window.addEventListener('comment:reload', (e: Event) => {
-      if (e instanceof CustomEvent) {
-        const data = e.detail;
-        this.fetchComments({
-          page: data.page,
-          scrollIntoView: data.scrollIntoView,
-        });
-      }
+    // Handle halo:comment:created event, then reload the comment list
+    window.addEventListener('halo:comment:created', () => {
+      this.fetchComments({
+        page: 1,
+        scrollIntoView: true,
+      });
     });
   }
 

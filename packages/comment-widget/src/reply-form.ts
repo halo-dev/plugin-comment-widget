@@ -144,6 +144,8 @@ export class ReplyForm extends LitElement {
       }
 
       this.dispatchEvent(new CustomEvent('reload'));
+      window.dispatchEvent(new CustomEvent('halo:comment-reply:created'));
+
       this.baseFormRef.value?.resetForm();
     } catch (error) {
       if (error instanceof FetchError) {

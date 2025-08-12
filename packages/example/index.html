@@ -37,6 +37,14 @@
           document.documentElement.classList.add(theme);
         }
       });
+
+      window.addEventListener("halo:comment:created", () => {
+        console.log("halo:comment:created");
+      });
+
+      window.addEventListener("halo:comment-reply:created", () => {
+        console.log("halo:comment-reply:created");
+      });
     </script>
   </head>
   <body>

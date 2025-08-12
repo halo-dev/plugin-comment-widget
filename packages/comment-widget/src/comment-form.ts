@@ -140,14 +140,7 @@ export class CommentForm extends LitElement {
         );
       }
 
-      window.dispatchEvent(
-        new CustomEvent('comment:reload', {
-          detail: {
-            page: 1,
-            scrollIntoView: true,
-          },
-        })
-      );
+      window.dispatchEvent(new CustomEvent('halo:comment:created'));
 
       this.baseFormRef.value?.resetForm();
     } catch (error) {
