@@ -237,7 +237,14 @@ export class BaseForm extends LitElement {
               </button> `
               : ''
           }
+          
           <div class="form-actions justify-end flex gap-2 flex-wrap items-center">
+
+            <div class="flex items-center gap-2">
+              <input id="allowNotification" name="allowNotification" type="checkbox" checked />
+              <label for="allowNotification" class="text-xs select-none text-text-3 hover:text-text-1 transition-all">${msg('Allow notification')}</label>
+            </div>
+
             ${
               this.showCaptcha && this.captcha
                 ? html`
@@ -292,6 +299,7 @@ export class BaseForm extends LitElement {
       detail: {
         ...data,
         content,
+        allowNotification: data.allowNotification === 'on',
       },
     });
     this.dispatchEvent(event);
