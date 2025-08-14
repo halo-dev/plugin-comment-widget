@@ -44,6 +44,7 @@ export default defineConfig({
     },
     borderRadius: {
       base: 'var(--halo-cw-base-rounded, 0.5em)',
+      avatar: 'var(--halo-cw-avatar-rounded, 9999px)',
     },
   },
   rules: [
@@ -65,7 +66,7 @@ export default defineConfig({
     'pagination-button':
       'inline-flex h-10 items-center text-sm gap-1 hover:bg-muted-3 rounded-base px-3 transition-all text-text-1 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
     avatar:
-      'rounded-full size-9 overflow-hidden inline-flex items-center justify-center bg-muted-2',
+      'rounded-avatar size-[var(--halo-cw-avatar-size,2.25em)] overflow-hidden inline-flex items-center justify-center bg-muted-2',
   },
   transformers: [transformerDirectives()],
 });

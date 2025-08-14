@@ -1,9 +1,7 @@
 import resetStyles from '@unocss/reset/tailwind.css?inline';
 import { css, unsafeCSS } from 'lit';
-import varStyles from './var';
 
 const baseStyles = [
-  varStyles,
   unsafeCSS(resetStyles),
   css`
     :host {
