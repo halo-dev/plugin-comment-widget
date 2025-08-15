@@ -88,13 +88,14 @@ export class ReplyForm extends LitElement {
 
     const data = e.detail;
 
-    const { displayName, email, website, content } = data || {};
+    const { displayName, email, website, content, hidden } = data || {};
 
     const replyRequest: ReplyRequest = {
       raw: content,
       content: content,
       // TODO: support user input
       allowNotification: true,
+      hidden: hidden || false,
     };
 
     if (this.quoteReply) {

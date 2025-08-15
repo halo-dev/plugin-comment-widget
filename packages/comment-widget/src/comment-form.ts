@@ -89,7 +89,7 @@ export class CommentForm extends LitElement {
       content: content,
       // TODO: support user input
       allowNotification: true,
-      hidden: hidden,
+      hidden: hidden || false,
       subjectRef: {
         group: this.group,
         kind: this.kind,
