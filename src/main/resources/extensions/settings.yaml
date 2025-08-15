@@ -38,7 +38,7 @@ spec:
         - $formkit: checkbox
           label: 支持私密评论
           name: enablePrivateComment
-          help: 开启之后，已登录的评论者可选是否私密评论，私密评论仅评论者和网站管理员（包含评论查看权限）可见，
+          help: 开启之后，评论者可选是否私密评论，私密评论仅评论者（已登录）和网站管理员（包含评论查看权限）可见，
           value: false
     - group: security
       label: 安全设置
