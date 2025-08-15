@@ -106,7 +106,7 @@ export class BaseCommentItem extends LitElement {
         }
       }
 
-        @unocss-placeholder;
+      @unocss-placeholder;
     `,
   ];
 }

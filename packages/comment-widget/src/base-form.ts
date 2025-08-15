@@ -22,6 +22,7 @@ import type { ConfigMapData } from './types';
 import './comment-editor';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
+import { cleanHtml } from './utils/html';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -278,7 +279,7 @@ export class BaseForm extends LitElement {
   }
 
   private debouncedSubmit = debounce((data: Record<string, unknown>) => {
-    const content = this.editorRef.value?.editor?.getHTML() || '';
+    const content = cleanHtml(this.editorRef.value?.editor?.getHTML());
     const characterCount =
       this.editorRef.value?.editor?.storage.characterCount.characters();
 

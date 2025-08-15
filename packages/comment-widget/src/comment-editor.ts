@@ -8,6 +8,7 @@ import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
 import { property } from 'lit/decorators.js';
 import baseStyles from './styles/base';
+import { cleanHtml } from './utils/html';
 
 interface ActionItem {
   name?: string;
@@ -137,7 +138,7 @@ export class CommentEditor extends LitElement {
       this.dispatchEvent(
         new CustomEvent('update', {
           detail: {
-            content: this.editor?.getHTML(),
+            content: cleanHtml(this.editor?.getHTML()),
             characterCount: this.editor?.storage.characterCount.characters(),
           },
         })

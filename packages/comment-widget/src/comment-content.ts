@@ -1,9 +1,9 @@
 import { css, html, LitElement, type PropertyValues, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import sanitizeHtml from 'sanitize-html';
 import baseStyles from './styles/base';
 import contentStyles from './styles/content.css?inline';
+import { cleanHtml } from './utils/html';
 
 export class CommentContent extends LitElement {
   @property({ type: String })
@@ -55,14 +55,7 @@ export class CommentContent extends LitElement {
 
   protected override render() {
     return html`
-      <div class="content">${unsafeHTML(
-        sanitizeHtml(this.content, {
-          allowedAttributes: {
-            ...sanitizeHtml.defaults.allowedAttributes,
-            code: ['class'],
-          },
-        })
-      )}</div>
+      <div class="content">${unsafeHTML(cleanHtml(this.content))}</div>
     `;
   }
 
