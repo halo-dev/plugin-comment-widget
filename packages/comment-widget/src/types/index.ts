@@ -12,6 +12,7 @@ interface BasicConfig {
   replySize: number;
   showCommenterDevice?: boolean;
   enablePrivateComment?: boolean;
+  showPrivateCommentBadge?: boolean;
 }
 
 interface SecurityConfig {
