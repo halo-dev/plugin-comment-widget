@@ -11,6 +11,7 @@ interface BasicConfig {
   withReplySize: number;
   replySize: number;
   showCommenterDevice?: boolean;
+  enablePrivateComment?: boolean;
 }
 
 interface SecurityConfig {

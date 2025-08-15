@@ -35,6 +35,11 @@ spec:
           label: 显示评论者设备信息
           name: showCommenterDevice
           value: false
+        - $formkit: checkbox
+          label: 支持私密评论
+          name: enablePrivateComment
+          help: 开启之后，评论者可选是否私密评论
+          value: false
     - group: security
       label: 安全设置
       formSchema:

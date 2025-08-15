@@ -41,6 +41,7 @@
 'sc8da3cc71de63832': `Iniciar sesión`,
 'sd1f44f1a8bc20e67': `Correo electrónico`,
 'sd5e242ab9574958a': `Error al comentar, por favor intente más tarde`,
+'se7bee6e9a9b5394c': `Íntimo`,
 'sea7e567ed89dc0d7': `Seleccionar emoticono`,
 'sf3ff78cc329d3528': `Anterior`,
 'sf77128b082955d42': `(O iniciar sesión)`,

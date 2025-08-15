@@ -150,6 +150,10 @@
   <source>Show replies</source>
   <target>顯示回覆</target>
 </trans-unit>
+<trans-unit id="se7bee6e9a9b5394c">
+  <source>Private</source>
+  <target>私密</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

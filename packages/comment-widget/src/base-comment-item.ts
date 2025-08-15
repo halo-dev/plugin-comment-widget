@@ -33,7 +33,10 @@ export class BaseCommentItem extends LitElement {
   content = '';
 
   @property({ type: String })
-  ua: string = '';
+  ua: string | undefined;
+
+  @property({ type: Boolean })
+  private: boolean | undefined;
 
   @consume({ context: configMapDataContext })
   @state()
@@ -49,7 +52,7 @@ export class BaseCommentItem extends LitElement {
         ></user-avatar>
       </div>
       <div class="item-main flex-[1_1_auto] min-w-0 w-full">
-        <div class="item-meta flex items-center gap-3 flex-wrap">
+        <div class="item-meta flex items-center gap-2 flex-wrap">
           ${
             this.userWebsite
               ? html`<a
@@ -64,6 +67,18 @@ export class BaseCommentItem extends LitElement {
           }
           
           ${this.ua && this.configMapData?.basic.showCommenterDevice ? html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>` : ''}
+
+
+          ${
+            this.private
+              ? html`
+              <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+                <i class="i-ri-git-repository-private-line opacity-90 size-3" aria-hidden="true"></i>
+                <span class="text-xs text-text-2">${msg('Private')}</span>
+              </div>`
+              : ''
+          }
+          
 
           <time class="item-meta-info text-xs text-text-3" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}

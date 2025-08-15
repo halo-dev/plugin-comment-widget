@@ -123,6 +123,7 @@ export class ReplyItem extends LitElement {
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
         .ua=${this.reply?.spec.userAgent}
+        .private=${this.comment?.spec.hidden || this.reply?.spec.hidden}
       >
         <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
           <div class="icon-button-icon ">

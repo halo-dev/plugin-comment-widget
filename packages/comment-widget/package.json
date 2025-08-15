@@ -35,7 +35,7 @@
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
     "@floating-ui/dom": "^1.7.3",
-    "@halo-dev/api-client": "^2.21.1",
+    "@halo-dev/api-client": "https://pkg.pr.new/@halo-dev/api-client@7679",
     "@lit/context": "^1.1.6",
     "@lit/localize": "^0.12.2",
     "@tiptap/core": "^3.1.0",
