@@ -154,6 +154,14 @@
   <source>Private</source>
   <target>私密</target>
 </trans-unit>
+<trans-unit id="s838e512973be01d4">
+  <source>Currently logged in. After selecting the private option, comments will only be visible to yourself and the site administrator.</source>
+  <target>目前已登入，選擇私密選項後，評論將僅對您和網站管理員可見。</target>
+</trans-unit>
+<trans-unit id="s5184a3f3e2f7b603">
+  <source>You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.</source>
+  <target>目前是匿名狀態，選擇私密選項後，評論將僅對網站管理員可見。</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

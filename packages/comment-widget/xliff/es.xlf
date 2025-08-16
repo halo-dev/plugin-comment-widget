@@ -154,6 +154,14 @@
   <source>Private</source>
   <target>Íntimo</target>
 </trans-unit>
+<trans-unit id="s838e512973be01d4">
+  <source>Currently logged in. After selecting the private option, comments will only be visible to yourself and the site administrator.</source>
+  <target>Actualmente conectado. Después de seleccionar la opción privada, los comentarios solo serán visibles para usted y el administrador del sitio.</target>
+</trans-unit>
+<trans-unit id="s5184a3f3e2f7b603">
+  <source>You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.</source>
+  <target>Actualmente anónimo. Después de seleccionar la opción privada, el comentario solo será visible para el administrador del sitio.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

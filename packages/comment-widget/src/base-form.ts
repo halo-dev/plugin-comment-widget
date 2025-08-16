@@ -23,6 +23,7 @@ import './comment-editor';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
 import { cleanHtml } from './utils/html';
+import './base-tooltip';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -251,6 +252,9 @@ export class BaseForm extends LitElement {
                   <div class="flex items-center gap-2">
                     <input id="hidden" name="hidden" type="checkbox" />
                     <label for="hidden" class="text-xs select-none text-text-3 hover:text-text-1 transition-all">${msg('Private')}</label>
+                    <base-tooltip content=${this.currentUser ? msg('Currently logged in. After selecting the private option, comments will only be visible to yourself and the site administrator.') : msg('You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.')}>
+                      <i class="i-mingcute:information-line size-3.5 text-text-3 block"></i>
+                    </base-tooltip>
                   </div>
                 `
                 : ''
