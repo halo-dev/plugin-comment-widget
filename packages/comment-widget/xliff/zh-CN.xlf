@@ -150,6 +150,18 @@
   <source>Show replies</source>
   <target>显示回复</target>
 </trans-unit>
+<trans-unit id="se7bee6e9a9b5394c">
+  <source>Private</source>
+  <target>私密</target>
+</trans-unit>
+<trans-unit id="s838e512973be01d4">
+  <source>Currently logged in. After selecting the private option, comments will only be visible to yourself and the site administrator.</source>
+  <target>当前已登录，选择私密选项后，评论将仅对您和网站管理员可见。</target>
+</trans-unit>
+<trans-unit id="s5184a3f3e2f7b603">
+  <source>You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.</source>
+  <target>当前是匿名状态，选择私密选项后，评论将仅对网站管理员可见。</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

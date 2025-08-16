@@ -35,6 +35,21 @@ spec:
           label: 显示评论者设备信息
           name: showCommenterDevice
           value: false
+        - $formkit: checkbox
+          label: 支持私密评论
+          id: enablePrivateComment
+          key: enablePrivateComment
+          name: enablePrivateComment
+          help: 开启之后，评论者可选是否私密评论，私密评论仅评论者（已登录）和网站管理员（包含评论查看权限）可见，
+          value: false
+        - $formkit: checkbox
+          if: "$get(enablePrivateComment).value === true"
+          label: 显示私密评论状态
+          name: showPrivateCommentBadge
+          id: showPrivateCommentBadge
+          key: showPrivateCommentBadge
+          value: true
+          help: 开启后，私密评论会显示一个私密状态标识
     - group: security
       label: 安全设置
       formSchema:
