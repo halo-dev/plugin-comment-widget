@@ -8,6 +8,7 @@ import './base-comment-item';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import type { CommentReplies } from './comment-replies';
@@ -124,11 +125,13 @@ export class CommentItem extends LitElement {
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
         <div class="icon-button-icon">
-        ${
-          this.upvoted
-            ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`
-            : html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
-        }
+        ${when(
+          this.upvoted,
+          () =>
+            html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`,
+          () =>
+            html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
+        )}
         </div>
         <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
       </button>
@@ -145,38 +148,39 @@ export class CommentItem extends LitElement {
             <span class="icon-button-text">${this.comment?.status?.visibleReplyCount || 0}</span>
           </button>`
       }
-      ${
-        this.configMapData?.basic.withReplies
-          ? html`
+
+      ${when(
+        this.configMapData?.basic.withReplies,
+        () => html`
           <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
             </div>
             <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}</span>
-          </button>`
-          : ''
-      }
+          </button>
+          `
+      )}
 
       <div slot="footer">
-        ${
-          this.showReplyForm
-            ? html`<div class="mt-2">
+        ${when(
+          this.showReplyForm,
+          () => html`
+            <div class="mt-2">
               <reply-form
                 @reload=${this.onReplyCreated}
                 .comment=${this.comment}
               ></reply-form>
-            </div>`
-            : ''
-        }
-        ${
-          this.showReplies
-            ? html`<comment-replies
+            </div>
+          `
+        )}
+        ${when(
+          this.showReplies,
+          () => html`<comment-replies
               ${ref(this.commentRepliesRef)}
               .comment="${this.comment}"
               .showReplyForm=${this.showReplyForm}
             ></comment-replies>`
-            : ``
-        }
+        )}
       </div>
     </base-comment-item>`;
   }

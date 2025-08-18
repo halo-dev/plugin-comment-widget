@@ -38,10 +38,10 @@
     "@halo-dev/api-client": "https://pkg.pr.new/@halo-dev/api-client@7679",
     "@lit/context": "^1.1.6",
     "@lit/localize": "^0.12.2",
-    "@tiptap/core": "^3.1.0",
-    "@tiptap/extensions": "^3.1.0",
-    "@tiptap/pm": "^3.1.0",
-    "@tiptap/starter-kit": "^3.1.0",
+    "@tiptap/core": "^3.2.0",
+    "@tiptap/extensions": "^3.2.0",
+    "@tiptap/pm": "^3.2.0",
+    "@tiptap/starter-kit": "^3.2.0",
     "dayjs": "^1.11.13",
     "emoji-mart": "^5.6.0",
     "es-toolkit": "^1.39.9",
@@ -53,7 +53,7 @@
     "ua-parser-js": "^2.0.4"
   },
   "devDependencies": {
-    "@iconify/json": "^2.2.371",
+    "@iconify/json": "^2.2.373",
     "@lit/localize-tools": "^0.8.0",
     "@types/sanitize-html": "^2.16.0",
     "@unocss/reset": "^66.4.2",

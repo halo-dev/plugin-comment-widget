@@ -3,28 +3,17 @@
   [data-color-scheme="auto"] {
     color-scheme: dark;
 
-    /* --halo-comment-widget-base-color: #ffffff;
-    --halo-comment-widget-base-info-color: #64748b;
-    --halo-comment-widget-component-form-input-bg-color: #475569;
-    --halo-comment-widget-component-form-input-color: #ffffff;
-    --halo-comment-widget-component-form-input-border-color: #495056;
-    --halo-comment-widget-component-form-input-border-color-focus: #65a3ff;
-    --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15em
-      #1c3966;
-    --halo-comment-widget-component-form-button-login-bg-color: #334155;
-    --halo-comment-widget-component-form-button-login-bg-color-hover: #475569;
-    --halo-comment-widget-component-form-button-login-border-color: #475569;
-    --halo-comment-widget-component-form-button-submit-border-color: #475569;
-    --halo-comment-widget-component-form-button-submit-border-color-hover: #64748b;
-    --halo-comment-widget-component-form-button-emoji-color: #cbd5e1;
+    --halo-cw-primary-1-color: #059669;
+    --halo-cw-primary-2-color: #047857;
+    --halo-cw-primary-3-color: #065f46;
 
-    --halo-comment-widget-component-comment-item-action-bg-color-hover: #475569;
-    --halo-comment-widget-component-comment-item-action-color-hover: #94a3b8;
+    --halo-cw-text-1-color: #f9fafb;
+    --halo-cw-text-2-color: #e5e7eb;
+    --halo-cw-text-3-color: #9ca3af;
 
-    --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
-    --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
-    --halo-comment-widget-component-pagination-button-border-color-active: #475569;
-    */
+    --halo-cw-muted-1-color: #4b5563;
+    --halo-cw-muted-2-color: #374151;
+    --halo-cw-muted-3-color: #1f2937;
 
     --halo-cw-emoji-picker-rgb-color: 222, 222, 221;
     --halo-cw-emoji-picker-rgb-accent: 58, 130, 247;
@@ -32,18 +21,6 @@
     --halo-cw-emoji-picker-rgb-input: 0, 0, 0;
     --halo-cw-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
     --halo-cw-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
-
-    --halo-cw-primary-1-color: #059669; /* green-600 */
-    --halo-cw-primary-2-color: #047857; /* green-700 */
-    --halo-cw-primary-3-color: #065f46; /* green-800 */
-
-    --halo-cw-text-1-color: #f9fafb; /* gray-50 */
-    --halo-cw-text-2-color: #e5e7eb; /* gray-200 */
-    --halo-cw-text-3-color: #9ca3af; /* gray-400 */
-
-    --halo-cw-muted-1-color: #4b5563; /* gray-600 */
-    --halo-cw-muted-2-color: #374151; /* gray-700 */
-    --halo-cw-muted-3-color: #1f2937; /* gray-800 */
   }
 }
 
@@ -52,28 +29,17 @@
 [data-color-scheme="dark"] {
   color-scheme: dark;
 
-  /* --halo-comment-widget-base-color: #ffffff;
-  --halo-comment-widget-base-info-color: #64748b;
-  --halo-comment-widget-component-form-input-bg-color: #475569;
-  --halo-comment-widget-component-form-input-color: #ffffff;
-  --halo-comment-widget-component-form-input-border-color: #495056;
-  --halo-comment-widget-component-form-input-border-color-focus: #65a3ff;
-  --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15em
-    #1c3966;
-  --halo-comment-widget-component-form-button-login-bg-color: #334155;
-  --halo-comment-widget-component-form-button-login-bg-color-hover: #475569;
-  --halo-comment-widget-component-form-button-login-border-color: #475569;
-  --halo-comment-widget-component-form-button-submit-border-color: #475569;
-  --halo-comment-widget-component-form-button-submit-border-color-hover: #64748b;
-  --halo-comment-widget-component-form-button-emoji-color: #cbd5e1;
+  --halo-cw-primary-1-color: #059669;
+  --halo-cw-primary-2-color: #047857;
+  --halo-cw-primary-3-color: #065f46;
 
-  --halo-comment-widget-component-comment-item-action-bg-color-hover: #475569;
-  --halo-comment-widget-component-comment-item-action-color-hover: #94a3b8;
+  --halo-cw-text-1-color: #f9fafb;
+  --halo-cw-text-2-color: #e2e8f0;
+  --halo-cw-text-3-color: #94a3b8;
 
-  --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
-  --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
-  --halo-comment-widget-component-pagination-button-border-color-active: #475569;
-  */
+  --halo-cw-muted-1-color: #64748b;
+  --halo-cw-muted-2-color: #475569;
+  --halo-cw-muted-3-color: #334155;
 
   --halo-cw-emoji-picker-rgb-color: 222, 222, 221;
   --halo-cw-emoji-picker-rgb-accent: 58, 130, 247;
@@ -81,16 +47,4 @@
   --halo-cw-emoji-picker-rgb-input: 0, 0, 0;
   --halo-cw-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
   --halo-cw-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
-
-  --halo-cw-primary-1-color: #059669; /* green-600 */
-  --halo-cw-primary-2-color: #047857; /* green-700 */
-  --halo-cw-primary-3-color: #065f46; /* green-800 */
-
-  --halo-cw-text-1-color: #f9fafb; /* gray-50 */
-  --halo-cw-text-2-color: #e2e8f0; /* gray-200 */
-  --halo-cw-text-3-color: #94a3b8; /* gray-400 */
-
-  --halo-cw-muted-1-color: #64748b; /* gray-600 */
-  --halo-cw-muted-2-color: #475569; /* gray-700 */
-  --halo-cw-muted-3-color: #334155; /* gray-800 */
 }

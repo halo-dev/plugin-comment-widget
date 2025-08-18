@@ -1,5 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { when } from 'lit/directives/when.js';
 import type { UAParser } from 'ua-parser-js';
 import baseStyles from './styles/base';
 
@@ -83,26 +84,20 @@ export class CommenterUABar extends LitElement {
 
     return html`
     <div class="inline-flex gap-2 items-center">
-      ${
-        os
-          ? html`
-            <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-              ${osIcon ? html`<i class="${osIcon} opacity-90 size-3" aria-hidden="true"></i>` : ''}
+      ${when(
+        os,
+        () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+              ${when(osIcon, () => html`<i class="${osIcon} opacity-90 size-3" aria-hidden="true"></i>`)}
               <span class="text-xs text-text-2">${os.name}</span>
-            </div>
-            `
-          : ''
-      }
-      ${
-        browser
-          ? html`
-            <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-              ${browserIcon ? html`<i class="${browserIcon} opacity-90 size-3" aria-hidden="true"></i>` : ''}
+            </div>`
+      )}
+      ${when(
+        browser,
+        () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+              ${when(browserIcon, () => html`<i class="${browserIcon} opacity-90 size-3" aria-hidden="true"></i>`)}
               <span class="text-xs text-text-2">${[browser.name, browser.major].filter(Boolean).join(' ')}</span>
-            </div>
-            `
-          : ''
-      }
+            </div>`
+      )}
     </div>`;
   }
 

@@ -7,6 +7,7 @@ import './base-comment-item';
 import './reply-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import { LS_UPVOTED_REPLIES_KEY } from './constant';
@@ -127,11 +128,13 @@ export class ReplyItem extends LitElement {
       >
         <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
           <div class="icon-button-icon ">
-          ${
-            this.upvoted
-              ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`
-              : html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
-          }
+          ${when(
+            this.upvoted,
+            () =>
+              html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`,
+            () =>
+              html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
+          )}
           </div>
           <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
         </button>
@@ -141,22 +144,19 @@ export class ReplyItem extends LitElement {
           </div>
           <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}</span>
         </button>
-        ${
-          this.showReplyForm
-            ? html`
-              <div class="reply-form mt-2" slot="footer">
+        ${when(
+          this.showReplyForm,
+          () => html`<div class="reply-form mt-2" slot="footer">
                 <reply-form
                   .comment=${this.comment}
                   .quoteReply=${this.reply}
                   @reload=${() => this.dispatchEvent(new CustomEvent('reload'))}
                 ></reply-form>
-              </div>
-            `
-            : ``
-        }
-        ${
-          this.quoteReply
-            ? html`<span
+              </div>`
+        )}
+        ${when(
+          this.quoteReply,
+          () => html`<span
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
@@ -164,8 +164,7 @@ export class ReplyItem extends LitElement {
                 ><i class="i-ic:round-reply" aria-hidden="true"></i><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`
-            : ''
-        }
+        )}
       </base-comment-item>
     `;
   }
