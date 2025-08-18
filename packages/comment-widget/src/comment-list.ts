@@ -19,6 +19,7 @@ import type { ConfigMapData } from './types';
 import './comment-pagination';
 import './comment-item';
 import './loading-block';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import baseStyles from './styles/base';
 
@@ -160,18 +161,17 @@ export class CommentList extends LitElement {
           </div>
         `
     }
-    ${
-      this.shouldDisplayPagination
-        ? html`
-          <comment-pagination
+    ${when(
+      this.shouldDisplayPagination,
+      () => html`<comment-pagination
             .total=${this.comments.total}
             .page=${this.comments.page}
             .size=${this.comments.size}
             @page-change=${this.onPageChange}
           ></comment-pagination>
         `
-        : ''
-    }`;
+    )}
+    `;
   }
 
   static override styles = [

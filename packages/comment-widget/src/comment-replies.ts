@@ -8,6 +8,7 @@ import './reply-item';
 import './loading-block';
 import './reply-form';
 import { msg } from '@lit/localize';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
@@ -49,10 +50,9 @@ export class CommentReplies extends LitElement {
 
   override render() {
     return html` <div class="replies-main">
-      ${
-        this.replies.length
-          ? html`
-            <div class="replies-list mt-3">
+      ${when(
+        this.replies.length,
+        () => html`<div class="replies-list mt-3">
               ${repeat(
                 this.replies,
                 (item) => item.metadata.name,
@@ -66,18 +66,15 @@ export class CommentReplies extends LitElement {
                     @reload=${this.fetchReplies}
                   ></reply-item>`
               )}
-            </div>
-          `
-          : ''
-      }
-      ${this.loading ? html` <loading-block></loading-block>` : ''}
-      ${
-        this.hasNext && !this.loading
-          ? html` <div class="replies-next flex justify-center my-2">
+            </div>`
+      )}
+      ${when(this.loading, () => html` <loading-block></loading-block>`)}
+      ${when(
+        this.hasNext && !this.loading,
+        () => html`<div class="replies-next flex justify-center my-2">
             <button class="replies-next-button pagination-button" @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
-          : ''
-      }
+      )}
     </div>`;
   }
 
@@ -142,13 +139,13 @@ export class CommentReplies extends LitElement {
       // TODO: Fix ts error
       // Needs @halo-dev/api-client@2.14.0
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       this.replies = this.comment?.replies.items;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       this.page = this.comment?.replies.page;
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error
       this.hasNext = this.comment?.replies.hasNext;
     } else {
       this.fetchReplies();

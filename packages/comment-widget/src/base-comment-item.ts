@@ -9,6 +9,8 @@ import { consume } from '@lit/context';
 import { configMapDataContext } from './context';
 import type { ConfigMapData } from './types';
 import './comment-content';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { when } from 'lit/directives/when.js';
 
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
@@ -45,35 +47,35 @@ export class BaseCommentItem extends LitElement {
         <user-avatar
           src="${this.userAvatar || ''}"
           alt="${this.userDisplayName || ''}"
-          href=${this.userWebsite}
+          href=${ifDefined(this.userWebsite)}
         ></user-avatar>
       </div>
       <div class="item-main flex-[1_1_auto] min-w-0 w-full">
         <div class="item-meta flex items-center gap-3 flex-wrap">
-          ${
-            this.userWebsite
-              ? html`<a
+          ${when(
+            this.userWebsite,
+            () => html`
+              <a
                 class="item-author font-medium text-sm text-text-1 hover:underline"
                 target="_blank"
-                href=${this.userWebsite}
+                href=${ifDefined(this.userWebsite)}
                 rel="noopener noreferrer"
               >
                 ${this.userDisplayName}
-              </a>`
-              : html`<span class="item-author font-medium text-sm text-text-1">${this.userDisplayName}</span>`
-          }
-          
-          ${this.ua && this.configMapData?.basic.showCommenterDevice ? html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>` : ''}
+              </a>
+              `,
+            () => html`
+              <span class="item-author font-medium text-sm text-text-1">${this.userDisplayName}</span>
+              `
+          )}
 
+          ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
+          
           <time class="item-meta-info text-xs text-text-3" title=${formatDate(this.creationTime)}>
             ${timeAgo(this.creationTime)}
           </time>
 
-          ${
-            !this.approved
-              ? html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`
-              : ''
-          }
+          ${when(!this.approved, () => html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`)}
         </div>
 
         <div class="item-content mt-2.5 space-y-2.5"><slot name="pre-content"></slot><comment-content .content=${this.content}></comment-content></div>

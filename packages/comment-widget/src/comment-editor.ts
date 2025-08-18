@@ -7,6 +7,8 @@ import './emoji-button';
 import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
 import { property } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { when } from 'lit/directives/when.js';
 import baseStyles from './styles/base';
 import { cleanHtml } from './utils/html';
 
@@ -169,7 +171,8 @@ export class CommentEditor extends LitElement {
   }
 
   protected override render() {
-    return html` ${this.loading ? html`<comment-editor-skeleton></comment-editor-skeleton>` : ''}
+    return html`
+      ${when(this.loading, () => html`<comment-editor-skeleton></comment-editor-skeleton>`)}
       <div
         class="border rounded-base border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-all"
         ?hidden=${this.loading}
@@ -203,8 +206,8 @@ export class CommentEditor extends LitElement {
       return html`
         <li>
           <div
-            aria-label=${item.displayName?.()}
-            title=${item.displayName?.()}
+            aria-label=${ifDefined(item.displayName?.())}
+            title=${ifDefined(item.displayName?.())}
             @click=${() => item.run?.(editor)}
             role="button"
             class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-all"

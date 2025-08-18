@@ -20,6 +20,7 @@ import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
 import './comment-editor';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
 import { cleanHtml } from './utils/html';
@@ -150,13 +151,9 @@ export class BaseForm extends LitElement {
 
   renderAccountInfo() {
     return html`<div class="form-account flex items-center gap-2">
-    <div class="form-account-avatar avatar">
-      ${
-        this.currentUser?.spec.avatar
-          ? html`<img src=${this.currentUser.spec.avatar} class="size-full object-cover" />`
-          : ''
-      }
-    </div>
+      <div class="form-account-avatar avatar">
+        ${when(this.currentUser?.spec.avatar, () => html`<img src=${this.currentUser?.spec.avatar || ''} class="size-full object-cover" />`)}
+      </div>
       <span class="form-account-name text-base text-text-1 font-semibold">
         ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
       </span>
@@ -193,9 +190,11 @@ export class BaseForm extends LitElement {
     return html`
       <form class="form w-full flex flex-col gap-4" @submit="${this.onSubmit}">
         <comment-editor ${ref(this.editorRef)} .placeholder=${this.configMapData?.editor?.placeholder}></comment-editor>
-        ${
-          !this.currentUser && this.allowAnonymousComments
-            ? html`<div class="form-inputs grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
+
+        ${when(
+          !this.currentUser && this.allowAnonymousComments,
+          () => html`
+            <div class="form-inputs grid grid-cols-1 md:grid-cols-4 gap-2 items-center">
               <input
                 name="displayName"
                 value=${this.customAccount.displayName}
@@ -220,28 +219,29 @@ export class BaseForm extends LitElement {
                 class="input"
               />
               <a tabindex="-1" href=${this.loginUrl} rel="nofollow" class="form-login-link text-text-3 hover:text-text-1 text-xs transition-all select-none">${msg('(Or login)')}</a>
-            </div>`
-            : ''
-        }
+            </div>
+          `
+        )}
 
         <div class="form__footer">
           ${this.currentUser ? this.renderAccountInfo() : ''}
-          ${
-            !this.currentUser && !this.allowAnonymousComments
-              ? html`<button
+          ${when(
+            !this.currentUser && !this.allowAnonymousComments,
+            () => html`
+              <button
                 @click=${this.handleOpenLoginPage}
                 class="form-login text-xs text-text-3 hover:text-text-1 px-3 transition-all py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
                 type="button"
                 tabindex="-1"
               >
                 ${msg('Login')}
-              </button> `
-              : ''
-          }
+              </button>
+              `
+          )}
           <div class="form-actions justify-end flex gap-2 flex-wrap items-center">
-            ${
-              this.showCaptcha && this.captcha
-                ? html`
+            ${when(
+              this.showCaptcha && this.captcha,
+              () => html`
                   <div class="form-captcha gap-2 flex items-center">
                     <img
                       @click=${this.handleFetchCaptcha}
@@ -256,20 +256,20 @@ export class BaseForm extends LitElement {
                       class="input "
                     />
                   </div>
-                `
-                : ''
-            }
+              `
+            )}
 
             <button
               .disabled=${this.submitting}
               type="submit"
               class="form-submit outline-none focus:shadow-input h-12 text-sm inline-flex border border-primary-1 border-solid items-center justify-center gap-2 bg-primary-1 text-white px-3 rounded-base hover:opacity-80 transition-all"
             >
-              ${
-                this.submitting
-                  ? html`<icon-loading></icon-loading>`
-                  : html`<i class="i-mingcute-send-line size-5" aria-hidden="true"></i>`
-              }
+              ${when(
+                this.submitting,
+                () => html`<icon-loading></icon-loading>`,
+                () =>
+                  html`<i class="i-mingcute-send-line size-5" aria-hidden="true"></i>`
+              )}
               ${msg('Submit')}
             </button>
           </div>
