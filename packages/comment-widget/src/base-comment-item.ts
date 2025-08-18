@@ -72,16 +72,13 @@ export class BaseCommentItem extends LitElement {
               `
           )}
 
-
-          ${
-            this.private && this.configMapData?.basic.showPrivateCommentBadge
-              ? html`
-              <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+          ${when(
+            this.private && this.configMapData?.basic.showPrivateCommentBadge,
+            () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
                 <i class="i-ri-git-repository-private-line opacity-90 size-3" aria-hidden="true"></i>
                 <span class="text-xs text-text-2">${msg('Private')}</span>
               </div>`
-              : ''
-          }
+          )}
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
