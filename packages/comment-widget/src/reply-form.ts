@@ -75,7 +75,7 @@ export class ReplyForm extends LitElement {
     return html` <base-form
       .submitting=${this.submitting}
       .captcha=${this.captcha}
-      .hidePrivateCheckbox=${this.comment?.spec.hidden || false}
+      .hidePrivateCheckbox=${true}
       ${ref(this.baseFormRef)}
       @submit="${this.onSubmit}"
     ></base-form>`;
@@ -88,14 +88,13 @@ export class ReplyForm extends LitElement {
 
     const data = e.detail;
 
-    const { displayName, email, website, content, hidden } = data || {};
+    const { displayName, email, website, content } = data || {};
 
     const replyRequest: ReplyRequest = {
       raw: content,
       content: content,
       // TODO: support user input
       allowNotification: true,
-      hidden: hidden || false,
     };
 
     if (this.quoteReply) {
