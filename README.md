@@ -2,11 +2,13 @@
 
 Halo 2.0 的通用评论组件插件，为前台提供完整的评论解决方案。
 
+![Cover](./images/cover.png)
+
 ## 使用方式
 
 1. 下载，目前提供以下两个下载方式：
     - GitHub Releases：访问 [Releases](https://github.com/halo-dev/plugin-comment-widget/releases) 下载 Assets 中的 JAR 文件。
-    - Halo 应用市场：<https://halo.run/store/apps/app-YXyaD>。
+    - Halo 应用市场：<https://www.halo.run/store/apps/app-YXyaD>。
 2. 安装，插件安装和更新方式可参考：<https://docs.halo.run/user-guide/plugins>。
 
 > 需要注意的是，此插件需要主题进行适配，不会主动在内容页加载评论组件。
@@ -46,81 +48,87 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
 
 目前已提供的 CSS 变量：
 
-| 变量名                                                                  | 描述                     |
-|-------------------------------------------------------------------------|------------------------|
-| `--halo-comment-widget-base-color`                                      | 基础文字颜色             |
-| `--halo-comment-widget-base-info-color`                                 | 非重要突出文字           |
-| `--halo-comment-widget-base-border-radius`                              | 基础元素的圆角           |
-| `--halo-comment-widget-base-font-size`                                  | 基础字体大小             |
-| `--halo-comment-widget-base-line-height`                                | 基础行高                 |
-| `--halo-comment-widget-base-font-family`                                | 基础字体族               |
-| `--halo-comment-widget-component-avatar-rounded`                        | 头像的圆角大小           |
-| `--halo-comment-widget-component-avatar-size`                           | 头像大小                 |
-| `--halo-comment-widget-component-form-input-bg-color`                   | 表单输入背景颜色         |
-| `--halo-comment-widget-component-form-input-color`                      | 表单输入文字颜色         |
-| `--halo-comment-widget-component-form-input-border-color`               | 表单输入边框颜色         |
-| `--halo-comment-widget-component-form-input-border-color-focus`         | 表单输入焦点时边框颜色   |
-| `--halo-comment-widget-component-form-input-box-shadow-focus`           | 表单输入焦点时的阴影     |
-| `--halo-comment-widget-component-form-button-login-bg-color`            | 登录按钮背景颜色         |
-| `--halo-comment-widget-component-form-button-login-bg-color-hover`      | 登录按钮悬停背景颜色     |
-| `--halo-comment-widget-component-form-button-login-border-color`        | 登录按钮边框颜色         |
-| `--halo-comment-widget-component-form-button-submit-bg-color`           | 提交按钮背景颜色         |
-| `--halo-comment-widget-component-form-button-submit-color`              | 提交按钮文字颜色         |
-| `--halo-comment-widget-component-form-button-submit-border-color`       | 提交按钮边框颜色         |
-| `--halo-comment-widget-component-form-button-submit-border-color-hover` | 提交按钮悬停边框颜色     |
-| `--halo-comment-widget-component-form-button-emoji-color`               | 表情按钮颜色             |
-| `--halo-comment-widget-component-comment-item-action-bg-color-hover`    | 评论项操作悬停背景颜色   |
-| `--halo-comment-widget-component-comment-item-action-color-hover`       | 评论项操作悬停颜色       |
-| `--halo-comment-widget-component-pagination-button-bg-color-hover`      | 分页按钮悬停背景颜色     |
-| `--halo-comment-widget-component-pagination-button-bg-color-active`     | 分页按钮活动状态背景颜色 |
-| `--halo-comment-widget-component-pagination-button-border-color-active` | 分页按钮活动状态边框颜色 |
-| `--halo-comment-widget-component-emoji-picker-rgb-color`                | 表情选择器颜色           |
-| `--halo-comment-widget-component-emoji-picker-rgb-accent`               | 表情选择器强调颜色       |
-| `--halo-comment-widget-component-emoji-picker-rgb-background`           | 表情选择器背景颜色       |
-| `--halo-comment-widget-component-emoji-picker-rgb-input`                | 表情选择器输入颜色       |
-| `--halo-comment-widget-component-emoji-picker-color-border`             | 表情选择器边框颜色       |
-| `--halo-comment-widget-component-emoji-picker-color-border-over`        | 表情选择器悬停边框颜色   |
+| 变量名                       | 描述                                     |
+| ---------------------------- | ---------------------------------------- |
+| `--halo-cw-primary-1-color`  | 主要的主题色，用于按钮背景，输入框边框等 |
+| `--halo-cw-primary-2-color`  | 较浅的主题色                             |
+| `--halo-cw-primary-3-color`  | 最浅的主题色                             |
+| `--halo-cw-text-1-color`     | 主要文本颜色，用于标题、正文等           |
+| `--halo-cw-text-2-color`     | 次要文本颜色                             |
+| `--halo-cw-text-3-color`     | 辅助文本颜色                             |
+| `--halo-cw-muted-1-color`    | 弱化色，用于边框、分割线、背景等辅助元素 |
+| `--halo-cw-muted-2-color`    | 更浅的弱化色                             |
+| `--halo-cw-muted-3-color`    | 最浅的弱化色                             |
+| `--halo-cw-base-rounded`     | 基础圆角大小                             |
+| `--halo-cw-avatar-rounded`   | 头像圆角大小                             |
+| `--halo-cw-avatar-size`      | 头像尺寸                                 |
+| `--halo-cw-base-font-size`   | 基础字体大小                             |
+| `--halo-cw-base-font-family` | 基础字体族                               |
 
 <details>
 <summary>点击查看 CSS 代码模板</summary>
 
 ```css
 :root {
+  --halo-cw-primary-1-color: ;
+  --halo-cw-primary-2-color: ;
+  --halo-cw-primary-3-color: ;
 
-  --halo-comment-widget-base-color: ;
-  --halo-comment-widget-base-info-color: ;
-  --halo-comment-widget-base-border-radius: ;
-  --halo-comment-widget-base-font-size: ;
-  --halo-comment-widget-base-line-height: ;
-  --halo-comment-widget-base-font-family: ;
-  --halo-comment-widget-component-avatar-rounded: ;
-  --halo-comment-widget-component-avatar-size: ;
-  --halo-comment-widget-component-form-input-bg-color: ;
-  --halo-comment-widget-component-form-input-color: ;
-  --halo-comment-widget-component-form-input-border-color: ;
-  --halo-comment-widget-component-form-input-border-color-focus: ;
-  --halo-comment-widget-component-form-input-box-shadow-focus: ;
-  --halo-comment-widget-component-form-button-login-bg-color: ;
-  --halo-comment-widget-component-form-button-login-bg-color-hover: ;
-  --halo-comment-widget-component-form-button-login-border-color: ;
-  --halo-comment-widget-component-form-button-submit-bg-color: ;
-  --halo-comment-widget-component-form-button-submit-color: ;
-  --halo-comment-widget-component-form-button-submit-border-color: ;
-  --halo-comment-widget-component-form-button-submit-border-color-hover: ;
-  --halo-comment-widget-component-form-button-emoji-color: ;
-  --halo-comment-widget-component-comment-item-action-bg-color-hover: ;
-  --halo-comment-widget-component-comment-item-action-color-hover: ;
-  --halo-comment-widget-component-pagination-button-bg-color-hover: ;
-  --halo-comment-widget-component-pagination-button-bg-color-active: ;
-  --halo-comment-widget-component-pagination-button-border-color-active: ;
-  --halo-comment-widget-component-emoji-picker-rgb-color: ;
-  --halo-comment-widget-component-emoji-picker-rgb-accent: ;
-  --halo-comment-widget-component-emoji-picker-rgb-background: ;
-  --halo-comment-widget-component-emoji-picker-rgb-input: ;
-  --halo-comment-widget-component-emoji-picker-color-border: ;
-  --halo-comment-widget-component-emoji-picker-color-border-over: ;
+  --halo-cw-text-1-color: ;
+  --halo-cw-text-2-color: ;
+  --halo-cw-text-3-color: ;
+
+  --halo-cw-muted-1-color: ;
+  --halo-cw-muted-2-color: ;
+  --halo-cw-muted-3-color: ;
+
+  --halo-cw-base-rounded: ;
+  --halo-cw-avatar-rounded: ;
+  --halo-cw-avatar-size: ;
+  --halo-cw-base-font-size: ;
+  --halo-cw-base-font-family: ;
 }
 ```
+
+</details>
+
+<details>
+<summary>3.0.0 版本之前已废弃的 CSS 变量</summary>
+
+| 变量名                                                                  | 描述                     | 备注                                               |
+| ----------------------------------------------------------------------- | ------------------------ | -------------------------------------------------- |
+| `--halo-comment-widget-base-color`                                      | 基础文字颜色             | 已废弃，后续使用 `--halo-cw-text-1-color` 代替     |
+| `--halo-comment-widget-base-info-color`                                 | 非重要突出文字           | 已废弃，后续使用 `--halo-cw-muted-*-color` 代替    |
+| `--halo-comment-widget-base-border-radius`                              | 基础元素的圆角           | 已废弃，后续使用 `--halo-cw-base-rounded` 代替     |
+| `--halo-comment-widget-base-font-size`                                  | 基础字体大小             | 已废弃，后续使用 `--halo-cw-base-font-size` 代替   |
+| `--halo-comment-widget-base-line-height`                                | 基础行高                 | 已废弃                                             |
+| `--halo-comment-widget-base-font-family`                                | 基础字体族               | 已废弃，后续使用 `--halo-cw-base-font-family` 代替 |
+| `--halo-comment-widget-component-avatar-rounded`                        | 头像的圆角大小           | 已废弃，后续使用 `--halo-cw-avatar-rounded` 代替   |
+| `--halo-comment-widget-component-avatar-size`                           | 头像大小                 | 已废弃，后续使用 `--halo-cw-avatar-size` 代替      |
+| `--halo-comment-widget-component-form-input-bg-color`                   | 表单输入背景颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-input-color`                      | 表单输入文字颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-input-border-color`               | 表单输入边框颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-input-border-color-focus`         | 表单输入焦点时边框颜色   | 已废弃，后续使用 `--halo-cw-primary-1-color` 代替  |
+| `--halo-comment-widget-component-form-input-box-shadow-focus`           | 表单输入焦点时的阴影     | 已废弃，后续使用 `--halo-cw-primary-2-color` 代替  |
+| `--halo-comment-widget-component-form-button-login-bg-color`            | 登录按钮背景颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-button-login-bg-color-hover`      | 登录按钮悬停背景颜色     | 已废弃                                             |
+| `--halo-comment-widget-component-form-button-login-border-color`        | 登录按钮边框颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-button-submit-bg-color`           | 提交按钮背景颜色         | 已废弃，后续使用 `--halo-cw-primary-1-color` 代替  |
+| `--halo-comment-widget-component-form-button-submit-color`              | 提交按钮文字颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-button-submit-border-color`       | 提交按钮边框颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-button-submit-border-color-hover` | 提交按钮悬停边框颜色     | 已废弃，后续使用 `--halo-cw-primary-3-color` 代替  |
+| `--halo-comment-widget-component-form-button-emoji-color`               | 表情按钮颜色             | 已废弃                                             |
+| `--halo-comment-widget-component-comment-item-action-bg-color-hover`    | 评论项操作悬停背景颜色   | 已废弃                                             |
+| `--halo-comment-widget-component-comment-item-action-color-hover`       | 评论项操作悬停颜色       | 已废弃                                             |
+| `--halo-comment-widget-component-pagination-button-bg-color-hover`      | 分页按钮悬停背景颜色     | 已废弃                                             |
+| `--halo-comment-widget-component-pagination-button-bg-color-active`     | 分页按钮活动状态背景颜色 | 已废弃                                             |
+| `--halo-comment-widget-component-pagination-button-border-color-active` | 分页按钮活动状态边框颜色 | 已废弃                                             |
+| `--halo-comment-widget-component-emoji-picker-rgb-color`                | 表情选择器颜色           | 已废弃                                             |
+| `--halo-comment-widget-component-emoji-picker-rgb-accent`               | 表情选择器强调颜色       | 已废弃                                             |
+| `--halo-comment-widget-component-emoji-picker-rgb-background`           | 表情选择器背景颜色       | 已废弃                                             |
+| `--halo-comment-widget-component-emoji-picker-rgb-input`                | 表情选择器输入颜色       | 已废弃                                             |
+| `--halo-comment-widget-component-emoji-picker-color-border`             | 表情选择器边框颜色       | 已废弃                                             |
+| `--halo-comment-widget-component-emoji-picker-color-border-over`        | 表情选择器悬停边框颜色   | 已废弃                                             |
 
 </details>
 
@@ -136,33 +144,24 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
   [data-color-scheme='auto'] {
     color-scheme: dark;
     
-    --halo-comment-widget-base-color: #ffffff;
-    --halo-comment-widget-base-info-color: #64748b;
-    --halo-comment-widget-component-form-input-bg-color: #475569;
-    --halo-comment-widget-component-form-input-color: #ffffff;
-    --halo-comment-widget-component-form-input-border-color: #495056;
-    --halo-comment-widget-component-form-input-border-color-focus: #65a3ff;
-    --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15em #1c3966;
-    --halo-comment-widget-component-form-button-login-bg-color: #334155;
-    --halo-comment-widget-component-form-button-login-bg-color-hover: #475569;
-    --halo-comment-widget-component-form-button-login-border-color: #475569;
-    --halo-comment-widget-component-form-button-submit-border-color: #475569;
-    --halo-comment-widget-component-form-button-submit-border-color-hover: #64748b;
-    --halo-comment-widget-component-form-button-emoji-color: #cbd5e1;
+    --halo-cw-primary-1-color: #059669;
+    --halo-cw-primary-2-color: #047857;
+    --halo-cw-primary-3-color: #065f46;
 
-    --halo-comment-widget-component-comment-item-action-bg-color-hover: #475569;
-    --halo-comment-widget-component-comment-item-action-color-hover: #94a3b8;
+    --halo-cw-text-1-color: #f9fafb;
+    --halo-cw-text-2-color: #e5e7eb;
+    --halo-cw-text-3-color: #9ca3af;
 
-    --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
-    --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
-    --halo-comment-widget-component-pagination-button-border-color-active: #475569;
+    --halo-cw-muted-1-color: #4b5563;
+    --halo-cw-muted-2-color: #374151;
+    --halo-cw-muted-3-color: #1f2937;
 
-    --halo-comment-widget-component-emoji-picker-rgb-color: 222, 222, 221;
-    --halo-comment-widget-component-emoji-picker-rgb-accent: 58, 130, 247;
-    --halo-comment-widget-component-emoji-picker-rgb-background: 21, 22, 23;
-    --halo-comment-widget-component-emoji-picker-rgb-input: 0, 0, 0;
-    --halo-comment-widget-component-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
-    --halo-comment-widget-component-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
+    --halo-cw-emoji-picker-rgb-color: 222, 222, 221;
+    --halo-cw-emoji-picker-rgb-accent: 58, 130, 247;
+    --halo-cw-emoji-picker-rgb-background: 21, 22, 23;
+    --halo-cw-emoji-picker-rgb-input: 0, 0, 0;
+    --halo-cw-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
+    --halo-cw-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -171,33 +170,24 @@ Halo 插件的详细开发文档可查阅 [插件开发](https://docs.halo.run/c
 [data-color-scheme='dark'] {
   color-scheme: dark;
 
-  --halo-comment-widget-base-color: #ffffff;
-  --halo-comment-widget-base-info-color: #64748b;
-  --halo-comment-widget-component-form-input-bg-color: #475569;
-  --halo-comment-widget-component-form-input-color: #ffffff;
-  --halo-comment-widget-component-form-input-border-color: #495056;
-  --halo-comment-widget-component-form-input-border-color-focus: #65a3ff;
-  --halo-comment-widget-component-form-input-box-shadow-focus: 0 0 0 0.15em #1c3966;
-  --halo-comment-widget-component-form-button-login-bg-color: #334155;
-  --halo-comment-widget-component-form-button-login-bg-color-hover: #475569;
-  --halo-comment-widget-component-form-button-login-border-color: #475569;
-  --halo-comment-widget-component-form-button-submit-border-color: #475569;
-  --halo-comment-widget-component-form-button-submit-border-color-hover: #64748b;
-  --halo-comment-widget-component-form-button-emoji-color: #cbd5e1;
+    --halo-cw-primary-1-color: #059669;
+    --halo-cw-primary-2-color: #047857;
+    --halo-cw-primary-3-color: #065f46;
 
-  --halo-comment-widget-component-comment-item-action-bg-color-hover: #475569;
-  --halo-comment-widget-component-comment-item-action-color-hover: #94a3b8;
+    --halo-cw-text-1-color: #f9fafb;
+    --halo-cw-text-2-color: #e5e7eb;
+    --halo-cw-text-3-color: #9ca3af;
 
-  --halo-comment-widget-component-pagination-button-bg-color-hover: #475569;
-  --halo-comment-widget-component-pagination-button-bg-color-active: #475569;
-  --halo-comment-widget-component-pagination-button-border-color-active: #475569;
+    --halo-cw-muted-1-color: #4b5563;
+    --halo-cw-muted-2-color: #374151;
+    --halo-cw-muted-3-color: #1f2937;
 
-  --halo-comment-widget-component-emoji-picker-rgb-color: 222, 222, 221;
-  --halo-comment-widget-component-emoji-picker-rgb-accent: 58, 130, 247;
-  --halo-comment-widget-component-emoji-picker-rgb-background: 21, 22, 23;
-  --halo-comment-widget-component-emoji-picker-rgb-input: 0, 0, 0;
-  --halo-comment-widget-component-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
-  --halo-comment-widget-component-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
+    --halo-cw-emoji-picker-rgb-color: 222, 222, 221;
+    --halo-cw-emoji-picker-rgb-accent: 58, 130, 247;
+    --halo-cw-emoji-picker-rgb-background: 21, 22, 23;
+    --halo-cw-emoji-picker-rgb-input: 0, 0, 0;
+    --halo-cw-emoji-picker-color-border: rgba(255, 255, 255, 0.1);
+    --halo-cw-emoji-picker-color-border-over: rgba(255, 255, 255, 0.2);
 }
 ```
 
