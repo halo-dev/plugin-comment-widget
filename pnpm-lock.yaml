@@ -49,8 +49,8 @@ importers:
         specifier: ^1.7.3
         version: 1.7.3
       '@halo-dev/api-client':
-        specifier: ^2.21.1
-        version: 2.21.1(axios@1.11.0)
+        specifier: https://pkg.pr.new/@halo-dev/api-client@7679
+        version: https://pkg.pr.new/@halo-dev/api-client@7679(axios@1.11.0)
       '@lit/context':
         specifier: ^1.1.6
         version: 1.1.6
@@ -515,6 +515,12 @@ packages:
 
   '@halo-dev/api-client@2.21.1':
     resolution: {integrity: sha512-4sfpSui4YO2u7W73r3ECoegK+/kVzLHv/a16pT23gZUqazK+5ZAqpDqVYHhbpyBVbs/fmsUuMgI8TXVLo6kZjg==}
+    peerDependencies:
+      axios: ^1.7.x
+
+  '@halo-dev/api-client@https://pkg.pr.new/@halo-dev/api-client@7679':
+    resolution: {tarball: https://pkg.pr.new/@halo-dev/api-client@7679}
+    version: 2.21.1
     peerDependencies:
       axios: ^1.7.x
 
@@ -3290,6 +3296,11 @@ snapshots:
   '@floating-ui/utils@0.2.10': {}
 
   '@halo-dev/api-client@2.21.1(axios@1.11.0)':
+    dependencies:
+      axios: 1.11.0
+      qs: 6.14.0
+
+  '@halo-dev/api-client@https://pkg.pr.new/@halo-dev/api-client@7679(axios@1.11.0)':
     dependencies:
       axios: 1.11.0
       qs: 6.14.0

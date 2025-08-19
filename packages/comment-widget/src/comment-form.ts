@@ -82,13 +82,14 @@ export class CommentForm extends LitElement {
 
     const data = e.detail;
 
-    const { displayName, email, website, content } = data || {};
+    const { displayName, email, website, content, hidden } = data || {};
 
     const commentRequest: CommentRequest = {
       raw: content,
       content: content,
       // TODO: support user input
       allowNotification: true,
+      hidden: hidden || false,
       subjectRef: {
         group: this.group,
         kind: this.kind,

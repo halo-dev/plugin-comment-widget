@@ -121,6 +121,7 @@ export class CommentItem extends LitElement {
       .approved=${this.comment?.spec.approved}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
       .ua=${this.comment?.spec.userAgent}
+      .private=${this.comment?.spec.hidden}
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
         <div class="icon-button-icon">

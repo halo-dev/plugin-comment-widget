@@ -24,6 +24,7 @@ import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
 import { cleanHtml } from './utils/html';
+import './base-tooltip';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -64,6 +65,9 @@ export class BaseForm extends LitElement {
   @consume({ context: toastContext, subscribe: true })
   @state()
   toastManager: ToastManager | undefined;
+
+  @property({ type: Boolean })
+  hidePrivateCheckbox = false;
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
 
@@ -151,9 +155,11 @@ export class BaseForm extends LitElement {
 
   renderAccountInfo() {
     return html`<div class="form-account flex items-center gap-2">
-      <div class="form-account-avatar avatar">
-        ${when(this.currentUser?.spec.avatar, () => html`<img src=${this.currentUser?.spec.avatar || ''} class="size-full object-cover" />`)}
-      </div>
+      ${when(
+        this.currentUser?.spec.avatar,
+        () => html`<div class="form-account-avatar avatar"><img src=${this.currentUser?.spec.avatar || ''} class="size-full object-cover" /></div>
+          `
+      )}
       <span class="form-account-name text-base text-text-1 font-semibold">
         ${this.currentUser?.spec.displayName || this.currentUser?.metadata.name}
       </span>
@@ -238,7 +244,19 @@ export class BaseForm extends LitElement {
               </button>
               `
           )}
-          <div class="form-actions justify-end flex gap-2 flex-wrap items-center">
+          <div class="form-actions justify-end flex gap-3 flex-wrap items-center">
+            ${when(
+              !this.hidePrivateCheckbox &&
+                this.configMapData?.basic.enablePrivateComment,
+              () => html`<div class="flex items-center gap-2">
+                      <input id="hidden" name="hidden" type="checkbox" />
+                      <label for="hidden" class="text-xs select-none text-text-3 hover:text-text-1 transition-all">${msg('Private')}</label>
+                      <base-tooltip content=${this.currentUser ? msg('Currently logged in. After selecting the private option, comments will only be visible to yourself and the site administrator.') : msg('You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.')}>
+                        <i class="i-mingcute:information-line size-3.5 text-text-3 block"></i>
+                      </base-tooltip>
+                    </div>`
+            )}
+
             ${when(
               this.showCaptcha && this.captcha,
               () => html`
@@ -293,6 +311,7 @@ export class BaseForm extends LitElement {
       detail: {
         ...data,
         content,
+        hidden: data.hidden === 'on',
       },
     });
     this.dispatchEvent(event);

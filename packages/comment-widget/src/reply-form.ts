@@ -75,6 +75,7 @@ export class ReplyForm extends LitElement {
     return html` <base-form
       .submitting=${this.submitting}
       .captcha=${this.captcha}
+      .hidePrivateCheckbox=${true}
       ${ref(this.baseFormRef)}
       @submit="${this.onSubmit}"
     ></base-form>`;
