@@ -24,6 +24,7 @@ import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
 import { cleanHtml } from './utils/html';
+import './base-tooltip';
 
 export class BaseForm extends LitElement {
   @consume({ context: baseUrlContext })
