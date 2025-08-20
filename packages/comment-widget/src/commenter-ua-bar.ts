@@ -2,6 +2,7 @@ import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import type { UAParser } from 'ua-parser-js';
+import haloLogo from './assets/halo.png';
 import baseStyles from './styles/base';
 
 const OS_ICON_MAP = {
@@ -72,8 +73,11 @@ export class CommenterUABar extends LitElement {
     const browser = this.parser.getBrowser();
 
     if (!os.name && !browser.name) {
+      const isHaloApp = this.ua.startsWith('Halo App/');
+
       return html`
       <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+        ${when(isHaloApp, () => html`<img src=${haloLogo} class="size-3 rounded-sm" />`)}
         <span class="text-xs text-text-3">${this.ua}</span>
       </div>
       `;
