@@ -1,5 +1,6 @@
 {
   "type": "module",
+  "private": true,
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild build --watch --env-mode=development",

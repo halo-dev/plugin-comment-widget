@@ -1,4 +1,5 @@
 {
+  "private": true,
   "scripts": {
     "build": "tsc && rslib build",
     "dev": "rslib build --watch"

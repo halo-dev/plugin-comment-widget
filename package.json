@@ -16,7 +16,7 @@
     "check": "biome check --write",
     "example:dev": "pnpm -C packages/example dev",
     "prepare": "husky",
-    "release": "pnpm -r run release"
+    "publish": "pnpm -r publish --access public --no-git-checks"
   },
   "lint-staged": {
     "*": [

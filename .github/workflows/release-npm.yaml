@@ -1,0 +1,28 @@
+name: Release NPM
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: https://registry.npmjs.org/
+      - uses: pnpm/action-setup@v4
+      - run: pnpm install
+      - name: Upgrade npm
+        run: npm i -g npm@latest
+      - name: Publish to NPM
+        run: pnpm run publish
