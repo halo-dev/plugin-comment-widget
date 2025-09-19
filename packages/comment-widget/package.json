@@ -1,6 +1,11 @@
 {
   "name": "@halo-dev/comment-widget",
   "version": "3.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halo-dev/plugin-comment-widget.git",
+    "directory": "packages/comment-widget"
+  },
   "author": {
     "name": "Halo",
     "url": "https://github.com/halo-dev"
@@ -30,7 +35,8 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "locale:build": "lit-localize build",
-    "locale:extract": "lit-localize extract"
+    "locale:extract": "lit-localize extract",
+    "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
