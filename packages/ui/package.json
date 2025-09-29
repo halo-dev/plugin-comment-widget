@@ -10,13 +10,13 @@
     "@halo-dev/comment-widget": "workspace:*",
     "@halo-dev/components": "^2.21.0",
     "@halo-dev/console-shared": "link:/Users/ryanwang/Workspace/github/ruibaby/halo-next/ui/packages/shared",
-    "vue": "^3.5.18"
+    "vue": "^3.5.22"
   },
   "devDependencies": {
     "@halo-dev/ui-plugin-bundler-kit": "^2.21.2",
-    "@rsbuild/core": "^1.4.15",
-    "@rsbuild/plugin-vue": "^1.1.1",
-    "@types/node": "^20.19.10",
+    "@rsbuild/core": "^1.5.13",
+    "@rsbuild/plugin-vue": "^1.1.2",
+    "@types/node": "^20.19.17",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.8.3",
     "vue-tsc": "^2.2.12"
