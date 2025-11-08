@@ -8,6 +8,6 @@
     "@halo-dev/comment-widget": "workspace:*"
   },
   "devDependencies": {
-    "@rslib/core": "^0.13.3"
+    "@rslib/core": "^0.17.1"
   }
 }
