@@ -16,3 +16,6 @@ rules:
   - apiGroups: [ "api.commentwidget.halo.run" ]
     resources: [ "config" ]
     verbs: [ "list" ]
+  - apiGroups: [ "api.commentwidget.halo.run" ]
+    resources: [ "upload" ]
+    verbs: [ "create" ]

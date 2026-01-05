@@ -8,66 +8,87 @@ import reactor.core.publisher.Mono;
 import run.halo.comment.widget.captcha.CaptchaType;
 
 public interface SettingConfigGetter {
-
+    
     /**
      * Never {@link Mono#empty()}.
      */
     Mono<BasicConfig> getBasicConfig();
-
+    
     /**
      * Never {@link Mono#empty()}.
      */
     Mono<AvatarConfig> getAvatarConfig();
-
+    
     /**
      * Never {@link Mono#empty()}.
      */
     Mono<SecurityConfig> getSecurityConfig();
-
+    
+    Mono<EditorConfig> getEditorConfig();
+    
+    @Data
+    class EditorConfig {
+        public static final String GROUP = "editor";
+        private boolean enableUpload = false;
+        private UploadConfig upload = new UploadConfig();
+    }
+    
+    @Data
+    class UploadConfig {
+        private boolean allowAnonymous = false;
+        
+        private UploadAttachment attachment = new UploadAttachment();
+        
+        @Data
+        static class UploadAttachment {
+            private String attachmentPolicy;
+            private String attachmentGroup;
+        }
+    }
+    
     @Data
     @Accessors(chain = true)
     class SecurityConfig {
         public static final String GROUP = "security";
-
-        @Getter(onMethod_ = @NonNull)
-        private CaptchaConfig captcha = CaptchaConfig.empty();
-
+        
+        @Getter(onMethod_ = @NonNull) private CaptchaConfig captcha
+            = CaptchaConfig.empty();
+        
         public SecurityConfig setCaptcha(CaptchaConfig captcha) {
             this.captcha = (captcha == null ? CaptchaConfig.empty() : captcha);
             return this;
         }
-
+        
         public static SecurityConfig empty() {
-            return new SecurityConfig()
-                .setCaptcha(CaptchaConfig.empty());
+            return new SecurityConfig().setCaptcha(CaptchaConfig.empty());
         }
     }
-
+    
     @Data
     @Accessors(chain = true)
     class CaptchaConfig {
-
+        
         private boolean anonymousCommentCaptcha;
-
-        @Getter(onMethod_ = @NonNull)
-        private CaptchaType type = CaptchaType.ALPHANUMERIC;
-
+        
+        @Getter(onMethod_ = @NonNull) private CaptchaType type
+            = CaptchaType.ALPHANUMERIC;
+        
         private boolean ignoreCase = true;
-
+        
         private int captchaLength = 4;
-
+        
         private int arithmeticRange = 90;
-
+        
         public CaptchaConfig setType(CaptchaType type) {
             this.type = (type == null ? CaptchaType.ALPHANUMERIC : type);
             return this;
         }
-
+        
         public static CaptchaConfig empty() {
             return new CaptchaConfig();
         }
     }
-
+    
     @Data
     class BasicConfig {
         public static final String GROUP = "basic";
@@ -76,7 +97,7 @@ public interface SettingConfigGetter {
         private boolean withReplies;
         private int withReplySize;
     }
-
+    
     @Data
     class AvatarConfig {
         public static final String GROUP = "avatar";

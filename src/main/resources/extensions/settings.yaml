@@ -147,3 +147,29 @@ spec:
         - $formkit: text
           name: placeholder
           label: 自定义评论框占位符
+        - $formkit: checkbox
+          name: enableUpload
+          id: enableUpload
+          key: enableUpload
+          label: 启用媒体上传
+          value: false
+        - $formkit: group
+          if: "$get(enableUpload).value === true"
+          name: upload
+          label: 媒体上传配置
+          children:
+            - $formkit: checkbox
+              name: allowAnonymous
+              label: 允许匿名用户上传
+              value: false
+            - $formkit: group
+              name: attachment
+              label: 附件配置
+              help: 出于安全考虑，建议为所选存储策略限制文件类型和大小，以免被恶意上传文件
+              children:
+                - $formkit: attachmentPolicySelect
+                  name: attachmentPolicy
+                  label: 存储策略
+                - $formkit: attachmentGroupSelect
+                  name: attachmentGroup
+                  label: 存储组
