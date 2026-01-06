@@ -295,9 +295,13 @@ const uploadFileAndReplaceNode = async (
       const permalink = attachment.status?.permalink;
       const node = nodes[index];
       if (node) {
+        const blobUrl = node.node.attrs.src;
         let tr = editor.state.tr;
         tr = tr.setNodeAttribute(node.pos, 'src', permalink);
         editor.view.dispatch(tr);
+        if (blobUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(blobUrl);
+        }
       }
     }
     return true;

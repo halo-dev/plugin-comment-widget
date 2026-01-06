@@ -51,13 +51,13 @@ import run.halo.app.infra.AnonymousUserConst;
 @Component
 @RequiredArgsConstructor
 public class UploadMediaEndpoint implements CustomEndpoint {
-    
+
     private final ReactiveExtensionClient client;
     private final SettingConfigGetter settingConfigGetter;
     private final AttachmentService attachmentService;
     private final RateLimiterRegistry rateLimiterRegistry;
     private final RateLimiterKeyRegistry rateLimiterKeyRegistry;
-    
+
     @Override
     public RouterFunction<ServerResponse> endpoint() {
         final var tag = "Comment Widget Media Upload";
@@ -85,31 +85,33 @@ public class UploadMediaEndpoint implements CustomEndpoint {
                 .build()
         ).build();
     }
-    
+
     @Override
     public GroupVersion groupVersion() {
         return GroupVersion.parseAPIVersion(
             "api.commentwidget.halo.run/v1alpha1");
     }
-    
+
     private Mono<List<Attachment>> uploadAttachments(List<FilePart> fileParts) {
-        return validateUploadRequest(fileParts).flatMap(
-            editorConfig -> validateUploadPermission(editorConfig).then(
-                Mono.just(editorConfig))).flatMap(editorConfig -> {
-            var uploadConfig = editorConfig.getUpload();
-            return uploadAttachmentsToStorage(fileParts,
-                uploadConfig.getAttachment()
-            );
-        });
+        return validateUploadRequest(fileParts)
+            .flatMap(editorConfig -> validateUploadPermission(editorConfig)
+                .then(Mono.just(editorConfig))
+            )
+            .flatMap(editorConfig -> {
+                var uploadConfig = editorConfig.getUpload();
+                return uploadAttachmentsToStorage(fileParts,
+                    uploadConfig.getAttachment()
+                );
+            });
     }
-    
+
     private Mono<SettingConfigGetter.EditorConfig> validateUploadRequest(
         List<FilePart> fileParts) {
         if (fileParts.isEmpty()) {
             return Mono.error(
                 new ServerWebInputException("At least one file is required"));
         }
-        
+
         return settingConfigGetter.getEditorConfig().flatMap(editorConfig -> {
             if (!editorConfig.isEnableUpload()) {
                 return Mono.error(
@@ -120,18 +122,18 @@ public class UploadMediaEndpoint implements CustomEndpoint {
             return Mono.just(editorConfig);
         });
     }
-    
+
     /**
      * Validate upload permission (anonymous user permission check).
      */
     private Mono<Void> validateUploadPermission(
         SettingConfigGetter.EditorConfig editorConfig) {
         var uploadConfig = editorConfig.getUpload();
-        
+
         if (uploadConfig.isAllowAnonymous()) {
             return Mono.empty();
         }
-        
+
         // Anonymous upload is not allowed, check if the current user is an anonymous user
         return isAnonymousCommenter().flatMap(isAnonymous -> {
             if (isAnonymous) {
@@ -143,7 +145,7 @@ public class UploadMediaEndpoint implements CustomEndpoint {
             return Mono.empty();
         });
     }
-    
+
     /**
      * Upload attachments to storage service. If any attachment upload fails, all successfully uploaded attachments will be rolled back and deleted.
      */
@@ -159,7 +161,7 @@ public class UploadMediaEndpoint implements CustomEndpoint {
                 ));
         }
         List<Attachment> uploadedAttachments = new CopyOnWriteArrayList<>();
-        
+
         return authenticationConsumerNullable(
             authentication -> Flux.fromIterable(fileParts)
                 // Ensure sequential upload
@@ -177,7 +179,7 @@ public class UploadMediaEndpoint implements CustomEndpoint {
                 .onErrorResume(error -> rollbackUploadedAttachments(
                     uploadedAttachments).then(Mono.error(error))));
     }
-    
+
     /**
      * Rollback and delete uploaded attachments.
      */
@@ -186,7 +188,7 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         if (attachments.isEmpty()) {
             return Mono.empty();
         }
-        
+
         return Flux.fromIterable(attachments).flatMap(attachment -> {
             String attachmentName = attachment.getMetadata().getName();
             return attachmentService.delete(attachment)
@@ -200,7 +202,7 @@ public class UploadMediaEndpoint implements CustomEndpoint {
                 });
         }).then();
     }
-    
+
     /**
      * Set the permanent link of the attachment.
      */
@@ -215,7 +217,7 @@ public class UploadMediaEndpoint implements CustomEndpoint {
                 status.setPermalink(permalink.toString());
             }).thenReturn(attachment);
     }
-    
+
     private <T> RateLimiterOperator<T> createIpBasedRateLimiter(
         ServerRequest request) {
         var clientIp = IpAddressUtils.getClientIp(request);
@@ -240,39 +242,42 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         }
         return RateLimiterOperator.of(rateLimiter);
     }
-    
+
     <T> Mono<T> authenticationConsumerNullable(
         Function<Authentication, Mono<T>> func) {
         return ReactiveSecurityContextHolder.getContext().map(
             SecurityContext::getAuthentication).flatMap(func);
     }
-    
+
     Mono<Boolean> isAnonymousCommenter() {
         return ReactiveSecurityContextHolder.getContext().map(
-            context -> AnonymousUserConst.isAnonymousUser(
-                context.getAuthentication().getName())).defaultIfEmpty(true);
+                context -> AnonymousUserConst.isAnonymousUser(
+                    context.getAuthentication().getName())
+            )
+            .defaultIfEmpty(true);
     }
-    
+
     @Schema(types = "object")
     public interface IUploadRequest {
-        
+
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Attachment files, support multiple files")
         List<FilePart> getFiles();
     }
-    
+
     public record UploadRequest(MultiValueMap<String, Part> formData)
         implements IUploadRequest {
-        
+
         @Override
         public List<FilePart> getFiles() {
             List<Part> parts = formData.get("files");
             if (CollectionUtils.isEmpty(parts)) {
                 throw new ServerWebInputException("No files found");
             }
-            
-            return parts.stream().filter(part -> part instanceof FilePart).map(
-                part -> (FilePart) part).collect(Collectors.toList());
+
+            return parts.stream().filter(part -> part instanceof FilePart)
+                .map(part -> (FilePart) part)
+                .collect(Collectors.toList());
         }
     }
-    
+
 }

@@ -146,8 +146,8 @@ export class CommentEditor extends LitElement {
           resize: {
             enabled: true,
             alwaysPreserveAspectRatio: true,
-            minWidth: 100,
-            minHeight: 100,
+            minWidth: 50,
+            minHeight: 50,
             directions: ['bottom-right'],
           },
         }),
