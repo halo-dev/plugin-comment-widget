@@ -274,6 +274,10 @@ public class UploadMediaEndpoint implements CustomEndpoint {
                 throw new ServerWebInputException("No files found");
             }
 
+            if (parts.size() > 10) {
+                throw new ServerWebInputException("Maximum of 10 files allowed");
+            }
+
             return parts.stream().filter(part -> part instanceof FilePart)
                 .map(part -> (FilePart) part)
                 .collect(Collectors.toList());
