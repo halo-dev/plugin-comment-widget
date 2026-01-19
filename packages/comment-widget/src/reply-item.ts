@@ -119,7 +119,7 @@ export class ReplyItem extends LitElement {
         .userAvatar="${handleReplyAvatar(this.reply)}"
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
-        .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
+        .creationTime="${this.reply?.spec.creationTime}"
         .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
