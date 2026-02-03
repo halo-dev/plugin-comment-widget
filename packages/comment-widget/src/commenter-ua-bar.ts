@@ -17,6 +17,7 @@ const OS_ICON_MAP = {
   Ubuntu: 'i-logos:ubuntu',
   Fedora: 'i-logos:fedora',
   HarmonyOS: 'i-simple-icons:harmonyos',
+  OpenHarmony: 'i-simple-icons:harmonyos',
 };
 
 const BROWSER_ICON_MAP = {
