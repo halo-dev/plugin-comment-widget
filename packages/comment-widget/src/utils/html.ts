@@ -5,6 +5,7 @@ export function cleanHtml(content?: string) {
   }
 
   return sanitizeHtml(content, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
     allowedAttributes: {
       ...sanitizeHtml.defaults.allowedAttributes,
       code: ['class'],

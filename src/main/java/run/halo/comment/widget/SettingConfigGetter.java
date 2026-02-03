@@ -24,13 +24,36 @@ public interface SettingConfigGetter {
      */
     Mono<SecurityConfig> getSecurityConfig();
 
+    Mono<EditorConfig> getEditorConfig();
+
+    @Data
+    class EditorConfig {
+        public static final String GROUP = "editor";
+        private boolean enableUpload = false;
+        private UploadConfig upload = new UploadConfig();
+    }
+
+    @Data
+    class UploadConfig {
+        private boolean allowAnonymous = false;
+
+        private UploadAttachment attachment = new UploadAttachment();
+
+        @Data
+        static class UploadAttachment {
+            private String attachmentPolicy;
+            private String attachmentGroup;
+        }
+    }
+
     @Data
     @Accessors(chain = true)
     class SecurityConfig {
         public static final String GROUP = "security";
 
         @Getter(onMethod_ = @NonNull)
-        private CaptchaConfig captcha = CaptchaConfig.empty();
+        private CaptchaConfig captcha
+            = CaptchaConfig.empty();
 
         public SecurityConfig setCaptcha(CaptchaConfig captcha) {
             this.captcha = (captcha == null ? CaptchaConfig.empty() : captcha);
@@ -38,8 +61,7 @@ public interface SettingConfigGetter {
         }
 
         public static SecurityConfig empty() {
-            return new SecurityConfig()
-                .setCaptcha(CaptchaConfig.empty());
+            return new SecurityConfig().setCaptcha(CaptchaConfig.empty());
         }
     }
 
@@ -50,7 +72,8 @@ public interface SettingConfigGetter {
         private boolean anonymousCommentCaptcha;
 
         @Getter(onMethod_ = @NonNull)
-        private CaptchaType type = CaptchaType.ALPHANUMERIC;
+        private CaptchaType type
+            = CaptchaType.ALPHANUMERIC;
 
         private boolean ignoreCase = true;
 

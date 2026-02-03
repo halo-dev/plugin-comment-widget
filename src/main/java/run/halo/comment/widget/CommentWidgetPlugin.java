@@ -1,5 +1,6 @@
 package run.halo.comment.widget;
 
+import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import org.springframework.stereotype.Component;
 import run.halo.app.plugin.BasePlugin;
 import run.halo.app.plugin.PluginContext;
@@ -10,7 +11,21 @@ import run.halo.app.plugin.PluginContext;
  */
 @Component
 public class CommentWidgetPlugin extends BasePlugin {
-    public CommentWidgetPlugin(PluginContext pluginContext) {
+    
+    private final RateLimiterRegistry rateLimiterRegistry;
+    private final RateLimiterKeyRegistry rateLimiterKeyRegistry;
+    
+    public CommentWidgetPlugin(PluginContext pluginContext,
+        RateLimiterRegistry rateLimiterRegistry,
+        RateLimiterKeyRegistry rateLimiterKeyRegistry) {
         super(pluginContext);
+        this.rateLimiterRegistry = rateLimiterRegistry;
+        this.rateLimiterKeyRegistry = rateLimiterKeyRegistry;
+    }
+    
+    @Override
+    public void stop() {
+        rateLimiterKeyRegistry.getAllKeys().forEach(rateLimiterRegistry::remove);
+        rateLimiterKeyRegistry.clear();
     }
 }

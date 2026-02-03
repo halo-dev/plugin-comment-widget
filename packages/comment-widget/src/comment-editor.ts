@@ -6,9 +6,11 @@ import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
 import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
+import { consume } from '@lit/context';
 import { property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { when } from 'lit/directives/when.js';
+import { baseUrlContext } from './context';
 import baseStyles from './styles/base';
 import { cleanHtml } from './utils/html';
 
@@ -75,7 +77,19 @@ const actionItems: ActionItem[] = [
   },
 ];
 
+const uploadActionItem: ActionItem = {
+  name: 'upload',
+  displayName: () => msg('Upload'),
+  type: 'action',
+  icon: 'i-mingcute-upload-line',
+  run: (editor?: Editor) => editor?.chain().focus().uploadFile().run(),
+};
+
 export class CommentEditor extends LitElement {
+  @consume({ context: baseUrlContext })
+  @state()
+  baseUrl = '';
+
   @property({ type: String })
   placeholder: string | undefined;
 
@@ -101,6 +115,8 @@ export class CommentEditor extends LitElement {
       'tiptap-extension-code-block-shiki'
     );
     const { CharacterCount } = await import('@tiptap/extensions');
+    const { EditorUpload } = await import('./extension/editor-upload');
+    const { Image } = await import('@tiptap/extension-image');
 
     this.loading = false;
 
@@ -124,6 +140,21 @@ export class CommentEditor extends LitElement {
         }),
 
         CharacterCount,
+
+        Image.configure({
+          inline: true,
+          resize: {
+            enabled: true,
+            alwaysPreserveAspectRatio: true,
+            minWidth: 50,
+            minHeight: 50,
+            directions: ['bottom-right'],
+          },
+        }),
+
+        EditorUpload.configure({
+          baseUrl: this.baseUrl,
+        }),
       ],
       onUpdate: () => {
         this.requestUpdate();
@@ -187,6 +218,7 @@ export class CommentEditor extends LitElement {
             this.renderActionItem(item, this.editor)
           )}
           ${this.renderActionItem({ type: 'separator' })}
+          ${this.renderActionItem(uploadActionItem, this.editor)}
           <li class="flex items-center">
             <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
           </li>
