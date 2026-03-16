@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -65,14 +66,14 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
     private Mono<Void> sendCaptchaRequiredResponse(ServerWebExchange exchange,
                                                    SettingConfigGetter.CaptchaConfig captchaConfig,
                                                    ResponseStatusException e) {
-        exchange.getResponse().getHeaders().addIfAbsent(CAPTCHA_REQUIRED_HEADER, "true");
+        addHeaderIfAbsent(exchange.getResponse().getHeaders(), CAPTCHA_REQUIRED_HEADER, Boolean.TRUE.toString());
         exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         return captchaManager.generate(exchange, captchaConfig)
             .flatMap(captcha -> {
                 var problemDetail = toProblemDetail(e);
                 problemDetail.setProperty("captcha", captcha.imageBase64());
                 var responseData = getResponseData(problemDetail);
-                exchange.getResponse().getHeaders().addIfAbsent("Content-Type", CONTENT_TYPE);
+                addHeaderIfAbsent(exchange.getResponse().getHeaders(), HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
                 return exchange.getResponse()
                     .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(responseData)));
             });
@@ -150,5 +151,18 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
     @Override
     public int getOrder() {
         return SecurityWebFiltersOrder.AUTHORIZATION.getOrder();
+    }
+
+    /**
+     * Adds a header to the HttpHeaders if it is not already present. Only for forward-compatibility with Spring Framework 7.
+     *
+     * @param headers     the HttpHeaders to add the header to
+     * @param headerName  the name of the header
+     * @param headerValue the value of the header
+     */
+    private static void addHeaderIfAbsent(HttpHeaders headers, String headerName, String headerValue) {
+        if (headers.getFirst(headerName) == null) {
+            headers.add(headerName, headerValue);
+        }
     }
 }
