@@ -48,6 +48,7 @@
     "@tiptap/extensions": "^3.10.4",
     "@tiptap/pm": "^3.10.4",
     "@tiptap/starter-kit": "^3.10.4",
+    "@tiptap/extension-image": "^3.14.0",
     "dayjs": "^1.11.19",
     "emoji-mart": "^5.6.0",
     "es-toolkit": "^1.41.0",

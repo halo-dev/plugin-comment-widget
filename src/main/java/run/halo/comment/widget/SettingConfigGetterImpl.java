@@ -27,4 +27,10 @@ public class SettingConfigGetterImpl implements SettingConfigGetter {
         return settingFetcher.fetch(SecurityConfig.GROUP, SecurityConfig.class)
             .defaultIfEmpty(SecurityConfig.empty());
     }
+
+    @Override
+    public Mono<EditorConfig> getEditorConfig() {
+        return settingFetcher.fetch(EditorConfig.GROUP, EditorConfig.class)
+            .defaultIfEmpty(new EditorConfig());
+    }
 }

@@ -60,6 +60,9 @@ importers:
       '@tiptap/core':
         specifier: ^3.10.4
         version: 3.10.4(@tiptap/pm@3.10.4)
+      '@tiptap/extension-image':
+        specifier: ^3.14.0
+        version: 3.14.0(@tiptap/core@3.10.4(@tiptap/pm@3.10.4))
       '@tiptap/extensions':
         specifier: ^3.10.4
         version: 3.10.4(@tiptap/core@3.10.4(@tiptap/pm@3.10.4))(@tiptap/pm@3.10.4)
@@ -132,7 +135,7 @@ importers:
         version: 2.21.0(vue-router@4.5.1(vue@3.5.24(typescript@5.8.3)))(vue@3.5.24(typescript@5.8.3))
       '@halo-dev/console-shared':
         specifier: link:/Users/ryanwang/Workspace/github/ruibaby/halo-next/ui/packages/shared
-        version: link:../../../../ruibaby/halo-next/ui/packages/shared
+        version: link:../../../../../../ryanwang/Workspace/github/ruibaby/halo-next/ui/packages/shared
       vue:
         specifier: ^3.5.24
         version: 3.5.24(typescript@5.8.3)
@@ -1067,6 +1070,11 @@ packages:
     peerDependencies:
       '@tiptap/core': ^3.10.4
       '@tiptap/pm': ^3.10.4
+
+  '@tiptap/extension-image@3.14.0':
+    resolution: {integrity: sha512-lmRU2bhKMDPo+00AiGXZu15jBA9Gmw6QixBWzRrUtsYuFrVAYYCUNIA6mDH7b80935ISqYI+YH1ZlJEmsMptJw==}
+    peerDependencies:
+      '@tiptap/core': ^3.14.0
 
   '@tiptap/extension-italic@3.10.4':
     resolution: {integrity: sha512-SlvKzL/oUxZ0s+1idv4ZdKmr4tS6m8jbXZYVZlzlRHxSfmt85SqUa2hMxmeNXySrHxURQNP6F+KyI6Z26ddFzA==}
@@ -3871,6 +3879,10 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.10.4(@tiptap/pm@3.10.4)
       '@tiptap/pm': 3.10.4
+
+  '@tiptap/extension-image@3.14.0(@tiptap/core@3.10.4(@tiptap/pm@3.10.4))':
+    dependencies:
+      '@tiptap/core': 3.10.4(@tiptap/pm@3.10.4)
 
   '@tiptap/extension-italic@3.10.4(@tiptap/core@3.10.4(@tiptap/pm@3.10.4))':
     dependencies:
