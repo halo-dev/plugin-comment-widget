@@ -2,19 +2,28 @@ package run.halo.comment.widget.captcha;
 
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
-import java.net.URI;
-import java.util.Locale;
-import java.util.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.ProblemDetailJacksonMixin;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.lang.NonNull;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
@@ -24,6 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import run.halo.app.infra.AnonymousUserConst;
 import run.halo.app.security.AdditionalWebFilter;
@@ -46,12 +56,58 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
     private final CaptchaCookieResolverImpl captchaCookieResolver;
     private final ServerSecurityContextRepository contextRepository;
 
+    private final Cache<String, Boolean> submissionCache = CacheBuilder.newBuilder()
+        .expireAfterWrite(5, TimeUnit.SECONDS)
+        .maximumSize(1000)
+        .build();
+
     @Override
     @NonNull
     public Mono<Void> filter(@NonNull ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         return pathMatcher.matches(exchange)
             .filter(ServerWebExchangeMatcher.MatchResult::isMatch)
-            .flatMap(result -> settingConfigGetter.getSecurityConfig())
+            .switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
+            .flatMap(match -> processDuplicateAndCaptcha(exchange, chain));
+    }
+
+    private Mono<Void> processDuplicateAndCaptcha(ServerWebExchange exchange, WebFilterChain chain) {
+        return DataBufferUtils.join(exchange.getRequest().getBody())
+            .map(dataBuffer -> {
+                byte[] bytes = new byte[dataBuffer.readableByteCount()];
+                dataBuffer.read(bytes);
+                DataBufferUtils.release(dataBuffer);
+                return bytes;
+            })
+            .defaultIfEmpty(new byte[0])
+            .flatMap(bytes -> {
+                if (bytes.length > 0) {
+                    String ip = resolveIp(exchange);
+                    String content = new String(bytes, StandardCharsets.UTF_8);
+                    String fingerprint = ip + "::" + md5(content);
+
+                    if (submissionCache.getIfPresent(fingerprint) != null) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "您提交得太快了，请勿重复发送相同内容。"));
+                    }
+                    submissionCache.put(fingerprint, true);
+                }
+
+                ServerHttpRequest mutatedRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
+                    @Override
+                    @NonNull
+                    public Flux<DataBuffer> getBody() {
+                        return bytes.length > 0 ?
+                            Flux.just(exchange.getResponse().bufferFactory().wrap(bytes)) :
+                            Flux.empty();
+                    }
+                };
+                ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
+
+                return handleCaptchaVerification(mutatedExchange, chain);
+            });
+    }
+
+    private Mono<Void> handleCaptchaVerification(ServerWebExchange exchange, WebFilterChain chain) {
+        return settingConfigGetter.getSecurityConfig()
             .map(SettingConfigGetter.SecurityConfig::getCaptcha)
             .filterWhen(captchaConfig -> isAnonymousCommenter(exchange))
             .switchIfEmpty(chain.filter(exchange).then(Mono.empty()))
@@ -114,6 +170,34 @@ public class CommentCaptchaFilter implements AdditionalWebFilter {
         var commentMatcher = pathMatchers(HttpMethod.POST, "/apis/api.halo.run/v1alpha1/comments");
         var replyMatcher = pathMatchers(HttpMethod.POST, "/apis/api.halo.run/v1alpha1/comments/{name}/reply");
         return new OrServerWebExchangeMatcher(commentMatcher, replyMatcher);
+    }
+
+    private static String resolveIp(ServerWebExchange exchange) {
+        var request = exchange.getRequest();
+        String ip = request.getHeaders().getFirst("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            if (request.getRemoteAddress() != null) {
+                ip = request.getRemoteAddress().getAddress().getHostAddress();
+            }
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0];
+        }
+        return ip == null ? "unknown" : ip;
+    }
+
+    private static String md5(String content) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(content.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return String.valueOf(content.hashCode());
+        }
     }
 
     static class InvalidCaptchaCodeException extends ResponseStatusException {
