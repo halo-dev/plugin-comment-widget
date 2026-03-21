@@ -67,7 +67,7 @@ export class UserAvatar extends LitElement {
 
   override render() {
     if (this.href) {
-      return html`<a class="avatar" href="${this.href}" target="_blank" rel="noopener noreferrer">
+      return html`<a class="avatar" href="${this.href}" target="_blank" rel="noopener noreferrer nofollow ugc">
         ${this.renderAvatarContent()}
       </a>`;
     }
