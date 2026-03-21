@@ -62,7 +62,7 @@ export class BaseCommentItem extends LitElement {
                 class="item-author font-medium text-sm text-text-1 hover:underline"
                 target="_blank"
                 href=${ifDefined(this.userWebsite)}
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow ugc"
               >
                 ${this.userDisplayName}
               </a>
