@@ -60,9 +60,6 @@ importers:
       '@tiptap/core':
         specifier: ^3.10.4
         version: 3.10.4(@tiptap/pm@3.10.4)
-      '@tiptap/extension-link':
-        specifier: ^3.10.4
-        version: 3.10.4(@tiptap/core@3.10.4(@tiptap/pm@3.10.4))(@tiptap/pm@3.10.4)
       '@tiptap/extensions':
         specifier: ^3.10.4
         version: 3.10.4(@tiptap/core@3.10.4(@tiptap/pm@3.10.4))(@tiptap/pm@3.10.4)
@@ -558,7 +555,7 @@ packages:
       axios: ^1.7.x
 
   '@halo-dev/api-client@https://pkg.pr.new/@halo-dev/api-client@7679':
-    resolution: {tarball: https://pkg.pr.new/@halo-dev/api-client@7679}
+    resolution: {integrity: sha512-cSjFE8p9hZrKxBhTwhODdxg18J5Hv6ymOCrHjrVizmVKVFgdKF2l3PixmlJcHXEnLhxLvSRrCg51tHKx5ggSvQ==, tarball: https://pkg.pr.new/@halo-dev/api-client@7679}
     version: 2.21.1
     peerDependencies:
       axios: ^1.7.x

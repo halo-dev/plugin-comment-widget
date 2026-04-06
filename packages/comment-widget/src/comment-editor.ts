@@ -96,7 +96,6 @@ export class CommentEditor extends LitElement {
   async createEditor() {
     const { Editor } = await import('@tiptap/core');
     const { CharacterCount, Placeholder } = await import('@tiptap/extensions');
-    const { Link } = await import('@tiptap/extension-link');
     const { StarterKit } = await import('@tiptap/starter-kit');
     const { CodeBlockShiki } = await import(
       'tiptap-extension-code-block-shiki'
@@ -111,21 +110,17 @@ export class CommentEditor extends LitElement {
           heading: false,
           link: {
             openOnClick: false,
+            defaultProtocol: 'https',
+            HTMLAttributes: {
+              target: '_blank',
+              rel: 'noopener noreferrer nofollow ugc',
+            },
           },
           codeBlock: false,
         }),
 
         Placeholder.configure({
           placeholder: this.placeholder || msg('Write a comment'),
-        }),
-
-        Link.configure({
-          openOnClick: false,
-          defaultProtocol: 'https',
-          HTMLAttributes: {
-            target: '_blank',
-            rel: 'noopener noreferrer nofollow ugc',
-          },
         }),
 
         CodeBlockShiki.configure({
