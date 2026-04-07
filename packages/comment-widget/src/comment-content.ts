@@ -9,6 +9,16 @@ export class CommentContent extends LitElement {
   @property({ type: String })
   content: string = '';
 
+  private applyLinkAttributes() {
+    const anchors =
+      this.shadowRoot?.querySelectorAll<HTMLAnchorElement>('.content a');
+
+    anchors?.forEach((anchor) => {
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer nofollow ugc';
+    });
+  }
+
   protected override firstUpdated(_changedProperties: PropertyValues) {
     super.firstUpdated(_changedProperties);
     const codeElements = this.shadowRoot?.querySelectorAll('pre>code');
@@ -36,6 +46,13 @@ export class CommentContent extends LitElement {
         }
       })
     );
+  }
+
+  protected override updated(_changedProperties: PropertyValues) {
+    super.updated(_changedProperties);
+    if (_changedProperties.has('content')) {
+      this.applyLinkAttributes();
+    }
   }
 
   private extractLanguageFromCodeElement(codeElement: Element): string | null {
