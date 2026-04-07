@@ -9,7 +9,7 @@
   "dependencies": {
     "@halo-dev/comment-widget": "workspace:*",
     "@halo-dev/components": "^2.21.0",
-    "@halo-dev/console-shared": "link:/Users/ryanwang/Workspace/github/ruibaby/halo-next/ui/packages/shared",
+    "@halo-dev/ui-shared": "^2.22.0",
     "vue": "^3.5.24"
   },
   "devDependencies": {
