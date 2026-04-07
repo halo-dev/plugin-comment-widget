@@ -1,5 +1,5 @@
 import { VLoading } from '@halo-dev/components';
-import { definePlugin } from '@halo-dev/console-shared';
+import { definePlugin } from '@halo-dev/ui-shared';
 import { defineAsyncComponent, markRaw } from 'vue';
 
 export default definePlugin({
