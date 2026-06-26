@@ -25,7 +25,7 @@ interface SecurityConfig {
 }
 
 interface AvatarConfig {
-  provider: 'gravatar';
+  provider: 'custom' | 'gravatar';
   enable: boolean;
   providerMirror: string;
   policy: 'anonymousUser' | 'allUser' | 'noAvatarUser';
