@@ -120,6 +120,8 @@ spec:
           if: "$get(enable).value === true"
           name: provider
           options:
+            - label: "自定义头像服务"
+              value: "custom"
             - label: "Gravatar"
               value: "gravatar"
           value: "gravatar"
@@ -128,7 +130,7 @@ spec:
           if: "$get(enable).value === true"
           name: providerMirror
           value: ""
-          help: 使用官方源则留空, 示例：https://gravatar.com
+          help: 自定义头像服务支持 {hash} 或 {seed} 占位符；不填写占位符时会自动追加 _avatar 参数。Gravatar 示例：https://gravatar.com
         - $formkit: select
           label: 头像策略
           if: "$get(enable).value === true"
