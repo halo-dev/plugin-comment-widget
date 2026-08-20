@@ -31,7 +31,7 @@ export class CommentContent extends LitElement {
         const content = codeblock.textContent || '';
 
         try {
-          const { codeToHtml } = await import('shiki/bundle/full');
+          const { codeToHtml } = await import('./shiki-bundle');
 
           const html = await codeToHtml(content, {
             lang,
