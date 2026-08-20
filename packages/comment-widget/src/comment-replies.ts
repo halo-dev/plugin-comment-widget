@@ -13,6 +13,7 @@ import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
+import { getNextReplyRequest } from './utils/reply-pagination';
 
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
@@ -34,6 +35,10 @@ export class CommentReplies extends LitElement {
 
   @state()
   page = 1;
+
+  private currentPageSize = 0;
+
+  private preloaded = false;
 
   @state()
   hasNext = false;
@@ -82,14 +87,16 @@ export class CommentReplies extends LitElement {
     this.activeQuoteReply = event.detail.quoteReply;
   }
 
-  async fetchReplies(options?: { append: boolean }) {
+  async fetchReplies(options?: {
+    page?: number;
+    size?: number;
+    append?: boolean;
+  }) {
     try {
       this.loading = true;
 
-      // Reload replies list
-      if (!options?.append) {
-        this.page = 1;
-      }
+      const page = options?.page ?? 1;
+      const size = options?.size ?? this.configMapData?.basic.replySize ?? 10;
 
       const data = await ofetch<ReplyVoList>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${
@@ -97,8 +104,8 @@ export class CommentReplies extends LitElement {
         }/reply`,
         {
           query: {
-            page: this.page || 1,
-            size: this.configMapData?.basic.replySize || 10,
+            page,
+            size,
           },
         }
       );
@@ -111,6 +118,8 @@ export class CommentReplies extends LitElement {
 
       this.hasNext = data.hasNext;
       this.page = data.page;
+      this.currentPageSize = data.size;
+      this.preloaded = false;
     } catch (error) {
       console.error(error);
       this.toastManager?.error(
@@ -122,31 +131,38 @@ export class CommentReplies extends LitElement {
   }
 
   async fetchNext() {
-    if (this.configMapData?.basic.withReplies) {
-      // if withReplies is true, we need to reload the replies list
-      await this.fetchReplies({ append: !(this.page === 1) });
-      this.page++;
-    } else {
-      this.page++;
-      await this.fetchReplies({ append: true });
+    if (this.loading || !this.hasNext) {
+      return;
     }
+
+    const request = getNextReplyRequest({
+      page: this.page,
+      currentPageSize: this.currentPageSize,
+      replySize: this.configMapData?.basic.replySize ?? 10,
+      preloaded: this.preloaded,
+    });
+
+    await this.fetchReplies(request);
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     if (this.configMapData?.basic.withReplies) {
-      // TODO: Fix ts error
-      // Needs @halo-dev/api-client@2.14.0
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      this.replies = this.comment?.replies.items;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      this.page = this.comment?.replies.page;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      this.hasNext = this.comment?.replies.hasNext;
+      const preloadedReplies = (
+        this.comment as (CommentVo & { replies?: ReplyVoList }) | undefined
+      )?.replies;
+
+      if (!preloadedReplies) {
+        this.fetchReplies();
+        return;
+      }
+
+      this.replies = preloadedReplies.items;
+      this.page = preloadedReplies.page;
+      this.currentPageSize = preloadedReplies.size;
+      this.hasNext = preloadedReplies.hasNext;
+      this.preloaded = true;
     } else {
       this.fetchReplies();
     }

@@ -15,7 +15,11 @@ spec:
         - $formkit: number
           label: 回复分页条数
           name: replySize
-          validation: required
+          id: replySize
+          key: replySize
+          min: 1
+          step: 1
+          validation: required|min:1
           value: 10
         - $formkit: checkbox
           label: 同时加载评论的回复
@@ -29,7 +33,11 @@ spec:
           name: withReplySize
           id: withReplySize
           key: withReplySize
-          validation: required
+          min: 1
+          max: "$get(replySize).value"
+          step: 1
+          validation: required|min:1
+          help: 不能大于回复分页条数
           value: 5
         - $formkit: checkbox
           label: 显示评论者设备信息

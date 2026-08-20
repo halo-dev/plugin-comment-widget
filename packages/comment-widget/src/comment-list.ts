@@ -22,6 +22,7 @@ import './loading-block';
 import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import baseStyles from './styles/base';
+import { getInitialReplySize } from './utils/reply-pagination';
 
 export class CommentList extends LitElement {
   @consume({ context: baseUrlContext })
@@ -106,6 +107,9 @@ export class CommentList extends LitElement {
         this.comments.page = page;
       }
 
+      const replySize = this.configMapData?.basic.replySize ?? 10;
+      const withReplySize = this.configMapData?.basic.withReplySize ?? 5;
+
       const data = await ofetch<CommentVoList>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
         {
@@ -117,7 +121,7 @@ export class CommentList extends LitElement {
             size: this.configMapData?.basic.size || 20,
             version: this.version,
             withReplies: this.configMapData?.basic.withReplies || false,
-            replySize: this.configMapData?.basic.replySize || 10,
+            replySize: getInitialReplySize(withReplySize, replySize),
           },
         }
       );

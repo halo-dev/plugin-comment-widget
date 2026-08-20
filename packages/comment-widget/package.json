@@ -36,7 +36,8 @@
     "dev": "vite build --watch",
     "locale:build": "lit-localize build",
     "locale:extract": "lit-localize extract",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "test": "node --test tests/*.test.ts"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
