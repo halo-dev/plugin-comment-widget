@@ -22,7 +22,13 @@ const presetRemToEm = definePreset(() => {
 });
 
 export default defineConfig({
-  presets: [presetWind3(), presetIcons(), presetRemToEm()],
+  presets: [
+    presetWind3(),
+    presetIcons({
+      warn: true,
+    }),
+    presetRemToEm(),
+  ],
   theme: {
     colors: {
       primary: {
