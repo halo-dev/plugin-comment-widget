@@ -2,24 +2,24 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "rsbuild build",
-    "dev": "rsbuild build --watch --env-mode=development",
+    "build": "vite build",
+    "dev": "vite build --watch --mode=development",
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
     "@halo-dev/comment-widget": "workspace:*",
-    "@halo-dev/components": "^2.21.0",
-    "@halo-dev/ui-shared": "^2.22.0",
+    "@halo-dev/components": "^2.26.0",
+    "@halo-dev/ui-shared": "^2.26.0",
     "pinia": "^3.0.4",
     "vue": "^3.5.24"
   },
   "devDependencies": {
-    "@halo-dev/ui-plugin-bundler-kit": "^2.21.2",
-    "@rsbuild/core": "^2.0.3",
-    "@rsbuild/plugin-vue": "^1.2.7",
+    "@halo-dev/ui-plugin-bundler-kit": "^2.26.0",
     "@types/node": "^20.19.24",
+    "@vitejs/plugin-vue": "^6.0.8",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.8.3",
+    "vite": "^8.2.2",
     "vue-tsc": "^2.2.12"
   }
 }

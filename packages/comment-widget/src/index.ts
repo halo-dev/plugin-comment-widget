@@ -14,19 +14,20 @@ import { ReplyItem } from './reply-item';
 import { UserAvatar } from './user-avatar';
 
 import './locale';
+
 export {
-  CommentWidget,
-  BaseForm,
   BaseCommentItem,
+  BaseForm,
+  CommentContent,
+  CommentEditor,
   CommentItem,
+  CommentList,
   CommentPagination,
   CommentReplies,
+  CommentWidget,
+  LitToast,
   LoadingBlock,
   ReplyForm,
   ReplyItem,
   UserAvatar,
-  CommentList,
-  LitToast,
-  CommentEditor,
-  CommentContent,
 };

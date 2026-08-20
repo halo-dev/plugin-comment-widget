@@ -90,10 +90,10 @@ function getPolicyInstance(): AvatarPolicy | undefined {
 }
 
 export {
-  AnonymousUserPolicy,
   AllUserPolicy,
-  NoAvatarUserPolicy,
+  AnonymousUserPolicy,
   AvatarPolicyEnum,
-  setPolicyInstance,
   getPolicyInstance,
+  NoAvatarUserPolicy,
+  setPolicyInstance,
 };
