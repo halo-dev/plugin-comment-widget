@@ -8,6 +8,7 @@ export default definePlugin({
   extensionPoints: {
     'comment:editor:replace': () => {
       return {
+        supportsEditing: true,
         component: markRaw(
           defineAsyncComponent({
             loader: () => import('./components/Editor.vue'),

@@ -79,6 +79,9 @@ export class CommentEditor extends LitElement {
   @property({ type: String })
   placeholder: string | undefined;
 
+  @property({ type: String, attribute: 'initial-content' })
+  initialContent = '';
+
   @property({ type: Boolean, attribute: 'keep-alive' })
   keepAlive = false;
 
@@ -105,6 +108,7 @@ export class CommentEditor extends LitElement {
 
     this.editor = new Editor({
       element: this.shadowRoot?.getElementById('editor-container'),
+      content: this.initialContent,
       extensions: [
         StarterKit.configure({
           heading: false,
