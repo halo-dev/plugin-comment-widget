@@ -54,12 +54,7 @@ export class CommentReplies extends LitElement {
   toastManager: ToastManager | undefined;
 
   override render() {
-    return html` <div class="replies-main" @comment-managed=${() => {
-      const size = this.configMapData?.basic.replySize ?? 10;
-      return this.fetchReplies({
-        size: Math.max(1, Math.ceil(this.replies.length / size)) * size,
-      });
-    }}>
+    return html` <div class="replies-main" @comment-managed=${this.refreshReplies}>
       ${when(
         this.replies.length,
         () => html`<div class="replies-list mt-3">
@@ -73,7 +68,7 @@ export class CommentReplies extends LitElement {
                     .replies=${this.replies}
                     .activeQuoteReply=${this.activeQuoteReply}
                     @set-active-quote-reply=${this.onSetActiveQuoteReply}
-                    @reload=${this.fetchReplies}
+                    @reload=${this.refreshReplies}
                   ></reply-item>`
               )}
             </div>`
@@ -90,6 +85,13 @@ export class CommentReplies extends LitElement {
 
   onSetActiveQuoteReply(event: CustomEvent) {
     this.activeQuoteReply = event.detail.quoteReply;
+  }
+
+  refreshReplies() {
+    const size = this.configMapData?.basic.replySize ?? 10;
+    return this.fetchReplies({
+      size: Math.max(1, Math.ceil(this.replies.length / size)) * size,
+    });
   }
 
   async fetchReplies(options?: {

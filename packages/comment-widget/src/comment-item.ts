@@ -114,7 +114,7 @@ export class CommentItem extends LitElement {
           : '.show-replies-button'
       )
       ?.focus({ preventScroll: true });
-    this.commentRepliesRef.value?.fetchReplies();
+    this.commentRepliesRef.value?.refreshReplies();
     this.showReplies = true;
   }
 
