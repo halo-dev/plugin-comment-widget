@@ -15,6 +15,7 @@
 's067e961bb67cf3f6': `Verificando…`,
 's09c7e0ff5f4e18cb': `Cancelar respuesta`,
 's0b7ae9543c001867': `Responder`,
+'s0d25b2b6889f933a': `¿Eliminar esta respuesta? Esta acción no se puede deshacer.`,
 's0fbf6dc6a1966408': `Siguiente`,
 's107ccef507b51f2c': `Completa la verificación`,
 's1c6fefb092506753': `Error al cargar la lista de comentarios, por favor intente más tarde`,

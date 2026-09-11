@@ -22,6 +22,10 @@ import './loading-block';
 import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import baseStyles from './styles/base';
+import {
+  type CommentManagedDetail,
+  fetchVisibleReplyCount,
+} from './utils/comment-management';
 import { getInitialReplySize } from './utils/reply-pagination';
 
 export class CommentList extends LitElement {
@@ -80,6 +84,15 @@ export class CommentList extends LitElement {
     this.activeReplyItem = event.detail;
   }
 
+  private onCommentManaged(event: CustomEvent<CommentManagedDetail>) {
+    const { action, restoreFocus, commentName } = event.detail;
+    if (action === 'delete' && restoreFocus) {
+      this.tabIndex = -1;
+      this.focus({ preventScroll: true });
+    }
+    return this.fetchComments({ replyCountFor: commentName });
+  }
+
   override disconnectedCallback(): void {
     this.activeReplyItem?.closeReplyForm();
     this.activeReplyItem = undefined;
@@ -113,8 +126,12 @@ export class CommentList extends LitElement {
     });
   }
 
-  async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {
-    const { page, scrollIntoView } = options || {};
+  async fetchComments(options?: {
+    page?: number;
+    scrollIntoView?: boolean;
+    replyCountFor?: string;
+  }) {
+    const { page, scrollIntoView, replyCountFor } = options || {};
     try {
       if (this.comments.items.length === 0) {
         this.loading = true;
@@ -143,6 +160,24 @@ export class CommentList extends LitElement {
         }
       );
 
+      const lastPage = Math.max(1, data.totalPages);
+      if (data.page > lastPage) {
+        await this.fetchComments({ ...options, page: lastPage });
+        return;
+      }
+
+      if (replyCountFor) {
+        const comment = data.items.find(
+          (item) => item.metadata.name === replyCountFor
+        );
+        if (comment) {
+          const visibleReplyCount = await fetchVisibleReplyCount(
+            this.baseUrl,
+            replyCountFor
+          );
+          comment.status = { ...comment.status, visibleReplyCount };
+        }
+      }
       this.comments = data;
     } catch (_error) {
       console.error(_error);
@@ -172,7 +207,7 @@ export class CommentList extends LitElement {
               <span>${msg(html`${this.comments.total} Comments`)}</span>
             </div>
 
-            <div class="comment-list" @reply-form-open=${this.onReplyFormOpen} @comment-managed=${() => this.fetchComments()}>
+            <div class="comment-list" @reply-form-open=${this.onReplyFormOpen} @comment-managed=${this.onCommentManaged}>
               ${repeat(
                 this.comments.items,
                 (item) => item.metadata.name,

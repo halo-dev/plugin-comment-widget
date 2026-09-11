@@ -1,4 +1,4 @@
-import type { UserPermission } from '@halo-dev/api-client';
+import type { ListedReplyList, UserPermission } from '@halo-dev/api-client';
 import { ofetch } from 'ofetch';
 
 export type ManagementAction =
@@ -49,4 +49,32 @@ export async function manageComment(
         ]
       : [{ op: 'add', path: '/spec/hidden', value: action === 'hide' }],
   });
+}
+
+export interface CommentManagedDetail {
+  action: ManagementAction;
+  restoreFocus: boolean;
+  commentName?: string;
+}
+
+export async function fetchVisibleReplyCount(
+  baseUrl: string,
+  commentName: string
+) {
+  const data = await ofetch<ListedReplyList>(
+    `${baseUrl}/apis/api.console.halo.run/v1alpha1/replies`,
+    {
+      query: {
+        commentName,
+        page: 1,
+        size: 1,
+        fieldSelector: [
+          'spec.approved=true',
+          'spec.hidden=false',
+          '!metadata.deletionTimestamp',
+        ],
+      },
+    }
+  );
+  return data.total;
 }

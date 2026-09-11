@@ -210,6 +210,10 @@
   <source>Delete</source>
   <target>刪除</target>
 </trans-unit>
+<trans-unit id="s0d25b2b6889f933a">
+  <source>Delete this reply? This cannot be undone.</source>
+  <target>確定刪除此回覆？此操作無法復原。</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

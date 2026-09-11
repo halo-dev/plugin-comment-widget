@@ -70,10 +70,13 @@ export class CommentManagement extends LitElement {
     if (
       action === 'delete' &&
       !window.confirm(
-        msg('Delete this comment and its replies? This cannot be undone.')
+        this.resource === 'replies'
+          ? msg('Delete this reply? This cannot be undone.')
+          : msg('Delete this comment and its replies? This cannot be undone.')
       )
     )
       return;
+    const restoreFocus = this.matches(':focus-within');
     this.busy = true;
     try {
       await manageComment(
@@ -82,10 +85,21 @@ export class CommentManagement extends LitElement {
         this.target.metadata.name,
         action
       );
-      this.close(true);
+      this.close(action !== 'delete');
       this.toastManager?.success(msg('Operation successful'));
       this.dispatchEvent(
-        new CustomEvent('comment-managed', { bubbles: true, composed: true })
+        new CustomEvent('comment-managed', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            action,
+            restoreFocus,
+            commentName:
+              this.resource === 'replies'
+                ? (this.target as ReplyVo).spec.commentName
+                : undefined,
+          },
+        })
       );
     } catch {
       this.toastManager?.error(msg('Operation failed. Please try again.'));
