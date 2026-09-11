@@ -222,6 +222,14 @@
   <source>Verification failed. Please verify again and resubmit.</source>
   <target>La verificación ha fallado. Vuelve a verificar e intenta enviar de nuevo.</target>
 </trans-unit>
+<trans-unit id="sbc0cd0b4dfb7dde1">
+  <source>Unpin</source>
+  <target>Desfijar</target>
+</trans-unit>
+<trans-unit id="s8db89619f41917b4">
+  <source>Pin</source>
+  <target>Fijar</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

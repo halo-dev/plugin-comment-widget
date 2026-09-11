@@ -6,6 +6,8 @@ export type ManagementAction =
   | 'unapprove'
   | 'hide'
   | 'unhide'
+  | 'pin'
+  | 'unpin'
   | 'delete';
 
 export async function fetchManagementPermission(baseUrl: string) {
@@ -47,7 +49,16 @@ export async function manageComment(
             value: action === 'approve' ? new Date().toISOString() : '',
           },
         ]
-      : [{ op: 'add', path: '/spec/hidden', value: action === 'hide' }],
+      : [
+          {
+            op: 'add',
+            path:
+              action === 'pin' || action === 'unpin'
+                ? '/spec/top'
+                : '/spec/hidden',
+            value: action === 'pin' || action === 'hide',
+          },
+        ],
   });
 }
 

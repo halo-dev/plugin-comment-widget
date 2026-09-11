@@ -83,6 +83,15 @@ test('management permissions fail closed and mutations follow Halo contracts', a
       }
     }
   }
+  for (const action of ['pin', 'unpin'] as const) {
+    await manageComment(baseUrl, 'comments', 'name', action);
+    assert.deepEqual(requests.at(-1), {
+      method: 'PATCH',
+      url: '/apis/content.halo.run/v1alpha1/comments/name',
+      type: 'application/json-patch+json',
+      body: [{ op: 'add', path: '/spec/top', value: action === 'pin' }],
+    });
+  }
   status = 403;
   const count = requests.length;
   await assert.rejects(manageComment(baseUrl, 'comments', 'name', 'delete'));

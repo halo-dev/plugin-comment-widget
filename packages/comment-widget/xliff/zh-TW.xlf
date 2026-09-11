@@ -222,6 +222,14 @@
   <source>Verification failed. Please verify again and resubmit.</source>
   <target>人機驗證未通過，請重新驗證後提交。</target>
 </trans-unit>
+<trans-unit id="sbc0cd0b4dfb7dde1">
+  <source>Unpin</source>
+  <target>取消置頂</target>
+</trans-unit>
+<trans-unit id="s8db89619f41917b4">
+  <source>Pin</source>
+  <target>置頂</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

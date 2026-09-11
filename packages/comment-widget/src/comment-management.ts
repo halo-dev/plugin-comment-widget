@@ -127,6 +127,15 @@ export class CommentManagement extends LitElement {
         <span class="icon-button-text">${msg('Manage')}</span>
       </summary>
       <div class="actions bg-muted-3 text-text-1 rounded-base border border-muted-1 p-1 shadow-lg" aria-busy=${this.busy}>
+        ${
+          this.resource === 'comments'
+            ? html`
+          <button type="button" ?disabled=${this.busy} @click=${() => this.run(this.target?.spec.top ? 'unpin' : 'pin')}>
+            ${this.target.spec.top ? msg('Unpin') : msg('Pin')}
+          </button>
+        `
+            : ''
+        }
         <button type="button" ?disabled=${this.busy} @click=${() => this.run(this.target?.spec.approved ? 'unapprove' : 'approve')}>
           ${this.target.spec.approved ? msg('Cancel approval') : msg('Approve')}
         </button>

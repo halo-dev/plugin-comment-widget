@@ -83,7 +83,13 @@ export class BaseCommentItem extends LitElement {
               </div>`
           )}
 
-          ${when(this.pinned, () => html`<span class="item-pinned text-xs text-text-2 bg-muted-3 rounded-base px-1.5 py-1">${msg('Pinned')}</span>`)}
+          ${when(
+            this.pinned,
+            () => html`<div class="item-pinned inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+                <i class="i-ri-pushpin-line opacity-90 size-3" aria-hidden="true"></i>
+                <span class="text-xs text-text-2">${msg('Pinned')}</span>
+              </div>`
+          )}
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
