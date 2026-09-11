@@ -250,6 +250,7 @@ export class CommentEditor extends LitElement {
       .tiptap {
         outline: none;
         border: none;
+        font-size: 16px;
       }
 
       .tiptap p {
