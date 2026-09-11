@@ -159,6 +159,9 @@ try {
   await replyList.fetchNext();
   assert(replyList.replies.length === 60, 'The final page must append replies');
   assert(replyList.shadowRoot.activeElement === replyList.shadowRoot.querySelectorAll('reply-item')[40], 'Final page must focus the first new reply');
+  const firstNewReply = replyList.shadowRoot.querySelectorAll('reply-item')[40];
+  select.focus();
+  assert(!firstNewReply.hasAttribute('tabindex'), 'Leaving the new reply must restore its shadow controls to the Tab order');
   assert(getComputedStyle(base.shadowRoot.querySelector('.item-content')).contentVisibility === 'auto', 'Offscreen comment content should skip rendering');
   assert(base.shadowRoot.querySelector('time').title === new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(comment.spec.creationTime)), 'Dates must use the active locale');
   base.creationTime = 'invalid';

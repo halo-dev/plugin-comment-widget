@@ -137,6 +137,18 @@ export class CommentReplies extends LitElement {
           this.renderRoot.querySelectorAll<HTMLElement>('reply-item')[
             firstNewReply
           ] || this;
+        const previousTabIndex = target.getAttribute('tabindex');
+        target.addEventListener(
+          'blur',
+          () => {
+            if (previousTabIndex === null) {
+              target.removeAttribute('tabindex');
+            } else {
+              target.setAttribute('tabindex', previousTabIndex);
+            }
+          },
+          { once: true }
+        );
         target.tabIndex = -1;
         target.focus({ preventScroll: true });
       }
