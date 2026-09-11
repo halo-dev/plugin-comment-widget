@@ -1,4 +1,5 @@
 export interface ConfigMapData {
+  captchaRequired: boolean;
   basic: BasicConfig;
   security: SecurityConfig;
   avatar: AvatarConfig;
@@ -17,7 +18,10 @@ interface BasicConfig {
 
 interface SecurityConfig {
   captcha: {
-    anonymousCommentCaptcha: boolean;
+    enable: boolean;
+    audience: 'ALL' | 'ANONYMOUS' | 'ROLES';
+    roles?: string[];
+    includeAnonymous?: boolean;
     type: 'ALPHANUMERIC' | 'ARITHMETIC';
     ignoreCase: boolean;
     captchaLength: number;
@@ -32,6 +36,7 @@ interface AvatarConfig {
 }
 
 interface EditorConfig {
+  enableEmoji?: boolean;
   placeholder?: string;
 }
 

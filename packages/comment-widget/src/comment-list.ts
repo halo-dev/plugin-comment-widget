@@ -69,6 +69,23 @@ export class CommentList extends LitElement {
   @state()
   loading = false;
 
+  private activeReplyItem?: { closeReplyForm(): void };
+
+  private onReplyFormOpen(event: CustomEvent<{ closeReplyForm(): void }>) {
+    event.stopPropagation();
+    if (this.activeReplyItem === event.detail) {
+      return;
+    }
+    this.activeReplyItem?.closeReplyForm();
+    this.activeReplyItem = event.detail;
+  }
+
+  override disconnectedCallback(): void {
+    this.activeReplyItem?.closeReplyForm();
+    this.activeReplyItem = undefined;
+    super.disconnectedCallback();
+  }
+
   get shouldDisplayPagination() {
     if (this.loading) {
       return false;
@@ -155,7 +172,7 @@ export class CommentList extends LitElement {
               <span>${msg(html`${this.comments.total} Comments`)}</span>
             </div>
 
-            <div class="comment-list">
+            <div class="comment-list" @reply-form-open=${this.onReplyFormOpen}>
               ${repeat(
                 this.comments.items,
                 (item) => item.metadata.name,

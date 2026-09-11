@@ -96,11 +96,12 @@ export class CommentItem extends LitElement {
   }
 
   handleShowReplies() {
-    this.showReplies = !this.showReplies;
-
     if (!this.configMapData?.basic.withReplies) {
-      this.showReplyForm = !this.showReplyForm;
+      this.handleToggleReplyForm();
+      this.showReplies = this.showReplyForm;
+      return;
     }
+    this.showReplies = !this.showReplies;
   }
 
   onReplyCreated() {
@@ -108,8 +109,23 @@ export class CommentItem extends LitElement {
     this.showReplies = true;
   }
 
+  closeReplyForm() {
+    this.showReplyForm = false;
+  }
+
   handleToggleReplyForm() {
-    this.showReplyForm = !this.showReplyForm;
+    if (this.showReplyForm) {
+      this.closeReplyForm();
+      return;
+    }
+    this.showReplyForm = true;
+    this.dispatchEvent(
+      new CustomEvent('reply-form-open', {
+        detail: this,
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   override render() {

@@ -4,7 +4,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch --mode=development",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "test": "node --experimental-vm-modules --test tests/*.test.mjs"
   },
   "dependencies": {
     "@halo-dev/comment-widget": "workspace:*",

@@ -78,8 +78,23 @@ export class ReplyItem extends LitElement {
     }
   }
 
+  closeReplyForm() {
+    this.showReplyForm = false;
+  }
+
   handleToggleReplyForm() {
-    this.showReplyForm = !this.showReplyForm;
+    if (this.showReplyForm) {
+      this.closeReplyForm();
+      return;
+    }
+    this.showReplyForm = true;
+    this.dispatchEvent(
+      new CustomEvent('reply-form-open', {
+        detail: this,
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   async handleUpvote() {

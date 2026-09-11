@@ -1,5 +1,6 @@
 package run.halo.comment.widget;
 
+import java.util.Set;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -33,7 +34,11 @@ public interface SettingConfigGetter {
         private CaptchaConfig captcha = CaptchaConfig.empty();
 
         public SecurityConfig setCaptcha(CaptchaConfig captcha) {
-            this.captcha = (captcha == null ? CaptchaConfig.empty() : captcha);
+            if (captcha == null) {
+                this.captcha = CaptchaConfig.empty();
+                return this;
+            }
+            this.captcha = captcha;
             return this;
         }
 
@@ -47,7 +52,17 @@ public interface SettingConfigGetter {
     @Accessors(chain = true)
     class CaptchaConfig {
 
-        private boolean anonymousCommentCaptcha;
+        private boolean enable;
+
+        private CaptchaAudience audience = CaptchaAudience.ANONYMOUS;
+
+        private Set<String> roles = Set.of();
+
+        private boolean includeAnonymous;
+
+        public enum CaptchaAudience {
+            ALL, ANONYMOUS, ROLES
+        }
 
         @Getter(onMethod_ = @NonNull)
         private CaptchaType type = CaptchaType.ALPHANUMERIC;
@@ -59,7 +74,11 @@ public interface SettingConfigGetter {
         private int arithmeticRange = 90;
 
         public CaptchaConfig setType(CaptchaType type) {
-            this.type = (type == null ? CaptchaType.ALPHANUMERIC : type);
+            if (type == null) {
+                this.type = CaptchaType.ALPHANUMERIC;
+                return this;
+            }
+            this.type = type;
             return this;
         }
 

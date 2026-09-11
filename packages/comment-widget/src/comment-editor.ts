@@ -85,6 +85,9 @@ export class CommentEditor extends LitElement {
   @property({ type: Boolean, attribute: 'keep-alive' })
   keepAlive = false;
 
+  @property({ type: Boolean })
+  enableEmoji = true;
+
   @state()
   editor: Editor | undefined;
 
@@ -194,10 +197,15 @@ export class CommentEditor extends LitElement {
           ${repeat(actionItems, (item) =>
             this.renderActionItem(item, this.editor)
           )}
-          ${this.renderActionItem({ type: 'separator' })}
-          <li class="flex items-center">
-            <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
-          </li>
+          ${when(
+            this.enableEmoji,
+            () => html`
+            ${this.renderActionItem({ type: 'separator' })}
+            <li class="flex items-center">
+              <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
+            </li>
+          `
+          )}
         </ul>
       </div>`;
   }
