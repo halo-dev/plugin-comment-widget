@@ -20,6 +20,7 @@ import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
 import './comment-editor';
+import { keyed } from 'lit/directives/keyed.js';
 import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
@@ -108,6 +109,70 @@ export class BaseForm extends LitElement {
 
   @property({ type: Boolean })
   hidePrivateCheckbox = false;
+
+  @property({ type: String })
+  commentName = '';
+
+  @property({ type: String })
+  quoteReplyName = '';
+
+  private draftKey = '';
+  private draftContent = '';
+  @state() private draftHidden = false;
+
+  protected override willUpdate() {
+    const key = `halo-comment-draft:${JSON.stringify([
+      new URL(this.baseUrl || '/', location.href).href,
+      this.group,
+      this.kind,
+      this.name,
+      this.commentName,
+      this.quoteReplyName,
+      this.currentUser?.metadata.name ?? '',
+    ])}`;
+    if (key === this.draftKey) {
+      return;
+    }
+    this.draftKey = key;
+    this.draftContent = '';
+    this.draftHidden = false;
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
+    try {
+      const draft = JSON.parse(localStorage.getItem(key) || 'null');
+      if (typeof draft?.content === 'string') {
+        this.draftContent = draft.content;
+        this.draftHidden = draft.hidden === true;
+        if (this.draftContent) {
+          window.addEventListener('beforeunload', this.onBeforeUnload);
+        }
+      }
+    } catch {
+      // Invalid or unavailable storage must not prevent editing.
+    }
+  }
+
+  private saveDraft() {
+    try {
+      if (this.draftContent) {
+        localStorage.setItem(
+          this.draftKey,
+          JSON.stringify({
+            content: this.draftContent,
+            hidden: this.draftHidden,
+          })
+        );
+      } else {
+        localStorage.removeItem(this.draftKey);
+      }
+    } catch {
+      // Keep editing and the unload warning available if storage is full or blocked.
+    }
+  }
+
+  private onHiddenChange(event: Event) {
+    this.draftHidden = (event.target as HTMLInputElement).checked;
+    this.saveDraft();
+  }
 
   textareaRef: Ref<HTMLTextAreaElement> = createRef<HTMLTextAreaElement>();
 
@@ -231,7 +296,12 @@ export class BaseForm extends LitElement {
     event.returnValue = '';
   };
 
-  private onEditorUpdate(event: CustomEvent<{ characterCount: number }>) {
+  private onEditorUpdate(
+    event: CustomEvent<{ content: string; characterCount: number }>
+  ) {
+    this.draftContent =
+      event.detail.characterCount > 0 ? event.detail.content : '';
+    this.saveDraft();
     if (event.detail.characterCount > 0) {
       window.addEventListener('beforeunload', this.onBeforeUnload);
     } else {
@@ -310,7 +380,7 @@ export class BaseForm extends LitElement {
   override render() {
     return html`
       <form class="form w-full flex flex-col gap-4" @submit="${this.onSubmit}">
-        <comment-editor .enableEmoji=${this.configMapData?.editor?.enableEmoji !== false} ${ref(this.editorRef)} .placeholder=${this.configMapData?.editor?.placeholder} @update=${this.onEditorUpdate}></comment-editor>
+        ${keyed(this.draftKey, html`<comment-editor .initialContent=${this.draftContent} .enableEmoji=${this.configMapData?.editor?.enableEmoji !== false} ${ref(this.editorRef)} .placeholder=${this.configMapData?.editor?.placeholder} @update=${this.onEditorUpdate}></comment-editor>`)}
 
         ${when(
           !this.currentUser && this.allowAnonymousComments,
@@ -370,7 +440,7 @@ export class BaseForm extends LitElement {
               !this.hidePrivateCheckbox &&
                 this.configMapData?.basic.enablePrivateComment,
               () => html`<div class="flex items-center gap-2">
-                      <input id="hidden" name="hidden" type="checkbox" />
+                      <input id="hidden" name="hidden" type="checkbox" .checked=${this.draftHidden} @change=${this.onHiddenChange} />
                       <label for="hidden" class="text-xs select-none text-text-3 hover:text-text-1 transition-colors">${msg('Private')}</label>
                       <base-tooltip content=${this.privateCommentDescription}>
                         <button type="button" aria-label=${msg('Private')} aria-describedby="private-description" class="inline-flex p-1 rounded-base hover:bg-muted-3">
@@ -553,6 +623,9 @@ export class BaseForm extends LitElement {
   }
 
   resetForm() {
+    this.draftContent = '';
+    this.draftHidden = false;
+    this.saveDraft();
     const form = this.shadowRoot?.querySelector('form');
     form?.reset();
     this.editorRef.value?.reset();

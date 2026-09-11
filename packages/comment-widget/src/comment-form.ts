@@ -83,6 +83,7 @@ export class CommentForm extends LitElement {
     this.submitting = true;
 
     const data = e.detail;
+    const baseForm = this.baseFormRef.value;
 
     const { displayName, email, website, content, hidden } = data || {};
 
@@ -148,9 +149,8 @@ export class CommentForm extends LitElement {
         );
       }
 
+      baseForm?.resetForm();
       window.dispatchEvent(new CustomEvent('halo:comment:created'));
-
-      this.baseFormRef.value?.resetForm();
     } catch (error) {
       if (error instanceof FetchError) {
         if (
