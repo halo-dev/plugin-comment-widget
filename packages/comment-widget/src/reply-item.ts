@@ -1,6 +1,7 @@
 import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import type { BaseForm } from './base-form';
 import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
@@ -83,11 +84,16 @@ export class ReplyItem extends LitElement {
     this.showReplyForm = false;
   }
 
-  onReplyCreated() {
-    this.closeReplyForm();
-    this.renderRoot
-      .querySelector<HTMLButtonElement>('.reply-button')
-      ?.focus({ preventScroll: true });
+  onReplyCreated(
+    event: CustomEvent<{ resetForm: (form: BaseForm) => boolean }>
+  ) {
+    const form = this.renderRoot.querySelector('reply-form')?.baseFormRef.value;
+    if (form && event.detail.resetForm(form)) {
+      this.closeReplyForm();
+      this.renderRoot
+        .querySelector<HTMLButtonElement>('.reply-button')
+        ?.focus({ preventScroll: true });
+    }
     this.dispatchEvent(new CustomEvent('reload'));
   }
 

@@ -622,7 +622,40 @@ export class BaseForm extends LitElement {
       ?.reset();
   }
 
-  resetForm() {
+  getDraftSnapshot() {
+    return {
+      key: this.draftKey,
+      content: this.draftContent,
+      hidden: this.draftHidden,
+    };
+  }
+
+  resetForm(submittedDraft = this.getDraftSnapshot()) {
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem(submittedDraft.key) || 'null'
+      );
+      if (
+        stored &&
+        (stored.content !== submittedDraft.content ||
+          stored.hidden !== submittedDraft.hidden)
+      ) {
+        return false;
+      }
+      localStorage.removeItem(submittedDraft.key);
+    } catch {
+      // A detached form cannot determine whether another editor has a newer draft.
+      if (!this.isConnected) {
+        return false;
+      }
+    }
+    if (
+      this.draftKey !== submittedDraft.key ||
+      this.draftContent !== submittedDraft.content ||
+      this.draftHidden !== submittedDraft.hidden
+    ) {
+      return false;
+    }
     this.draftContent = '';
     this.draftHidden = false;
     this.saveDraft();
@@ -630,6 +663,7 @@ export class BaseForm extends LitElement {
     form?.reset();
     this.editorRef.value?.reset();
     window.removeEventListener('beforeunload', this.onBeforeUnload);
+    return true;
   }
 
   setFocus() {

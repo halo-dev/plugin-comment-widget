@@ -94,6 +94,7 @@ export class ReplyForm extends LitElement {
 
     const data = e.detail;
     const baseForm = this.baseFormRef.value;
+    const submittedDraft = baseForm?.getDraftSnapshot();
 
     const { displayName, email, website, content } = data || {};
 
@@ -156,8 +157,14 @@ export class ReplyForm extends LitElement {
         );
       }
 
-      baseForm?.resetForm();
-      this.dispatchEvent(new CustomEvent('reload'));
+      this.dispatchEvent(
+        new CustomEvent('reload', {
+          detail: {
+            resetForm: (form: BaseForm) => form.resetForm(submittedDraft),
+          },
+        })
+      );
+      baseForm?.resetForm(submittedDraft);
       window.dispatchEvent(new CustomEvent('halo:comment-reply:created'));
     } catch (error) {
       if (error instanceof FetchError) {

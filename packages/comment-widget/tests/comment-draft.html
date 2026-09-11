@@ -125,6 +125,63 @@ try {
   assert(keys().length === 1, 'Deleting all content must remove its draft');
   await submit(rootOwner);
   assert(keys().length === 0 && content(root) === '', 'Successful root submission must clear draft and editor');
+  // A completed request must only clear the draft that it submitted.
+  for (const target of ['comment', 'reply', 'quote']) {
+    for (const changed of [false, true, 'quota']) {
+      const raceWidget = await mount(`draft-test-post-race-${target}-${changed}`);
+      let item = raceWidget.shadowRoot.querySelector('comment-list').shadowRoot.querySelector('comment-item');
+      if (target === 'quote') {
+        item = document.createElement('reply-item');
+        item.comment = comments[0];
+        item.reply = { ...comments[0], metadata: { name: 'quoted-race-reply' } };
+        raceWidget.shadowRoot.append(item);
+        await item.updateComplete;
+      }
+      const [owner, original] = target === 'comment'
+        ? [raceWidget.shadowRoot.querySelector('comment-form'), await base(raceWidget.shadowRoot.querySelector('comment-form'))]
+        : await open(item);
+      edit(original, '<p>submitted draft</p>');
+      delaySubmit = true;
+      finishSubmit = undefined;
+      const inFlight = submit(owner);
+      await until(() => finishSubmit);
+      let active = original;
+      if (target !== 'comment') {
+        item.handleToggleReplyForm();
+        await until(() => !original.isConnected);
+        [, active] = await open(item);
+      }
+      const setItem = Storage.prototype.setItem;
+      if (changed === 'quota') Storage.prototype.setItem = () => { throw new Error('Quota exceeded'); };
+      try {
+        if (changed) edit(active, '<p>new unsent draft</p>');
+        finishSubmit();
+        await inFlight;
+      } finally {
+        Storage.prototype.setItem = setItem;
+      }
+      if (changed === 'quota') {
+        assert(active.isConnected && content(active) === 'new unsent draft', `${target}: failed storage must not allow old success to close new input`);
+        edit(active, '<p>new unsent draft!</p>');
+        edit(active, '<p>new unsent draft</p>');
+      }
+      delaySubmit = false;
+      if (changed) {
+        assert(active.isConnected && content(active) === 'new unsent draft', `${target}: old success must keep the active new draft`);
+        assert(keys().some(key => localStorage.getItem(key).includes('new unsent draft')), `${target}: old success must keep the stored new draft`);
+      } else {
+        assert(!keys().some(key => key.includes(`race-${target}-${changed}`)), `${target}: unchanged submitted draft must be removed`);
+      }
+      raceWidget.remove();
+      const remounted = await mount(`draft-test-post-race-${target}-${changed}`);
+      if (target === 'comment') {
+        const restored = await base(remounted.shadowRoot.querySelector('comment-form'));
+        assert(content(restored) === (changed ? 'new unsent draft' : ''), `${target}: remount must reflect the remaining draft`);
+      }
+      remounted.remove();
+      keys().filter(key => key.includes(`race-${target}-${changed}`)).forEach(key => { localStorage.removeItem(key); });
+    }
+  }
   const draftKey = keys()[0] ?? root.draftKey;
   localStorage.setItem(draftKey, '{invalid json');
   widget.remove();
@@ -140,7 +197,7 @@ try {
     Storage.prototype.setItem = originalSetItem;
   }
   widget.remove();
-  document.querySelector('#result').textContent = 'PASS: reply switching, persistence, formatting, privacy, isolation, failed and detached submissions, clearing';
+  document.querySelector('#result').textContent = 'PASS: draft persistence, isolation, privacy, clearing, in-flight edits and reopened replies, including storage failures';
 } catch (error) {
   document.querySelector('#result').textContent = `FAIL: ${error.stack}`;
   throw error;

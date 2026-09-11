@@ -1,6 +1,7 @@
 import type { CommentVo } from '@halo-dev/api-client';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import type { BaseForm } from './base-form';
 import baseStyles from './styles/base';
 import './comment-replies';
 import './user-avatar';
@@ -105,15 +106,20 @@ export class CommentItem extends LitElement {
     this.showReplies = !this.showReplies;
   }
 
-  onReplyCreated() {
-    this.closeReplyForm();
-    this.renderRoot
-      .querySelector<HTMLButtonElement>(
-        this.configMapData?.basic.withReplies
-          ? '.reply-button'
-          : '.show-replies-button'
-      )
-      ?.focus({ preventScroll: true });
+  onReplyCreated(
+    event: CustomEvent<{ resetForm: (form: BaseForm) => boolean }>
+  ) {
+    const form = this.renderRoot.querySelector('reply-form')?.baseFormRef.value;
+    if (form && event.detail.resetForm(form)) {
+      this.closeReplyForm();
+      this.renderRoot
+        .querySelector<HTMLButtonElement>(
+          this.configMapData?.basic.withReplies
+            ? '.reply-button'
+            : '.show-replies-button'
+        )
+        ?.focus({ preventScroll: true });
+    }
     this.commentRepliesRef.value?.refreshReplies();
     this.showReplies = true;
   }
