@@ -80,9 +80,9 @@ export class CommentReplies extends LitElement {
       )}
       ${when(this.loading, () => html` <loading-block></loading-block>`)}
       ${when(
-        this.hasNext && !this.loading,
+        this.hasNext,
         () => html`<div class="replies-next flex justify-center my-2">
-            <button class="replies-next-button pagination-button" @click=${this.fetchNext}>${msg('Load more')}</button>
+            <button type="button" class="replies-next-button pagination-button" aria-disabled=${this.loading} aria-busy=${this.loading} @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
       )}
     </div>`;
@@ -115,6 +115,12 @@ export class CommentReplies extends LitElement {
         }
       );
 
+      const restoreFocus =
+        !data.hasNext &&
+        this.renderRoot
+          .querySelector('.replies-next-button')
+          ?.matches(':focus');
+      const firstNewReply = options?.append ? this.replies.length : 0;
       if (options?.append) {
         this.replies = this.replies.concat(data.items);
       } else {
@@ -125,6 +131,15 @@ export class CommentReplies extends LitElement {
       this.page = data.page;
       this.currentPageSize = data.size;
       this.preloaded = false;
+      if (restoreFocus) {
+        await this.updateComplete;
+        const target =
+          this.renderRoot.querySelectorAll<HTMLElement>('reply-item')[
+            firstNewReply
+          ] || this;
+        target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+      }
     } catch (error) {
       console.error(error);
       this.toastManager?.error(

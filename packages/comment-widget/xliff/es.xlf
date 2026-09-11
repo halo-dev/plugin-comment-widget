@@ -230,6 +230,14 @@
   <source>Pin</source>
   <target>Fijar</target>
 </trans-unit>
+<trans-unit id="s2406b89e991a4524">
+  <source>Refresh verification code</source>
+  <target>Actualizar código de verificación</target>
+</trans-unit>
+<trans-unit id="s2e192b19ed15fcf6">
+  <source>Page</source>
+  <target>Página</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

@@ -77,9 +77,9 @@ export class CommenterUABar extends LitElement {
       const isHaloApp = this.ua.startsWith('Halo App/');
 
       return html`
-      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-        ${when(isHaloApp, () => html`<img src=${haloLogo} class="size-3 rounded-sm" />`)}
-        <span class="text-xs text-text-3">${this.ua}</span>
+      <div class="max-w-full inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+        ${when(isHaloApp, () => html`<img src=${haloLogo} alt="" class="size-3 shrink-0 rounded-sm" />`)}
+        <span class="min-w-0 break-all text-xs text-text-3">${this.ua}</span>
       </div>
       `;
     }
@@ -124,6 +124,7 @@ export class CommenterUABar extends LitElement {
   static override styles = [
     ...baseStyles,
     css`
+      :host { min-width: 0; max-width: 100%; }
       @unocss-placeholder;
     `,
   ];

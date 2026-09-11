@@ -67,7 +67,9 @@ export class ReplyForm extends LitElement {
       this.scrollIntoView({
         block: 'center',
         inline: 'start',
-        behavior: 'smooth',
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
       });
       this.baseFormRef.value?.setFocus();
     }, 0);

@@ -42,8 +42,8 @@ export class CommentPagination extends LitElement {
             ${msg('Previous')}
           </button>
         </li>
-        <li class="inline-flex items-center gap-1 text-sm text-text-3 hover:text-text-1 transition-all">
-          <select name="pagination-value" id="pagination-value" class="pagination-select appearance-none outline-none bg-transparent" @change=${(e: Event) => this.gotoPage((e.target as HTMLSelectElement).value)}>
+        <li class="inline-flex items-center gap-1 text-sm text-text-3 hover:text-text-1 transition-colors">
+          <select name="pagination-value" id="pagination-value" aria-label=${msg('Page')} class="pagination-select appearance-none bg-muted-3 text-text-1 rounded-base" @change=${(e: Event) => this.gotoPage((e.target as HTMLSelectElement).value)}>
             ${Array.from({ length: this.totalPages }, (_, i) => i + 1).map((page) => html`<option .selected=${page === this.page} value=${page}>${page} / ${this.totalPages}</option>`)}
           </select>
           <i class="i-tabler:chevron-down size-4" aria-hidden="true"></i>

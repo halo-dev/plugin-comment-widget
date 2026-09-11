@@ -62,7 +62,7 @@ export class BaseCommentItem extends LitElement {
             this.userWebsite,
             () => html`
               <a
-                class="item-author font-medium text-sm text-text-1 hover:underline"
+                class="item-author min-w-0 break-all font-medium text-sm text-text-1 hover:underline"
                 target="_blank"
                 href=${ifDefined(this.userWebsite)}
                 rel="noopener noreferrer nofollow ugc"
@@ -71,7 +71,7 @@ export class BaseCommentItem extends LitElement {
               </a>
               `,
             () => html`
-              <span class="item-author font-medium text-sm text-text-1">${this.userDisplayName}</span>
+              <span class="item-author min-w-0 break-all font-medium text-sm text-text-1">${this.userDisplayName}</span>
               `
           )}
 
@@ -114,6 +114,11 @@ export class BaseCommentItem extends LitElement {
   static override styles = [
     ...baseStyles,
     css`
+      .item-content {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 4em;
+      }
+
       .animate-breath {
         animation: breath 1s ease-in-out infinite;
       }
