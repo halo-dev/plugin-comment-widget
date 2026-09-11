@@ -112,6 +112,13 @@ export class CommentEditor extends LitElement {
     this.editor = new Editor({
       element: this.shadowRoot?.getElementById('editor-container'),
       content: this.initialContent,
+      editorProps: {
+        attributes: {
+          role: 'textbox',
+          'aria-label': msg('Write a comment'),
+          'aria-multiline': 'true',
+        },
+      },
       extensions: [
         StarterKit.configure({
           heading: false,
@@ -185,7 +192,7 @@ export class CommentEditor extends LitElement {
     return html`
       ${when(this.loading, () => html`<comment-editor-skeleton></comment-editor-skeleton>`)}
       <div
-        class="border rounded-base border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-all"
+        class="border rounded-base border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-[border-color,box-shadow]"
         ?hidden=${this.loading}
         @click=${this.setFocus}
       >
@@ -221,15 +228,16 @@ export class CommentEditor extends LitElement {
       const isActive = item.name ? editor?.isActive(item.name) : false;
       return html`
         <li>
-          <div
+          <button
+            type="button"
             aria-label=${ifDefined(item.displayName?.())}
+            aria-pressed=${isActive}
             title=${ifDefined(item.displayName?.())}
             @click=${() => item.run?.(editor)}
-            role="button"
-            class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-all"
+            class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-colors"
           >
             <i class="size-5 ${item.icon}" aria-hidden="true"></i>
-          </div>
+          </button>
         </li>
       `;
     }

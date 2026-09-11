@@ -191,7 +191,9 @@ export class CommentList extends LitElement {
         this.scrollIntoView({
           block: 'start',
           inline: 'start',
-          behavior: 'smooth',
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'instant'
+            : 'smooth',
         });
       }
     }

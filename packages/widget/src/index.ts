@@ -30,10 +30,12 @@ export function init(el: string, props: Props) {
       if (entry.isIntersecting && parent.childElementCount === 0) {
         parent.appendChild(commentWidget);
 
-        parent.animate([{ opacity: 0 }, { opacity: 1 }], {
-          duration: 300,
-          fill: 'forwards',
-        });
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          parent.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: 300,
+            fill: 'forwards',
+          });
+        }
       }
     });
   });

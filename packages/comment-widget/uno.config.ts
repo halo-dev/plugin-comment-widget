@@ -62,14 +62,14 @@ export default defineConfig({
   ],
   shortcuts: {
     input:
-      'px-3 py-0 text-sm rounded-base bg-transparent border h-12 border-muted-1 border-solid outline-none transition-all focus:border-primary-1 focus:shadow-input placeholder:text-text-3',
+      'min-w-0 px-3 py-0 text-sm rounded-base bg-transparent border h-12 border-muted-1 border-solid outline-none transition-[border-color,box-shadow] focus:border-primary-1 focus:shadow-input placeholder:text-text-3',
     'icon-button': 'inline-flex items-center gap-[0.1em] cursor-pointer',
     'icon-button-icon':
-      'inline-flex items-center justify-center rounded-full transition-all duration-150 p-2 text-text-3 group-hover:bg-muted-3 group-hover:text-text-1',
+      'inline-flex items-center justify-center rounded-full transition-colors duration-150 p-2 text-text-3 group-hover:bg-muted-3 group-hover:text-text-1',
     'icon-button-text':
       'select-none text-xs text-text-3 group-hover:text-text-1',
     'pagination-button':
-      'inline-flex h-10 items-center text-sm gap-1 hover:bg-muted-3 rounded-base px-3 transition-all text-text-1 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
+      'inline-flex h-10 items-center text-sm gap-1 hover:bg-muted-3 rounded-base px-3 transition-[background-color,opacity] text-text-1 opacity-80 disabled:!opacity-70 disabled:cursor-not-allowed hover:opacity-100 font-medium justify-center',
     avatar:
       'rounded-avatar size-[var(--halo-cw-avatar-size,2.25em)] overflow-hidden inline-flex items-center justify-center bg-muted-2',
   },

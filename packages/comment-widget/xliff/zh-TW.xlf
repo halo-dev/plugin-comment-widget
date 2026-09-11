@@ -230,6 +230,14 @@
   <source>Pin</source>
   <target>置頂</target>
 </trans-unit>
+<trans-unit id="s2406b89e991a4524">
+  <source>Refresh verification code</source>
+  <target>重新整理驗證碼</target>
+</trans-unit>
+<trans-unit id="s2e192b19ed15fcf6">
+  <source>Page</source>
+  <target>頁碼</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

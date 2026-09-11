@@ -34,12 +34,18 @@ export class BaseTooltip extends LitElement {
     super.connectedCallback();
     this.addEventListener('mouseenter', this._showTooltip);
     this.addEventListener('mouseleave', this._hideTooltip);
+    this.addEventListener('focusin', this._showTooltip);
+    this.addEventListener('focusout', this._hideTooltip);
+    this.addEventListener('keydown', this._onKeydown);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener('mouseenter', this._showTooltip);
     this.removeEventListener('mouseleave', this._hideTooltip);
+    this.removeEventListener('focusin', this._showTooltip);
+    this.removeEventListener('focusout', this._hideTooltip);
+    this.removeEventListener('keydown', this._onKeydown);
 
     // Clean up positioning if needed
     if (this.cleanupFn) {
@@ -60,7 +66,14 @@ export class BaseTooltip extends LitElement {
     this._updatePosition();
   };
 
-  private _hideTooltip = (): void => {
+  private _onKeydown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      this._hideTooltip();
+    }
+  };
+
+  private _hideTooltip = (event?: Event): void => {
+    if (event?.type === 'mouseleave' && this.matches(':focus-within')) return;
     if (!this.tooltipEl) return;
 
     this.tooltipEl.classList.remove('show');
@@ -108,7 +121,7 @@ export class BaseTooltip extends LitElement {
   override render() {
     return html`
       <slot></slot>
-      <div class="tooltip">
+      <div class="tooltip" role="tooltip">
         ${this.content}
       </div>
     `;
@@ -136,6 +149,7 @@ export class BaseTooltip extends LitElement {
         width: auto; 
         z-index: 10;
         opacity: 0;
+        visibility: hidden;
         pointer-events: none;
         transition: opacity 0.2s;
         top: 0;
@@ -146,6 +160,7 @@ export class BaseTooltip extends LitElement {
 
       .tooltip.show {
         opacity: 1;
+        visibility: visible;
       }
     `,
   ];

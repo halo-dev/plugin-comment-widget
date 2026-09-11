@@ -23,7 +23,12 @@ export function formatDate(date: string | Date | undefined | null): string {
   if (!date) {
     return '';
   }
-  return dayjs(date).format('YYYY-MM-DD HH:mm');
+  const value = new Date(date);
+  if (Number.isNaN(value.getTime())) return '';
+  return new Intl.DateTimeFormat(getLocale(), {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(value);
 }
 
 export function timeAgo(date: string | Date | undefined | null): string {
