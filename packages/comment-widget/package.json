@@ -37,7 +37,7 @@
     "locale:build": "lit-localize build",
     "locale:extract": "lit-localize extract",
     "prepublishOnly": "pnpm run build",
-    "test": "node --test tests/*.test.ts tests/*.test.mjs"
+    "test": "vitest run"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
@@ -71,7 +71,10 @@
     "@lit/localize-tools": "^0.8.2",
     "@types/sanitize-html": "^2.16.1",
     "@unocss/reset": "^66.8.0",
+    "@vitest/browser-playwright": "^5.0.0",
     "lit-analyzer": "^2.0.3",
-    "unocss": "^66.8.0"
+    "playwright": "^1.63.0",
+    "unocss": "^66.8.0",
+    "vitest": "^5.0.0"
   }
 }

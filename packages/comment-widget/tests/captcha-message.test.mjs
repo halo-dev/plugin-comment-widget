@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
+import { test } from 'vitest';
 
 const source = await readFile(
   new URL('../src/utils/captcha.ts', import.meta.url),

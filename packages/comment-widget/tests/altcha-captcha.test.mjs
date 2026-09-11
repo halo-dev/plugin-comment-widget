@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import ts from 'typescript';
+import { afterEach, test, vi } from 'vitest';
+
+afterEach(() => vi.useRealTimers());
 
 const source = await readFile(
   new URL('../src/altcha-captcha.ts', import.meta.url),
@@ -132,8 +134,8 @@ test('reset cancels an outstanding verification and rejects late results', async
   assert.equal(captcha.token, '');
 });
 
-test('timeouts abort work and allow a subsequent retry', async (t) => {
-  t.mock.timers.enable({ apis: ['setTimeout'] });
+test('timeouts abort work and allow a subsequent retry', async () => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   let signal;
   let calls = 0;
   const captcha = createCaptcha(({ controller }) => {
@@ -145,7 +147,7 @@ test('timeouts abort work and allow a subsequent retry', async (t) => {
   });
   const pending = captcha.waitForToken();
   await flush();
-  t.mock.timers.tick(60000);
+  vi.advanceTimersByTime(60000);
   assert.equal(await pending, '');
   assert.equal(signal.aborted, true);
   assert.equal(await captcha.waitForToken(), 'retry');
@@ -171,8 +173,8 @@ test('does not start verification after the component is detached', async () => 
   assert.equal(await captcha.waitForToken(), '');
 });
 
-test('standard only accepts manual verification, including after reset and expiry', async (t) => {
-  t.mock.timers.enable({ apis: ['setTimeout'] });
+test('standard only accepts manual verification, including after reset and expiry', async () => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   let options;
   const captcha = createCaptcha(
     () => assert.fail('Standard must not call verify automatically'),
@@ -199,7 +201,7 @@ test('standard only accepts manual verification, including after reset and expir
     return token;
   });
   await flush();
-  t.mock.timers.tick(60000);
+  vi.advanceTimersByTime(60000);
   await flush();
   assert.equal(settled, false);
   changeState('verified', 'manual-token');
@@ -220,8 +222,8 @@ test('standard only accepts manual verification, including after reset and expir
   assert.equal(await captcha.waitForToken(), 'before-submit');
 });
 
-test('standard times out active requests, releases submission, and supports retry', async (t) => {
-  t.mock.timers.enable({ apis: ['setTimeout'] });
+test('standard times out active requests, releases submission, and supports retry', async () => {
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   let options;
   const signals = [];
   const captcha = createCaptcha(
@@ -242,7 +244,7 @@ test('standard times out active requests, releases submission, and supports retr
   await options.fetch('/challenge');
   captcha.handleStateChange({ detail: { state: 'verifying' } });
   assert.equal(signals[0].aborted, false);
-  t.mock.timers.tick(60000);
+  vi.advanceTimersByTime(60000);
   assert.equal(signals[0].aborted, true);
   assert.equal(await pending, '');
   assert.equal(captcha.failed, true);
@@ -256,7 +258,7 @@ test('standard times out active requests, releases submission, and supports retr
     detail: { state: 'verified', payload: 'retry-token' },
   });
   assert.equal(await retry, 'retry-token');
-  t.mock.timers.tick(60000);
+  vi.advanceTimersByTime(60000);
   assert.equal(captcha.token, 'retry-token');
   assert.equal(captcha.failed, false);
   captcha.reset();

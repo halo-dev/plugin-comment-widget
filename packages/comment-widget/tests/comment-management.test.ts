@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
-import test from 'node:test';
+import { test } from 'vitest';
 import {
   fetchManagementPermission,
   manageComment,
 } from '../src/utils/comment-management.ts';
 
-test('management permissions fail closed and mutations follow Halo contracts', async (t) => {
+test('management permissions fail closed and mutations follow Halo contracts', async ({
+  onTestFinished,
+}) => {
   let permissions = ['system:comments:view'];
   let status = 200;
   const requests: {
@@ -28,7 +30,12 @@ test('management permissions fail closed and mutations follow Halo contracts', a
     res.end(JSON.stringify({ uiPermissions: permissions }));
   });
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-  t.after(() => server.close());
+  onTestFinished(
+    () =>
+      new Promise<void>((resolve, reject) =>
+        server.close((error) => (error ? reject(error) : resolve()))
+      )
+  );
   const address = server.address();
   assert.ok(address && typeof address !== 'string');
   const baseUrl = `http://127.0.0.1:${address.port}`;

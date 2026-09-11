@@ -73,3 +73,4 @@ node_modules
 /src/main/resources/static/
 /src/main/resources/console/
 /src/main/resources/ui/
+.vitest/
