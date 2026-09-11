@@ -106,6 +106,14 @@ export class CommentItem extends LitElement {
   }
 
   onReplyCreated() {
+    this.closeReplyForm();
+    this.renderRoot
+      .querySelector<HTMLButtonElement>(
+        this.configMapData?.basic.withReplies
+          ? '.reply-button'
+          : '.show-replies-button'
+      )
+      ?.focus({ preventScroll: true });
     this.commentRepliesRef.value?.fetchReplies();
     this.showReplies = true;
   }
@@ -159,7 +167,7 @@ export class CommentItem extends LitElement {
         this.comment?.status?.visibleReplyCount === 0
           ? ''
           : html`
-          <button slot="action" class="icon-button group" type="button" @click="${this.handleShowReplies}" aria-label=${msg('Show replies')}>
+          <button slot="action" class="show-replies-button icon-button group" type="button" @click="${this.handleShowReplies}" aria-label=${msg('Show replies')}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle size-4" aria-hidden="true"></i>
             </div>
@@ -170,7 +178,7 @@ export class CommentItem extends LitElement {
       ${when(
         this.configMapData?.basic.withReplies,
         () => html`
-          <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
+          <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
             </div>

@@ -83,6 +83,14 @@ export class ReplyItem extends LitElement {
     this.showReplyForm = false;
   }
 
+  onReplyCreated() {
+    this.closeReplyForm();
+    this.renderRoot
+      .querySelector<HTMLButtonElement>('.reply-button')
+      ?.focus({ preventScroll: true });
+    this.dispatchEvent(new CustomEvent('reload'));
+  }
+
   handleToggleReplyForm() {
     if (this.showReplyForm) {
       this.closeReplyForm();
@@ -154,7 +162,7 @@ export class ReplyItem extends LitElement {
           </div>
           <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
         </button>
-        <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
+        <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
           <div class="icon-button-icon ">
             <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
           </div>
@@ -167,7 +175,7 @@ export class ReplyItem extends LitElement {
                 <reply-form
                   .comment=${this.comment}
                   .quoteReply=${this.reply}
-                  @reload=${() => this.dispatchEvent(new CustomEvent('reload'))}
+                  @reload=${this.onReplyCreated}
                 ></reply-form>
               </div>`
         )}
