@@ -33,7 +33,7 @@ export function getNextReplyRequest({
   }
 
   return {
-    page: page + 1,
+    page: (page * currentPageSize) / replySize + 1,
     size: replySize,
     append: true,
   };

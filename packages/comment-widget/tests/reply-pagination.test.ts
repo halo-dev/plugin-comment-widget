@@ -48,3 +48,15 @@ test('continues with the next page after the preload is reconciled', () => {
 test('clamps legacy preload sizes to the reply page size', () => {
   assert.equal(getInitialReplySize(5, 3), 3);
 });
+
+test('continues after refreshing multiple loaded reply pages', () => {
+  assert.deepEqual(
+    getNextReplyRequest({
+      page: 1,
+      currentPageSize: 20,
+      replySize: 10,
+      preloaded: false,
+    }),
+    { page: 3, size: 10, append: true }
+  );
+});

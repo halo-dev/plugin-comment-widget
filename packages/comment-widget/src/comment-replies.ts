@@ -54,7 +54,12 @@ export class CommentReplies extends LitElement {
   toastManager: ToastManager | undefined;
 
   override render() {
-    return html` <div class="replies-main" @comment-managed=${() => this.fetchReplies()}>
+    return html` <div class="replies-main" @comment-managed=${() => {
+      const size = this.configMapData?.basic.replySize ?? 10;
+      return this.fetchReplies({
+        size: Math.max(1, Math.ceil(this.replies.length / size)) * size,
+      });
+    }}>
       ${when(
         this.replies.length,
         () => html`<div class="replies-list mt-3">
