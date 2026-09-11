@@ -26,6 +26,7 @@ import type { CommentEditor } from './comment-editor';
 import { cleanHtml } from './utils/html';
 import './base-tooltip';
 import './turnstile-captcha';
+import type { AltchaCaptcha } from './altcha-captcha';
 import type { TurnstileCaptcha } from './turnstile-captcha';
 
 export class BaseForm extends LitElement {
@@ -130,6 +131,45 @@ export class BaseForm extends LitElement {
     )}`;
   }
 
+  @state() private altchaReady = false;
+  @state() private altchaLoadFailed = false;
+  private altchaLoading?: Promise<void>;
+
+  private async loadAltchaComponent() {
+    if (this.altchaReady) {
+      return;
+    }
+    if (this.altchaLoading) {
+      return this.altchaLoading;
+    }
+    this.altchaLoadFailed = false;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    this.altchaLoading = Promise.race([
+      import('./altcha-captcha'),
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error('ALTCHA loading timed out')),
+          15000
+        );
+      }),
+    ])
+      .then(() => {
+        this.altchaReady = true;
+      })
+      .catch(() => {
+        this.altchaLoadFailed = true;
+      })
+      .finally(() => {
+        clearTimeout(timeout);
+        this.altchaLoading = undefined;
+      });
+    return this.altchaLoading;
+  }
+
+  get useAltcha() {
+    return this.configMapData?.security.captcha.type === 'ALTCHA';
+  }
+
   get useTurnstile() {
     return this.configMapData?.security.captcha.type === 'TURNSTILE';
   }
@@ -159,11 +199,15 @@ export class BaseForm extends LitElement {
     if (!shouldRefreshCaptcha) {
       return;
     }
+    if (this.useAltcha) {
+      void this.loadAltchaComponent();
+      return;
+    }
     this.handleFetchCaptcha();
   }
 
   async handleFetchCaptcha() {
-    if (!this.showCaptcha || this.useTurnstile) {
+    if (!this.showCaptcha || this.useTurnstile || this.useAltcha) {
       return;
     }
 
@@ -309,7 +353,10 @@ export class BaseForm extends LitElement {
             )}
 
             ${when(
-              this.showCaptcha && !this.useTurnstile && this.captcha,
+              this.showCaptcha &&
+                !this.useTurnstile &&
+                !this.useAltcha &&
+                this.captcha,
               () => html`
                   <div class="form-captcha gap-2 flex items-center">
                     <img
@@ -329,6 +376,27 @@ export class BaseForm extends LitElement {
             )}
 
             ${when(this.showCaptcha && this.useTurnstile, () => html`<turnstile-captcha @interaction-required-change=${this.handleVerificationInteraction} .siteKey=${this.configMapData?.security.captcha.turnstileSiteKey || ''}></turnstile-captcha>`)}
+
+            ${when(
+              this.showCaptcha && this.useAltcha && this.altchaReady,
+              () => html`
+              <comment-altcha-captcha
+                .display=${this.configMapData?.security.captcha.altchaDisplay || 'floating'}
+                .hideLogo=${this.configMapData?.security.captcha.altchaHideLogo === true}
+                .hideFooter=${this.configMapData?.security.captcha.altchaHideFooter === true}
+                .challengeUrl=${`${this.baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/altcha`}
+              ></comment-altcha-captcha>
+            `
+            )}
+
+            ${when(
+              this.showCaptcha && this.useAltcha && this.altchaLoadFailed,
+              () => html`
+              <button type="button" class="text-xs text-text-2 underline" @click=${this.loadAltchaComponent}>
+                ${msg('Verification unavailable. Click to retry.')}
+              </button>
+            `
+            )}
 
             <button
               .disabled=${this.busy}
@@ -362,26 +430,39 @@ export class BaseForm extends LitElement {
       return;
     }
 
-    const turnstile =
-      this.shadowRoot?.querySelector<TurnstileCaptcha>('turnstile-captcha');
     let turnstileToken = '';
-    if (this.showCaptcha && this.useTurnstile) {
-      this.verificationInteractionRequired =
-        turnstile?.interactionRequired ?? false;
+    let altchaPayload = '';
+    if (this.showCaptcha && (this.useTurnstile || this.useAltcha)) {
       this.waitingForVerification = true;
+      if (this.useAltcha) {
+        await this.loadAltchaComponent();
+        await this.updateComplete;
+      }
+      const widget = this.shadowRoot?.querySelector<
+        TurnstileCaptcha | AltchaCaptcha
+      >('turnstile-captcha, comment-altcha-captcha');
+      this.verificationInteractionRequired =
+        widget?.interactionRequired ?? false;
+      this.waitingForVerification = true;
+      let token = '';
       try {
-        turnstileToken = (await turnstile?.waitForToken()) ?? '';
+        token = (await widget?.waitForToken()) ?? '';
       } finally {
         this.waitingForVerification = false;
       }
       if (!this.isConnected) {
         return;
       }
-      if (!turnstileToken) {
+      if (!token) {
         this.toastManager?.warn(
           msg('Verification unavailable. Click to retry.')
         );
         return;
+      }
+      if (this.useAltcha) {
+        altchaPayload = token;
+      } else {
+        turnstileToken = token;
       }
     }
     // Read the current draft after verification so edits made while waiting are retained.
@@ -400,6 +481,7 @@ export class BaseForm extends LitElement {
       detail: {
         ...data,
         turnstileToken,
+        altchaPayload,
         content,
         hidden: data.hidden === 'on',
       },
@@ -426,7 +508,10 @@ export class BaseForm extends LitElement {
     this.debouncedSubmit();
   }
 
-  resetTurnstile() {
+  resetVerification() {
+    this.shadowRoot
+      ?.querySelector<AltchaCaptcha>('comment-altcha-captcha')
+      ?.reset();
     this.shadowRoot
       ?.querySelector<TurnstileCaptcha>('turnstile-captcha')
       ?.reset();

@@ -37,7 +37,7 @@
     "locale:build": "lit-localize build",
     "locale:extract": "lit-localize extract",
     "prepublishOnly": "pnpm run build",
-    "test": "node --test tests/*.test.ts"
+    "test": "node --test tests/*.test.ts tests/*.test.mjs"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
@@ -49,6 +49,7 @@
     "@tiptap/extensions": "^3.30.2",
     "@tiptap/pm": "^3.30.2",
     "@tiptap/starter-kit": "^3.30.2",
+    "altcha": "3.2.2",
     "dayjs": "^1.11.23",
     "emoji-mart": "^5.6.0",
     "es-toolkit": "^1.51.0",

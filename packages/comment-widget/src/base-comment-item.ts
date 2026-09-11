@@ -29,6 +29,9 @@ export class BaseCommentItem extends LitElement {
   approved: boolean | undefined;
 
   @property({ type: Boolean })
+  pinned: boolean | undefined;
+
+  @property({ type: Boolean })
   breath: boolean | undefined;
 
   @property({ type: String })
@@ -79,6 +82,8 @@ export class BaseCommentItem extends LitElement {
                 <span class="text-xs text-text-2">${msg('Private')}</span>
               </div>`
           )}
+
+          ${when(this.pinned, () => html`<span class="item-pinned text-xs text-text-2 bg-muted-3 rounded-base px-1.5 py-1">${msg('Pinned')}</span>`)}
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           

@@ -28,7 +28,7 @@ class CommentTurnstileFilterTest {
             when(verifier.verify(isNull(), eq(config))).thenReturn(Mono.just(result));
             var handlerCalled = new java.util.concurrent.atomic.AtomicBoolean();
             when(chain.filter(any())).thenReturn(Mono.fromRunnable(() -> handlerCalled.set(true)));
-            var filter = new CommentCaptchaFilter(settings, mock(CaptchaManager.class), verifier,
+            var filter = new CommentCaptchaFilter(settings, mock(CaptchaManager.class), verifier, mock(AltchaService.class),
                 mock(CaptchaCookieResolverImpl.class), new CaptchaRequirement());
             var exchange = MockServerWebExchange.from(MockServerHttpRequest.post(path));
             filter.filter(exchange, chain).block();
@@ -82,7 +82,7 @@ class CommentTurnstileFilterTest {
                 new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + username)));
         for (var path : java.util.List.of("/apis/api.halo.run/v1alpha1/comments",
             "/apis/api.halo.run/v1alpha1/comments/example/reply")) {
-            var filter = new CommentCaptchaFilter(settings, mock(CaptchaManager.class), verifier,
+            var filter = new CommentCaptchaFilter(settings, mock(CaptchaManager.class), verifier, mock(AltchaService.class),
                 mock(CaptchaCookieResolverImpl.class), new CaptchaRequirement());
             var chain = mock(WebFilterChain.class);
             when(chain.filter(any())).thenReturn(Mono.empty());

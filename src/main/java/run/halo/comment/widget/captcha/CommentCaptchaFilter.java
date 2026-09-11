@@ -41,6 +41,7 @@ public class CommentCaptchaFilter implements AfterSecurityWebFilter {
     private final SettingConfigGetter settingConfigGetter;
     private final CaptchaManager captchaManager;
     private final TurnstileVerifier turnstileVerifier;
+    private final AltchaService altchaService;
     private final CaptchaCookieResolverImpl captchaCookieResolver;
     private final CaptchaRequirement captchaRequirement;
 
@@ -64,6 +65,15 @@ public class CommentCaptchaFilter implements AfterSecurityWebFilter {
                     if (!required) {
                         return chain.filter(exchange);
                     }
+                    if (config.getType() == CaptchaType.ALTCHA) {
+                        return altchaService.verify(exchange.getRequest().getHeaders().getFirst("X-Altcha-Payload"))
+                            .flatMap(valid -> {
+                                if (valid) {
+                                    return chain.filter(exchange);
+                                }
+                                return sendAltchaRequiredResponse(exchange);
+                            });
+                    }
                     if (config.getType() == CaptchaType.TURNSTILE) {
                         return validateTurnstile(exchange, chain, config);
                     }
@@ -81,6 +91,18 @@ public class CommentCaptchaFilter implements AfterSecurityWebFilter {
                 }
                 return sendTurnstileRequiredResponse(exchange, result);
             });
+    }
+
+    private Mono<Void> sendAltchaRequiredResponse(ServerWebExchange exchange) {
+        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+        addHeaderIfAbsent(exchange.getResponse().getHeaders(), CAPTCHA_REQUIRED_HEADER, "true");
+        addHeaderIfAbsent(exchange.getResponse().getHeaders(), HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
+        var problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,
+            "人机验证未通过，请重新验证后提交");
+        problem.setType(URI.create(CAPTCHA_INVALID_TYPE));
+        problem.setTitle("ALTCHA Verification");
+        return exchange.getResponse().writeWith(Mono.just(
+            exchange.getResponse().bufferFactory().wrap(getResponseData(problem))));
     }
 
     private Mono<Void> sendTurnstileRequiredResponse(ServerWebExchange exchange,

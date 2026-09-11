@@ -162,6 +162,10 @@
   <source>You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.</source>
   <target>目前是匿名狀態，選擇私密選項後，評論將僅對網站管理員可見。</target>
 </trans-unit>
+<trans-unit id="s44851a8adf059eef">
+  <source>Pinned</source>
+  <target>置頂</target>
+</trans-unit>
 <trans-unit id="s34239948d1de01f1">
   <source>Verification unavailable. Click to retry.</source>
   <target>驗證暫不可用，點擊重試</target>
@@ -213,6 +217,10 @@
 <trans-unit id="s0d25b2b6889f933a">
   <source>Delete this reply? This cannot be undone.</source>
   <target>確定刪除此回覆？此操作無法復原。</target>
+</trans-unit>
+<trans-unit id="s59b95f09e3b42060">
+  <source>Verification failed. Please verify again and resubmit.</source>
+  <target>人機驗證未通過，請重新驗證後提交。</target>
 </trans-unit>
 </body>
 </file>

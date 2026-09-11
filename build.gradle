@@ -25,6 +25,8 @@ repositories {
 dependencies {
     implementation platform('run.halo.tools.platform:plugin:2.26.0')
     compileOnly 'run.halo.app:api'
+    implementation 'org.altcha:altcha:2.0.3'
+    implementation 'org.json:json:20240303'
 
     testImplementation 'run.halo.app:api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

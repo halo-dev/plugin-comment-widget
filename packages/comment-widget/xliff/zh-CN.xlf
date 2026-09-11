@@ -162,6 +162,10 @@
   <source>You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.</source>
   <target>当前是匿名状态，选择私密选项后，评论将仅对网站管理员可见。</target>
 </trans-unit>
+<trans-unit id="s44851a8adf059eef">
+  <source>Pinned</source>
+  <target>置顶</target>
+</trans-unit>
 <trans-unit id="s34239948d1de01f1">
   <source>Verification unavailable. Click to retry.</source>
   <target>验证暂不可用，点击重试</target>
@@ -213,6 +217,10 @@
 <trans-unit id="s0d25b2b6889f933a">
   <source>Delete this reply? This cannot be undone.</source>
   <target>确定删除此回复？此操作无法撤销。</target>
+</trans-unit>
+<trans-unit id="s59b95f09e3b42060">
+  <source>Verification failed. Please verify again and resubmit.</source>
+  <target>人机验证未通过，请重新验证后提交。</target>
 </trans-unit>
 </body>
 </file>

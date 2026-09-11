@@ -21,7 +21,9 @@ import type { ToastManager } from './lit-toast';
 import type { ProblemDetail } from './types';
 import {
   type CaptchaRequiredResponse,
+  getAltchaHeader,
   getCaptchaCodeHeader,
+  getCaptchaMessage,
   isRequireCaptcha,
 } from './utils/captcha';
 
@@ -127,6 +129,7 @@ export class CommentForm extends LitElement {
           method: 'POST',
           headers: {
             ...getCaptchaCodeHeader(data.captchaCode),
+            ...getAltchaHeader(data.altchaPayload),
             ...(data.turnstileToken
               ? { 'X-Turnstile-Token': data.turnstileToken }
               : {}),
@@ -155,10 +158,9 @@ export class CommentForm extends LitElement {
             error.response as FetchResponse<CaptchaRequiredResponse>
           )
         ) {
-          const { captcha, detail } =
-            error.data as unknown as CaptchaRequiredResponse;
-          this.captcha = captcha ?? '';
-          this.toastManager?.warn(detail);
+          const response = error.data as CaptchaRequiredResponse;
+          this.captcha = response.captcha ?? '';
+          this.toastManager?.warn(getCaptchaMessage(response));
           return;
         }
 
@@ -171,7 +173,7 @@ export class CommentForm extends LitElement {
       }
       this.toastManager?.error(msg('Comment failed, please try again later'));
     } finally {
-      this.baseFormRef.value?.resetTurnstile();
+      this.baseFormRef.value?.resetVerification();
       this.submitting = false;
     }
   }

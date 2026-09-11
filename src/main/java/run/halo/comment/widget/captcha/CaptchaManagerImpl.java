@@ -48,7 +48,7 @@ public class CaptchaManagerImpl implements CaptchaManager {
         return Mono.fromSupplier(() -> {
                 var captcha = switch (captchaConfig.getType()) {
                     case ALPHANUMERIC -> CaptchaGenerator.generateSimpleCaptcha(captchaConfig.getCaptchaLength());
-                    case TURNSTILE -> throw new IllegalStateException("Turnstile does not use image captchas");
+                    case ALTCHA, TURNSTILE -> throw new IllegalStateException("Selected captcha type does not use image captchas");
                     case ARITHMETIC -> CaptchaGenerator.generateMathCaptcha(captchaConfig.getArithmeticRange());
                 };
                 var imageBase64 = encodeBufferedImageToDataUri(captcha.image());

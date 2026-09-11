@@ -162,6 +162,10 @@
   <source>You are currently anonymous. After selecting the private option, the comment will only be visible to the site administrator.</source>
   <target>Actualmente anónimo. Después de seleccionar la opción privada, el comentario solo será visible para el administrador del sitio.</target>
 </trans-unit>
+<trans-unit id="s44851a8adf059eef">
+  <source>Pinned</source>
+  <target>Fijado</target>
+</trans-unit>
 <trans-unit id="s34239948d1de01f1">
   <source>Verification unavailable. Click to retry.</source>
   <target>Verificación no disponible. Haz clic para reintentar.</target>
@@ -213,6 +217,10 @@
 <trans-unit id="s0d25b2b6889f933a">
   <source>Delete this reply? This cannot be undone.</source>
   <target>¿Eliminar esta respuesta? Esta acción no se puede deshacer.</target>
+</trans-unit>
+<trans-unit id="s59b95f09e3b42060">
+  <source>Verification failed. Please verify again and resubmit.</source>
+  <target>La verificación ha fallado. Vuelve a verificar e intenta enviar de nuevo.</target>
 </trans-unit>
 </body>
 </file>

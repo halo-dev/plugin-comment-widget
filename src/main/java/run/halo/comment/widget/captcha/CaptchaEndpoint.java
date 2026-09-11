@@ -29,7 +29,8 @@ public class CaptchaEndpoint implements CustomEndpoint {
         return settingConfigGetter.getSecurityConfig()
             .map(SettingConfigGetter.SecurityConfig::getCaptcha)
             .flatMap(captchaConfig -> {
-                if (captchaConfig.getType() == CaptchaType.TURNSTILE) {
+                if (captchaConfig.getType() == CaptchaType.TURNSTILE
+                    || captchaConfig.getType() == CaptchaType.ALTCHA) {
                     return ServerResponse.noContent().build();
                 }
                 return captchaManager.generate(request.exchange(), captchaConfig)

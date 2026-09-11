@@ -24,7 +24,7 @@ class CaptchaEndpointTest {
         var client = WebTestClient.bindToRouterFunction(
             new CaptchaEndpoint(manager, settings).endpoint()).build();
 
-        if (type == CaptchaType.TURNSTILE) {
+        if (type == CaptchaType.TURNSTILE || type == CaptchaType.ALTCHA) {
             client.get().uri("/captcha/-/generate").exchange()
                 .expectStatus().isNoContent().expectBody().isEmpty();
             verifyNoInteractions(manager);

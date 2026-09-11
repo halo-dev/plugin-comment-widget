@@ -110,13 +110,26 @@ spec:
               if: "$get(captchaEnable).value === true"
               name: type
               id: type
+              key: captchaType
               value: "ALPHANUMERIC"
               help: Cloudflare Turnstile 官方文档
               __raw__sectionsSchema:
                 help:
-                  if: "$value === TURNSTILE"
+                  if: "$value === TURNSTILE || $value === ALTCHA"
                   children:
+                    - $el: span
+                      if: "$value === ALTCHA"
+                      children: ALTCHA 仅支持在 HTTPS 环境下使用。
                     - $el: a
+                      if: "$value === ALTCHA"
+                      children: ALTCHA 官方文档
+                      attrs:
+                        href: https://altcha.org/docs/
+                        target: _blank
+                        rel: noopener noreferrer
+                        class: underline
+                    - $el: a
+                      if: "$value === TURNSTILE"
                       children: Cloudflare Turnstile 官方文档
                       attrs:
                         href: https://developers.cloudflare.com/turnstile/get-started/
@@ -130,15 +143,43 @@ spec:
                   value: "ARITHMETIC"
                 - label: Cloudflare Turnstile
                   value: "TURNSTILE"
+                - label: ALTCHA
+                  value: "ALTCHA"
+            - $formkit: radio
+              if: "$get(captchaEnable).value === true && $get(type).value === ALTCHA"
+              name: altchaDisplay
+              label: ALTCHA 显示模式
+              value: floating
+              key: altchaDisplay
+              help: 标准模式需要用户手动点击验证；自动模式在用户提交时自动验证，以浮层展示验证进度和结果。
+              options:
+                - label: 标准模式
+                  value: standard
+                - label: 自动模式
+                  value: floating
+            - $formkit: checkbox
+              if: "$get(captchaEnable).value === true && $get(type).value === ALTCHA"
+              name: altchaHideLogo
+              key: altchaHideLogo
+              label: 隐藏 ALTCHA 标志
+              value: false
+            - $formkit: checkbox
+              if: "$get(captchaEnable).value === true && $get(type).value === ALTCHA"
+              name: altchaHideFooter
+              key: altchaHideFooter
+              label: 隐藏 ALTCHA 页脚
+              value: false
             - $formkit: text
               if: "$get(captchaEnable).value === true && $get(type).value === TURNSTILE"
               name: turnstileSiteKey
+              key: turnstileSiteKey
               label: Turnstile Site Key
               validation: required
             - $formkit: secret
               if: "$get(captchaEnable).value === true && $get(type).value === TURNSTILE"
               name: turnstileSecretRef
               label: Turnstile Secret Key
+              key: turnstileSecretRef
               descriptionPreset: 评论组件 Cloudflare Turnstile 验证密钥
               requiredKeys:
                 - key: secretKey
