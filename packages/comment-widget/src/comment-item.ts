@@ -5,6 +5,7 @@ import baseStyles from './styles/base';
 import './comment-replies';
 import './user-avatar';
 import './base-comment-item';
+import './comment-management';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -177,6 +178,7 @@ export class CommentItem extends LitElement {
           `
       )}
 
+      <comment-management slot="action" .target=${this.comment} resource="comments"></comment-management>
       <div slot="footer">
         ${when(
           this.showReplyForm,

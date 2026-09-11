@@ -4,6 +4,7 @@ import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
+import './comment-management';
 import './reply-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
@@ -159,6 +160,7 @@ export class ReplyItem extends LitElement {
           </div>
           <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}</span>
         </button>
+      <comment-management slot="action" .target=${this.reply} resource="replies"></comment-management>
         ${when(
           this.showReplyForm,
           () => html`<div class="reply-form mt-2" slot="footer">

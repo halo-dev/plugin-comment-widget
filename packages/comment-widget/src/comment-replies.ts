@@ -54,7 +54,7 @@ export class CommentReplies extends LitElement {
   toastManager: ToastManager | undefined;
 
   override render() {
-    return html` <div class="replies-main">
+    return html` <div class="replies-main" @comment-managed=${() => this.fetchReplies()}>
       ${when(
         this.replies.length,
         () => html`<div class="replies-list mt-3">

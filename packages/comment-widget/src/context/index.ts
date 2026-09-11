@@ -24,3 +24,7 @@ export const toastContext = createContext<ToastManager | undefined>(
 export const configMapDataContext = createContext<ConfigMapData | undefined>(
   Symbol('configMapData')
 );
+
+export const canManageCommentsContext = createContext<boolean>(
+  Symbol('canManageComments')
+);

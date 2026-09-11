@@ -16,6 +16,7 @@ import './comment-pagination';
 import {
   allowAnonymousCommentsContext,
   baseUrlContext,
+  canManageCommentsContext,
   configMapDataContext,
   currentUserContext,
   groupContext,
@@ -30,6 +31,7 @@ import type { ConfigMapData } from './types';
 import './comment-list';
 import { ofetch } from 'ofetch';
 import './comment-editor-skeleton';
+import { fetchManagementPermission } from './utils/comment-management';
 
 export class CommentWidget extends LitElement {
   @provide({ context: baseUrlContext })
@@ -68,6 +70,10 @@ export class CommentWidget extends LitElement {
   @state()
   toastManager: ToastManager | undefined;
 
+  @provide({ context: canManageCommentsContext })
+  @state()
+  canManageComments = false;
+
   @state()
   isInitialized = false;
 
@@ -100,8 +106,12 @@ export class CommentWidget extends LitElement {
     const data = await ofetch<DetailedUser>(
       `${this.baseUrl}/apis/api.console.halo.run/v1alpha1/users/-`
     );
+    this.canManageComments = false;
     this.currentUser =
       data.user.metadata.name === 'anonymousUser' ? undefined : data.user;
+    if (this.currentUser) {
+      this.canManageComments = await fetchManagementPermission(this.baseUrl);
+    }
   }
 
   initAvatarProvider() {

@@ -172,7 +172,7 @@ export class CommentList extends LitElement {
               <span>${msg(html`${this.comments.total} Comments`)}</span>
             </div>
 
-            <div class="comment-list" @reply-form-open=${this.onReplyFormOpen}>
+            <div class="comment-list" @reply-form-open=${this.onReplyFormOpen} @comment-managed=${() => this.fetchComments()}>
               ${repeat(
                 this.comments.items,
                 (item) => item.metadata.name,
