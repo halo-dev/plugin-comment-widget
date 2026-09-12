@@ -1,6 +1,8 @@
+import { msg, str } from '@lit/localize';
 import { type Editor, Extension } from '@tiptap/core';
 import Image from '@tiptap/extension-image';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { ToastManager } from '../lit-toast';
 import {
   imageUploadState,
   renderImage,
@@ -17,6 +19,7 @@ export {
 export interface EditorUploadOptions {
   baseUrl: string;
   enabled: () => boolean;
+  maxFileSize: () => number;
 }
 
 declare module '@tiptap/core' {
@@ -38,12 +41,13 @@ export const EditorUpload = Extension.create<EditorUploadOptions>({
     return {
       baseUrl: '',
       enabled: () => false,
+      maxFileSize: () => 10,
     };
   },
 
   addCommands() {
     return {
-      uploadFile: () => createUploadCommand(this.options.enabled),
+      uploadFile: () => createUploadCommand(this.options),
     };
   },
 
@@ -88,9 +92,8 @@ export const EditorUpload = Extension.create<EditorUploadOptions>({
           transformPasted: (slice) =>
             imageUploadState(editor).restorePasted(slice),
           handlePaste: (_view, event) =>
-            handlePaste(event, editor, this.options.enabled),
-          handleDrop: (_view, event) =>
-            handleDrop(event, editor, this.options.enabled),
+            handlePaste(event, editor, this.options),
+          handleDrop: (_view, event) => handleDrop(event, editor, this.options),
         },
       }),
     ];
@@ -139,28 +142,39 @@ function containsFileClipboardIdentifier(types: readonly string[]) {
   return types.some((type) => fileTypes.includes(type.toLowerCase()));
 }
 
-type FileProps = {
-  file: File;
-  editor: Editor;
+const IMAGE_TYPES: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  jpe: 'image/jpeg',
+  jif: 'image/jpeg',
+  jfif: 'image/jpeg',
+  jfi: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  avif: 'image/avif',
 };
 
-/**
- * Handles file events, determining if the file is an image and triggering the appropriate upload process.
- *
- * @param {FileProps} { file, editor } - File and editor instances
- * @returns {boolean} - True if a file is handled, otherwise false
- */
-function handleFileEvent({ file, editor }: FileProps) {
-  if (!file) {
-    return false;
+function fileError(file: File, maxFileSize: number) {
+  if (!Number.isInteger(maxFileSize) || maxFileSize < 1 || maxFileSize > 2047) {
+    return msg(
+      'Image upload is unavailable. Please contact the site administrator.'
+    );
   }
-
-  if (file.type.startsWith('image/')) {
-    renderImage({ file, editor });
-    return true;
+  if (file.size > maxFileSize * 1024 * 1024) {
+    return msg(str`Image size must not exceed ${maxFileSize} MiB.`);
   }
-
-  return false;
+  const type = IMAGE_TYPES[file.name.split('.').pop()?.toLowerCase() ?? ''];
+  if (
+    !file.size ||
+    !type ||
+    (file.type &&
+      file.type !== 'application/octet-stream' &&
+      file.type !== type)
+  ) {
+    return msg('Only JPEG, PNG, GIF, WebP, and AVIF images are supported.');
+  }
+  return undefined;
 }
 
 function canUpload(editor: Editor, enabled: () => boolean) {
@@ -170,19 +184,19 @@ function canUpload(editor: Editor, enabled: () => boolean) {
   return editor.isEditable;
 }
 
-function createUploadCommand(enabled: () => boolean) {
-  return ({ editor }: { editor: Editor }) => openFilePicker(editor, enabled);
+function createUploadCommand(options: EditorUploadOptions) {
+  return ({ editor }: { editor: Editor }) => openFilePicker(editor, options);
 }
 
-function openFilePicker(editor: Editor, enabled: () => boolean) {
-  if (!canUpload(editor, enabled)) {
+function openFilePicker(editor: Editor, options: EditorUploadOptions) {
+  if (!canUpload(editor, options.enabled)) {
     return false;
   }
   const input = document.createElement('input');
-  input.accept = 'image/*';
+  input.accept = Object.values(IMAGE_TYPES).join(',');
   input.type = 'file';
   input.multiple = true;
-  input.onchange = () => acceptSelectedFiles(input, editor, enabled);
+  input.onchange = () => acceptSelectedFiles(input, editor, options);
   input.click();
   return true;
 }
@@ -190,9 +204,9 @@ function openFilePicker(editor: Editor, enabled: () => boolean) {
 function acceptSelectedFiles(
   input: HTMLInputElement,
   editor: Editor,
-  enabled: () => boolean
+  options: EditorUploadOptions
 ) {
-  if (!canUpload(editor, enabled)) {
+  if (!canUpload(editor, options.enabled)) {
     return;
   }
   if (editor.isDestroyed) {
@@ -201,21 +215,29 @@ function acceptSelectedFiles(
   if (!input.files) {
     return;
   }
-  handleFiles(Array.from(input.files), editor);
+  handleFiles(Array.from(input.files), editor, options);
 }
 
-function handleFiles(files: File[], editor: Editor) {
+function handleFiles(
+  files: File[],
+  editor: Editor,
+  options: EditorUploadOptions
+) {
+  const errors = new Set<string>();
   for (const file of files) {
-    handleFileEvent({ editor, file });
+    const error = fileError(file, options.maxFileSize());
+    if (error) errors.add(error);
+    else renderImage({ file, editor });
   }
+  if (errors.size) new ToastManager().error([...errors].join('; '));
 }
 
 function handlePaste(
   event: ClipboardEvent,
   editor: Editor,
-  enabled: () => boolean
+  options: EditorUploadOptions
 ) {
-  if (!canUpload(editor, enabled)) {
+  if (!canUpload(editor, options.enabled)) {
     return false;
   }
 
@@ -239,15 +261,19 @@ function handlePaste(
 
   if (files.length) {
     event.preventDefault();
-    handleFiles(files, editor);
+    handleFiles(files, editor, options);
     return true;
   }
 
   return false;
 }
 
-function handleDrop(event: DragEvent, editor: Editor, enabled: () => boolean) {
-  if (!canUpload(editor, enabled)) {
+function handleDrop(
+  event: DragEvent,
+  editor: Editor,
+  options: EditorUploadOptions
+) {
+  if (!canUpload(editor, options.enabled)) {
     return false;
   }
 
@@ -262,6 +288,6 @@ function handleDrop(event: DragEvent, editor: Editor, enabled: () => boolean) {
 
   // Prevent file drops from navigating away and losing the comment draft.
   event.preventDefault();
-  handleFiles(Array.from(event.dataTransfer.files), editor);
+  handleFiles(Array.from(event.dataTransfer.files), editor, options);
   return true;
 }

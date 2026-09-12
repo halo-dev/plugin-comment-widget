@@ -3,7 +3,7 @@
     // Re-generate this file by running lit-localize
 
     import {html} from 'lit';
-    
+    import {str} from '@lit/localize';
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,6 +12,7 @@
       'h6a83761bb66bbcc5': html`${0} 則評論`,
 's023f646163e63d90': `操作失敗，請重試。`,
 's053945ad43e9d1d6': `請輸入驗證碼`,
+'s065307503771fd8d': `僅支援 JPEG、PNG、GIF、WebP 和 AVIF 圖片。`,
 's067e961bb67cf3f6': `正在驗證…`,
 's09c7e0ff5f4e18cb': `取消回覆`,
 's0b7ae9543c001867': `回覆`,
@@ -52,6 +53,7 @@
 's84b033b2f7360187': `請先登入或者完善資訊`,
 's851926ed399df4e4': `上次提交已取消，請再次提交以送出修改後的內容。`,
 's8db89619f41917b4': `置頂`,
+'s8e176d64f6528d3d': str`單張圖片大小不能超過 ${0} MiB。`,
 's96668830629e0dfc': `上傳`,
 's98a5f7789c49dd3f': `審核中`,
 's9df212d89cab196d': `隱藏`,
@@ -79,5 +81,6 @@
 'sf77128b082955d42': `（或登入帳號）`,
 'sf7c0eba7c822e3d6': `粗體`,
 'sf9709983d4da2c54': `讚`,
+'sff08dba77ae75e40': `圖片上傳暫不可用，請聯絡網站管理員。`,
     };
   

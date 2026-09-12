@@ -161,7 +161,8 @@ class UploadMediaEndpointTest {
     }
 
     @Test
-    void delegatesLargeAvifToSelectedStoragePolicyWithoutRewriting() {
+    void delegatesValidatedAvifToSelectedStoragePolicyWithoutRewriting() {
+        config.getUpload().setMaxFileSize(java.math.BigDecimal.valueOf(12));
         var result = upload(request(11 * 1024 * 1024, 1)).block(Duration.ofSeconds(10));
         assertThat(result).hasSize(1);
         assertThat(receivedBytes).isEqualTo(11 * 1024 * 1024);
@@ -276,6 +277,28 @@ class UploadMediaEndpointTest {
         );
     }
 
+    @Test
+    void rejectsOversizedImageBeforeCreatingUploadRecord() {
+        config.getUpload().setMaxFileSize(java.math.BigDecimal.ONE);
+        var result = upload(request(1024 * 1024 + 1, 1)).block();
+        assertThat(result.getFirst().error().status()).isEqualTo(413);
+        verifyNoInteractions(attachments, lifecycle);
+    }
+
+    @Test
+    void rejectsNonImageAndKeepsSuccessfulBatchResults() throws Exception {
+        byte[] image;
+        try (var stream = getClass().getResourceAsStream("/images/image.avif")) {
+            image = stream.readAllBytes();
+        }
+        var results = upload(request(List.of(image, "<svg/>".getBytes(StandardCharsets.UTF_8), image),
+            "original.avif", "image/avif")).block();
+        assertThat(results.get(0).uploadId()).isEqualTo("upload-id");
+        assertThat(results.get(1).error().status()).isEqualTo(415);
+        assertThat(results.get(2).uploadId()).isEqualTo("upload-id");
+        org.mockito.Mockito.verify(lifecycle, org.mockito.Mockito.times(2)).begin("draft", "alice");
+    }
+
     private static class PolicyRejection extends ResponseStatusException {
 
         PolicyRejection() {
@@ -299,7 +322,8 @@ class UploadMediaEndpointTest {
     }
 
     private void assertTemporaryPartDeleted() {
-        assertThatThrownBy(() -> receivedFile.content().then().block()).isNotNull();
+        var source = ((ImageFileValidator.ValidatedFilePart) receivedFile).source();
+        assertThatThrownBy(() -> source.content().then().block()).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -319,12 +343,27 @@ class UploadMediaEndpointTest {
     }
 
     private ServerRequest request(int size, int count) {
-        String part =
-            "--boundary\r\nContent-Disposition: form-data; name=\"files\"; " +
-            "filename=\"original.avif\"\r\nContent-Type: image/avif\r\n\r\n" +
-            "x".repeat(size) +
-            "\r\n";
-        byte[] body = (part.repeat(count) + "--boundary--\r\n").getBytes(StandardCharsets.UTF_8);
+        byte[] image;
+        try (var stream = getClass().getResourceAsStream("/images/image.avif")) {
+            var original = stream.readAllBytes();
+            image = Arrays.copyOf(original, Math.max(size, original.length));
+        } catch (java.io.IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
+        return request(java.util.Collections.nCopies(count, image), "original.avif", "image/avif");
+    }
+
+    private ServerRequest request(List<byte[]> images, String filename, String type) {
+        var output = new java.io.ByteArrayOutputStream();
+        for (var image : images) {
+            output.writeBytes(("--boundary\r\nContent-Disposition: form-data; name=\"files\"; "
+                + "filename=\"" + filename + "\"\r\nContent-Type: " + type + "\r\n\r\n")
+                .getBytes(StandardCharsets.UTF_8));
+            output.writeBytes(image);
+            output.writeBytes("\r\n".getBytes(StandardCharsets.UTF_8));
+        }
+        output.writeBytes("--boundary--\r\n".getBytes(StandardCharsets.UTF_8));
+        byte[] body = output.toByteArray();
         var request = MockServerHttpRequest.post("/upload")
             .header("Content-Type", "multipart/form-data; boundary=boundary")
             .body(

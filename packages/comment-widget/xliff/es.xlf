@@ -282,6 +282,18 @@
   <source>Your previous submission was cancelled. Submit again to send your changes.</source>
         <target>El envío anterior se canceló. Vuelve a enviar para publicar tus cambios.</target>
 </trans-unit>
+<trans-unit id="sff08dba77ae75e40">
+  <source>Image upload is unavailable. Please contact the site administrator.</source>
+  <target>La carga de imágenes no está disponible. Contacta con el administrador del sitio.</target>
+</trans-unit>
+<trans-unit id="s8e176d64f6528d3d">
+  <source>Image size must not exceed <x id="0" equiv-text="${maxFileSize}"/> MiB.</source>
+  <target>El tamaño de la imagen no debe superar <x id="0" equiv-text="${maxFileSize}"/> MiB.</target>
+</trans-unit>
+<trans-unit id="s065307503771fd8d">
+  <source>Only JPEG, PNG, GIF, WebP, and AVIF images are supported.</source>
+  <target>Solo se admiten imágenes JPEG, PNG, GIF, WebP y AVIF.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

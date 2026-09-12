@@ -117,11 +117,12 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         String hash,
         SettingConfigGetter.EditorConfig config
     ) {
+        var maxBytes = ImageFileValidator.maxBytes(config.getUpload().getMaxFileSize());
         return Mono.usingWhen(
             request
                 .multipartData()
                 .map(parts -> parts.values().stream().flatMap(List::stream).toList()),
-            parts -> uploadParts(parts, config, hash),
+            parts -> uploadParts(parts, config, hash, maxBytes),
             this::deleteParts,
             (parts, error) -> deleteParts(parts),
             this::deleteParts
@@ -137,7 +138,8 @@ public class UploadMediaEndpoint implements CustomEndpoint {
     private Mono<List<UploadedImage>> uploadParts(
         List<Part> parts,
         SettingConfigGetter.EditorConfig config,
-        String hash
+        String hash,
+        int maxBytes
     ) {
         if (parts.isEmpty()) {
             return Mono.error(new ServerWebInputException("At least one file is required"));
@@ -148,7 +150,8 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         return uploadAttachmentsToStorage(
             parts.stream().map(FilePart.class::cast).toList(),
             config.getUpload().getAttachment(),
-            hash
+            hash,
+            maxBytes
         );
     }
 
@@ -195,14 +198,15 @@ public class UploadMediaEndpoint implements CustomEndpoint {
     private Mono<List<UploadedImage>> uploadAttachmentsToStorage(
         List<FilePart> files,
         SettingConfigGetter.UploadConfig.UploadAttachment settings,
-        String hash
+        String hash,
+        int maxBytes
     ) {
         if (StringUtils.isBlank(settings.getAttachmentPolicy())) {
             return Mono.error(new ServerWebInputException("Please configure the upload policy"));
         }
         return UploadIdentity.currentOwner().flatMap(owner ->
             Flux.fromIterable(files)
-                .concatMap(file -> uploadOne(file, settings, hash, owner))
+                .concatMap(file -> uploadOne(file, settings, hash, owner, maxBytes))
                 .collectList()
         );
     }
@@ -211,11 +215,12 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         FilePart file,
         SettingConfigGetter.UploadConfig.UploadAttachment settings,
         String hash,
-        String owner
+        String owner,
+        int maxBytes
     ) {
-        return beginAndUpload(file, settings, hash, owner).onErrorResume(error ->
-            Mono.just(UploadedImage.failed(error))
-        );
+        return ImageFileValidator.withValidatedFile(file, maxBytes,
+                validated -> beginAndUpload(validated, settings, hash, owner))
+            .onErrorResume(error -> Mono.just(UploadedImage.failed(error)));
     }
 
     private Mono<UploadedImage> beginAndUpload(

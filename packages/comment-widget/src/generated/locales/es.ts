@@ -3,7 +3,7 @@
     // Re-generate this file by running lit-localize
 
     import {html} from 'lit';
-    
+    import {str} from '@lit/localize';
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,6 +12,7 @@
       'h6a83761bb66bbcc5': html`${0} Comentarios`,
 's023f646163e63d90': `La operación falló. Inténtalo de nuevo.`,
 's053945ad43e9d1d6': `Por favor, ingrese el código de verificación`,
+'s065307503771fd8d': `Solo se admiten imágenes JPEG, PNG, GIF, WebP y AVIF.`,
 's067e961bb67cf3f6': `Verificando…`,
 's09c7e0ff5f4e18cb': `Cancelar respuesta`,
 's0b7ae9543c001867': `Responder`,
@@ -52,6 +53,7 @@
 's84b033b2f7360187': `Por favor, inicie sesión o complete la información primero`,
 's851926ed399df4e4': `El envío anterior se canceló. Vuelve a enviar para publicar tus cambios.`,
 's8db89619f41917b4': `Fijar`,
+'s8e176d64f6528d3d': str`El tamaño de la imagen no debe superar ${0} MiB.`,
 's96668830629e0dfc': `Subir`,
 's98a5f7789c49dd3f': `En revisión`,
 's9df212d89cab196d': `Ocultar`,
@@ -79,5 +81,6 @@
 'sf77128b082955d42': `(O iniciar sesión)`,
 'sf7c0eba7c822e3d6': `Negrita`,
 'sf9709983d4da2c54': `Me gusta`,
+'sff08dba77ae75e40': `La carga de imágenes no está disponible. Contacta con el administrador del sitio.`,
     };
   

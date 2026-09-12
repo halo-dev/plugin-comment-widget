@@ -276,10 +276,19 @@ spec:
               name: allowAnonymous
               label: 允许匿名用户上传
               value: false
+            - $formkit: number
+              name: maxFileSize
+              label: 单张图片最大大小（MiB）
+              value: 10
+              min: 1
+              max: 2047
+              step: 1
+              validation: required|number|min:1|max:2047|matches:/^[0-9]+$/
+              help: 仅支持 JPEG、PNG、GIF、WebP、AVIF 图片，不支持 SVG。存储策略有更严格限制时仍然生效。
             - $formkit: group
               name: attachment
               label: 附件配置
-              help: 出于安全考虑，建议为所选存储策略限制文件类型和大小，以免被恶意上传文件
+              help: 上传图片同时受插件和所选存储策略的限制
               children:
                 - $formkit: attachmentPolicySelect
                   name: attachmentPolicy
