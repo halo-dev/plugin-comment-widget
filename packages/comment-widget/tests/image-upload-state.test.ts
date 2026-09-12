@@ -153,7 +153,7 @@ test('undo and redo reuse the confirmed attachment without losing image dimensio
   assert.equal(attrs.src, '/confirmed.svg');
   assert.equal(attrs.uploadId, 'confirmed');
   assert.equal(attrs.local, false);
-  assert.equal(attrs.file, null);
+  assert.equal(attrs.file, file);
   assert.equal(attrs.width, 120);
   assert.equal(uploads.restoreUploaded(editor.tr).docChanged, false);
 });
@@ -178,4 +178,44 @@ test('unconfirmed local files remain uploadable and do not inherit another sessi
     new ImageUploadState().restoreUploaded(editor.tr).docChanged,
     false
   );
+});
+
+test('renewal preserves the original File and replaces every historical upload alias', () => {
+  const uploads = new ImageUploadState();
+  const file = new File(['original'], 'image.png');
+  uploads.rememberLocal('blob:original', file);
+  uploads.rememberUploaded('blob:original', {
+    uploadId: 'expired',
+    url: '/expired.png',
+    expiresAt: '2020-01-01T00:00:00Z',
+  });
+  uploads.rememberUploaded('/expired.png', {
+    uploadId: 'renewed',
+    url: '/renewed.png',
+    expiresAt: '2099-01-01T00:00:00Z',
+  });
+  for (const src of ['blob:original', '/expired.png', '/renewed.png']) {
+    const attrs = uploads
+      .restorePasted(pastedImage(src))
+      .content.child(0).attrs;
+    assert.equal(attrs.src, '/renewed.png');
+    assert.equal(attrs.uploadId, 'renewed');
+    assert.equal(attrs.file, file);
+  }
+  const editor = EditorState.create({
+    doc: schema.nodes.doc.create(
+      null,
+      schema.nodes.paragraph.create(
+        null,
+        schema.nodes.image.create({
+          src: '/expired.png',
+          uploadId: 'expired',
+          file,
+        })
+      )
+    ),
+  });
+  const restored = uploads.restoreUploaded(editor.tr).doc.child(0).child(0);
+  assert.equal(restored.attrs.uploadId, 'renewed');
+  assert.equal(restored.attrs.file, file);
 });

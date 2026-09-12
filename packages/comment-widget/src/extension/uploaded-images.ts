@@ -69,11 +69,15 @@ export function restoreUploadDraft(
         attrs.src = url;
         imageUploadState(editor).rememberLocal(url, attrs.file);
       } else if (attrs.uploadId) {
-        imageUploadState(editor).rememberUploaded(attrs.src, {
-          uploadId: attrs.uploadId,
-          url: attrs.src,
-          expiresAt: '',
-        });
+        imageUploadState(editor).rememberUploaded(
+          attrs.src,
+          {
+            uploadId: attrs.uploadId,
+            url: attrs.src,
+            expiresAt: attrs.expiresAt,
+          },
+          attrs.file
+        );
       }
     }
     node.content?.forEach(restoreNode);
@@ -157,7 +161,12 @@ export function getLocalNodes(editor: Editor) {
   const localNodes: LocalNode[] = [];
   state.doc.descendants(
     (node: Node, pos: number, parent: Node | null, index: number) => {
-      if (node.attrs.local) {
+      if (
+        node.attrs.local ||
+        (node.attrs.uploadId &&
+          node.attrs.file instanceof File &&
+          Date.parse(node.attrs.expiresAt) <= Date.now())
+      ) {
         localNodes.push({ node, pos, parent, index });
       }
     }
@@ -210,7 +219,20 @@ export async function uploadEditorFiles(
   if (restored.docChanged) {
     editor.view.dispatch(restored.setMeta('addToHistory', false));
   }
-  const localNodes = getLocalNodes(editor);
+  let localNodes = getLocalNodes(editor);
+  if (localNodes.some(({ node }) => !node.attrs.local)) {
+    try {
+      if (!(await uploadSession(editor).prepareUploadRenewal(baseUrl ?? ''))) {
+        // Keep the original content fingerprint while submission recovery is pending.
+        return true;
+      }
+    } catch (error) {
+      new ToastManager().error(imageErrorMessage(error));
+      return false;
+    }
+    if (editor.isDestroyed) return false;
+    localNodes = getLocalNodes(editor);
+  }
   if (localNodes.length === 0) {
     return true;
   }
@@ -236,12 +258,16 @@ function replaceUploadedImage(
   }
   imageUploadState(editor).rememberUploaded(
     original.node.attrs.src,
-    attachment
+    attachment,
+    original.node.attrs.file
   );
-  // Locate by blob URL again: positions may have moved during the upload.
+  // Locate by source URL again: positions may have moved during the upload.
   const matches: number[] = [];
   editor.state.doc.descendants((node, pos) => {
-    if (node.attrs.local && node.attrs.src === original.node.attrs.src) {
+    if (
+      node.type.name === Image.name &&
+      node.attrs.src === original.node.attrs.src
+    ) {
       matches.push(pos);
     }
   });
@@ -251,7 +277,8 @@ function replaceUploadedImage(
       .setNodeAttribute(pos, 'src', attachment.url)
       .setNodeAttribute(pos, 'uploadId', attachment.uploadId)
       .setNodeAttribute(pos, 'local', false)
-      .setNodeAttribute(pos, 'file', null);
+      .setNodeAttribute(pos, 'file', original.node.attrs.file)
+      .setNodeAttribute(pos, 'expiresAt', attachment.expiresAt);
   }
   editor.view.dispatch(tr.setMeta('addToHistory', false));
   // Keep the blob URL valid for undo; it is released on editor destruction.

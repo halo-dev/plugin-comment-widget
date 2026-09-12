@@ -96,6 +96,30 @@ class UploadLifecycleTest {
     }
 
     @Test
+    void renewedImageCanReuseUrlAfterOldAttachmentWasDeleted() throws Exception {
+        var expired = uploaded();
+        expired.getSpec().setState(CommentUpload.State.DELETING);
+        expired.getSpec().setExpiresAt(Instant.now().minusSeconds(60));
+        save(expired);
+        var renewed = uploaded();
+        when(client.listAll(eq(CommentUpload.class), any(), any()))
+            .thenReturn(List.of(expired, renewed));
+        var content = "<img src='https://example.com/a.png'>";
+        assertThat(service.referenced(content)).hasSize(2);
+
+        client.delete(client.fetch(Attachment.class, expired.getSpec().getAttachmentName())
+            .orElseThrow());
+        var referenced = service.referenced(content);
+        assertThat(referenced).extracting(u -> u.getMetadata().getName())
+            .containsExactly(renewed.getMetadata().getName());
+        var ticket = service.issue(hash, owner);
+        var submission = service.reserve(ticket.getMetadata().getName(), hash, owner,
+            "/comments", mapper.readTree("{\"content\":\"" + content + "\"}"), referenced);
+        assertThat(submission.getSpec().getUploadIds())
+            .containsExactly(renewed.getMetadata().getName());
+    }
+
+    @Test
     void cancelIssuedTicketThroughEndpointChecksOwnershipAndPreservesImages() {
         var upload = uploaded();
         var ticket = service.issue(hash, owner);

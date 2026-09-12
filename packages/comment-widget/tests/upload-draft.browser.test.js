@@ -7,9 +7,9 @@ import {
   uploadSession,
 } from '../src/extension/uploaded-images.ts';
 
-async function mount() {
+async function mount(name = 'cw205-probe') {
   const form = document.createElement('base-form');
-  form.name = 'cw205-probe';
+  form.name = name;
   form.configMapData = {
     basic: {},
     editor: { enableUpload: true, upload: { allowAnonymous: true } },
@@ -85,15 +85,25 @@ test('English locale receives a localized upload error', async () => {
 
 test('restored pending submission checks status instead of posting twice', async () => {
   let posts = 0;
+  let uploads = 0;
+  const now = Date.now();
   let status = 'UNKNOWN';
   vi.spyOn(window, 'fetch').mockImplementation(async (input) => {
     const path = new URL(String(input), location.href).pathname;
     const headers = { 'Content-Type': 'application/json' };
-    if (path.endsWith('/upload'))
+    if (path.endsWith('/upload')) {
+      uploads++;
       return new Response(
-        JSON.stringify([{ uploadId: 'one', url: '/one.png', expiresAt: '' }]),
+        JSON.stringify([
+          {
+            uploadId: 'one',
+            url: '/one.png',
+            expiresAt: new Date(now + 86400000).toISOString(),
+          },
+        ]),
         { headers }
       );
+    }
     if (path.endsWith('/submissions'))
       return new Response(JSON.stringify({ id: 'ticket' }), { headers });
     if (path.endsWith('/submissions/ticket'))
@@ -116,14 +126,18 @@ test('restored pending submission checks status instead of posting twice', async
   original.remove();
   const restored = await mount();
   const next = restored.editorRef.value.editor;
+  vi.spyOn(Date, 'now').mockReturnValue(now + 86400001);
+  expect(await uploadEditorFiles(next, '')).toBe(true);
   await expect(
     uploadSession(next).submit(url, body, uploadedIds(next), {}, '')
   ).rejects.toThrow('being confirmed');
   status = 'BOUND';
+  expect(await uploadEditorFiles(next, '')).toBe(true);
   await expect(
     uploadSession(next).submit(url, body, uploadedIds(next), {}, '')
   ).resolves.toBeUndefined();
   expect(posts).toBe(1);
+  expect(uploads).toBe(1);
 });
 
 test('old success preserves a newer image with the same sanitized HTML', async () => {
@@ -399,3 +413,119 @@ test('a lost cancellation race preserves pending and never sends changed content
   ).rejects.toThrow('being confirmed');
   expect(requests).toEqual(['GET', 'DELETE', 'GET']);
 });
+
+test('expired uploaded draft keeps its File and renews before submission', async () => {
+  let expired = false;
+  const requests = [];
+  const now = Date.now();
+  vi.spyOn(Date, 'now').mockImplementation(() =>
+    expired ? now + 86400001 : now
+  );
+  vi.spyOn(window, 'fetch').mockImplementation(async (input, options = {}) => {
+    const path = new URL(String(input), location.href).pathname;
+    requests.push(path);
+    const headers = { 'Content-Type': 'application/json' };
+    if (path.endsWith('/upload')) {
+      expect(await options.body.get('files').text()).toBe('original image');
+      return new Response(
+        JSON.stringify([
+          {
+            uploadId: expired ? 'renewed' : 'original',
+            url: expired ? '/renewed.png' : '/original.png',
+            expiresAt: new Date(Date.now() + 86400000).toISOString(),
+          },
+        ]),
+        { headers }
+      );
+    }
+    if (path.endsWith('/submissions')) {
+      return new Response(JSON.stringify({ id: 'renewed-ticket' }), {
+        headers,
+      });
+    }
+    expect(new Headers(options.headers).get('X-Comment-Uploads')).toBe(
+      'renewed'
+    );
+    expect(JSON.parse(options.body).content).toContain('/renewed.png');
+    return new Response(JSON.stringify({ spec: { approved: true } }), {
+      headers,
+    });
+  });
+  const original = await mount('expired-upload');
+  renderImage({
+    editor: original.editorRef.value.editor,
+    file: new File(['original image'], 'x.png', { type: 'image/png' }),
+  });
+  expect(await uploadEditorFiles(original.editorRef.value.editor, '')).toBe(
+    true
+  );
+  original.remove();
+  const restored = await mount('expired-upload');
+  const editor = restored.editorRef.value.editor;
+  expect(await uploadEditorFiles(editor, '')).toBe(true);
+  expect(requests).toHaveLength(1);
+  expired = true;
+  expect(await uploadEditorFiles(editor, '')).toBe(true);
+  expect(uploadedIds(editor)).toEqual(['renewed']);
+  await expect(
+    uploadSession(editor).submit(
+      '/apis/api.halo.run/v1alpha1/comments',
+      { content: editor.getHTML() },
+      uploadedIds(editor),
+      {},
+      ''
+    )
+  ).resolves.toEqual({ spec: { approved: true } });
+  expect(requests.filter((path) => path.endsWith('/upload'))).toHaveLength(2);
+});
+
+test.each([
+  ['ISSUED', 200, 204, true],
+  ['FAILED', 200, 204, true],
+  ['UNKNOWN', 200, 204, false],
+  ['PROCESSING', 200, 204, false],
+  ['PREPARING', 200, 204, false],
+  ['BOUND', 200, 204, false],
+  ['ISSUED', 200, 409, undefined],
+  ['UNKNOWN', 404, 204, undefined],
+  ['UNKNOWN', 410, 204, undefined],
+])(
+  'renewal respects persisted ticket %s (GET %i, DELETE %i)',
+  async (state, getStatus, deleteStatus, allowed) => {
+    const { UploadSession } = await import('../src/utils/upload-session.ts');
+    const pending = {
+      id: 'old-ticket',
+      token: 'old-owner',
+      fingerprint: 'original',
+    };
+    const checkpoint = vi.fn();
+    const requests = [];
+    vi.spyOn(window, 'fetch').mockImplementation(
+      async (_input, options = {}) => {
+        requests.push(options.method || 'GET');
+        expect(new Headers(options.headers).get('X-Comment-Upload-Token')).toBe(
+          'old-owner'
+        );
+        if (options.method === 'DELETE') {
+          return new Response(null, { status: deleteStatus });
+        }
+        return new Response(JSON.stringify({ state }), {
+          status: getStatus,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    );
+    const session = new UploadSession(undefined, checkpoint, async () => ({
+      token: 'new-owner',
+      pending,
+    }));
+    if (allowed === undefined) {
+      await expect(session.prepareUploadRenewal('')).rejects.toThrow();
+    } else {
+      expect(await session.prepareUploadRenewal('')).toBe(allowed);
+    }
+    expect(session.snapshot().pending).toEqual(allowed ? undefined : pending);
+    expect(checkpoint).toHaveBeenCalledTimes(allowed ? 1 : 0);
+    expect(requests).toEqual(state === 'ISSUED' ? ['GET', 'DELETE'] : ['GET']);
+  }
+);

@@ -63,6 +63,11 @@ export const EditorUpload = Extension.create<EditorUploadOptions>({
               return null;
             },
           },
+          expiresAt: {
+            default: null,
+            parseHTML: () => null,
+            renderHTML: () => null,
+          },
           local: {
             default: false,
             parseHTML: () => false,

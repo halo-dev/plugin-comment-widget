@@ -53,6 +53,37 @@ export class UploadSession {
     return { token: this.token, pending: this.pending };
   }
 
+  async prepareUploadRenewal(baseUrl: string): Promise<boolean> {
+    await this.readPending();
+    const pending = this.pending;
+    if (!pending) return true;
+    const status = await this.readStatus(pending, baseUrl);
+    if (status.state === 'ISSUED') {
+      await this.cancelIssued(pending, baseUrl);
+    } else if (status.state !== 'FAILED') {
+      return false;
+    }
+    this.pending = undefined;
+    await this.onChange(pending.id);
+    return true;
+  }
+
+  private async readPending() {
+    const stored = await this.onRead();
+    if (stored?.pending) this.pending = stored.pending;
+  }
+
+  private cancelIssued(pending: PendingSubmission, baseUrl: string) {
+    return ofetch(
+      `${baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/submissions/${pending.id}`,
+      {
+        method: 'DELETE',
+        headers: { 'X-Comment-Upload-Token': pending.token },
+        retry: 0,
+      }
+    );
+  }
+
   async submit<T>(
     url: string,
     body: unknown,
@@ -60,10 +91,7 @@ export class UploadSession {
     headers: Record<string, string>,
     baseUrl: string
   ): Promise<SubmittedResource<T>> {
-    const stored = await this.onRead();
-    if (stored?.pending) {
-      this.pending = stored.pending;
-    }
+    await this.readPending();
     const fingerprint = JSON.stringify({ url, body, ids });
     if (await this.recoverSubmission(fingerprint, baseUrl)) {
       return undefined;
@@ -106,14 +134,7 @@ export class UploadSession {
     if (status.state === 'ISSUED') {
       if (pending.fingerprint !== fingerprint) {
         // A GET alone cannot rule out a delayed POST; cancellation must win the server CAS.
-        await ofetch(
-          `${baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/submissions/${pending.id}`,
-          {
-            method: 'DELETE',
-            headers: { 'X-Comment-Upload-Token': pending.token },
-            retry: 0,
-          }
-        );
+        await this.cancelIssued(pending, baseUrl);
         this.pending = undefined;
         await this.onChange(pending.id);
         throw new Error(

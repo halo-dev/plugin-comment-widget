@@ -206,6 +206,9 @@ public class UploadLifecycleService {
             )
             .stream()
             .filter(u -> !u.getSpec().isRetained())
+            // Storage may reuse a deleted attachment's URL before its upload record is purged.
+            .filter(u -> u.getSpec().getAttachmentName() == null
+                || client.fetch(Attachment.class, u.getSpec().getAttachmentName()).isPresent())
             .toList();
     }
 

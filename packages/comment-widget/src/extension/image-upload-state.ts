@@ -7,6 +7,7 @@ type ImageAttributes = {
   local: boolean;
   file: File | null;
   uploadId: string | null;
+  expiresAt: string | null;
 };
 
 /** Trusted associations belong to one editor session, never to pasted HTML. */
@@ -14,16 +15,27 @@ export class ImageUploadState {
   private readonly images = new Map<string, ImageAttributes>();
 
   rememberLocal(src: string, file: File) {
-    this.images.set(src, { src, file, local: true, uploadId: null });
+    this.images.set(src, {
+      src,
+      file,
+      local: true,
+      uploadId: null,
+      expiresAt: null,
+    });
   }
 
-  rememberUploaded(localSrc: string, image: UploadedImage) {
+  rememberUploaded(localSrc: string, image: UploadedImage, file?: File | null) {
+    const previous = this.images.get(localSrc);
     const attributes = {
       src: image.url,
       uploadId: image.uploadId,
       local: false,
-      file: null,
+      file: file ?? previous?.file ?? null,
+      expiresAt: image.expiresAt,
     };
+    for (const [src, known] of this.images) {
+      if (known === previous) this.images.set(src, attributes);
+    }
     this.images.set(localSrc, attributes);
     this.images.set(image.url, attributes);
   }
@@ -44,11 +56,11 @@ export class ImageUploadState {
     if (node.type.name !== 'image') {
       return;
     }
-    if (!node.attrs.local) {
-      return;
-    }
     const known = this.images.get(node.attrs.src);
-    if (!known?.uploadId) {
+    if (
+      !known?.uploadId ||
+      (!node.attrs.local && node.attrs.uploadId === known.uploadId)
+    ) {
       return;
     }
     return known;
@@ -76,7 +88,14 @@ export class ImageUploadState {
     }
     const known = this.images.get(node.attrs.src);
     return node.type.create(
-      { ...node.attrs, uploadId: null, local: false, file: null, ...known },
+      {
+        ...node.attrs,
+        uploadId: null,
+        local: false,
+        file: null,
+        expiresAt: null,
+        ...known,
+      },
       node.content,
       node.marks
     );
