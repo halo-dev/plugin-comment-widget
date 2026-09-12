@@ -96,6 +96,7 @@ export class CommentList extends LitElement {
   }
 
   override disconnectedCallback(): void {
+    window.removeEventListener('halo:comment:created', this.onCommentCreated);
     this.activeReplyItem?.closeReplyForm();
     this.activeReplyItem = undefined;
     super.disconnectedCallback();
@@ -120,13 +121,12 @@ export class CommentList extends LitElement {
     this.fetchComments();
 
     // Handle halo:comment:created event, then reload the comment list
-    window.addEventListener('halo:comment:created', () => {
-      this.fetchComments({
-        page: 1,
-        scrollIntoView: true,
-      });
-    });
+    window.addEventListener('halo:comment:created', this.onCommentCreated);
   }
+
+  private onCommentCreated = () => {
+    this.fetchComments({ page: 1, scrollIntoView: true });
+  };
 
   async fetchComments(options?: {
     page?: number;
