@@ -201,9 +201,16 @@ export class BaseForm extends LitElement {
   editorRef: Ref<CommentEditor> = createRef<CommentEditor>();
 
   get customAccount() {
-    return JSON.parse(
-      localStorage.getItem('halo-comment-custom-account') || '{}'
-    );
+    try {
+      return (
+        JSON.parse(
+          localStorage.getItem('halo-comment-custom-account') || '{}'
+        ) ?? {}
+      );
+    } catch {
+      // Invalid or unavailable storage must not prevent anonymous commenting.
+      return {};
+    }
   }
 
   get parentDomId() {

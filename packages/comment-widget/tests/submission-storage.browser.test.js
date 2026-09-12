@@ -3,6 +3,44 @@ import '../src/comment-form.ts';
 import '../src/reply-form.ts';
 import { mockApi, until } from './browser-helpers.js';
 
+test.each(['disabled', 'denied', 'invalid JSON', 'null'])(
+  'anonymous form renders when account storage is %s',
+  async (storage) => {
+    if (storage === 'disabled') {
+      vi.stubGlobal('localStorage', null);
+    } else if (storage === 'denied') {
+      const getItem = Storage.prototype.getItem;
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (key) {
+        if (key === 'halo-comment-custom-account') {
+          throw new DOMException('Access denied', 'SecurityError');
+        }
+        return getItem.call(this, key);
+      });
+    } else {
+      localStorage.setItem(
+        'halo-comment-custom-account',
+        storage === 'null' ? 'null' : '{invalid'
+      );
+    }
+    try {
+      const form = document.createElement('base-form');
+      form.allowAnonymousComments = true;
+      document.body.append(form);
+      await form.updateComplete;
+      expect(form.shadowRoot.querySelector('input[name=email]').value).toBe('');
+      expect(
+        form.shadowRoot.querySelector('button[type=submit]')
+      ).not.toBeNull();
+      await until(() => form.editorRef.value?.editor);
+      form.editorRef.value.editor.commands.setContent('<p>Still editable</p>');
+      expect(form.editorRef.value.editor.getText()).toBe('Still editable');
+    } finally {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    }
+  }
+);
+
 test.each([
   ['comment-form', false],
   ['reply-form', false],
