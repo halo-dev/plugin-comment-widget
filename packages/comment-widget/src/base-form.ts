@@ -300,7 +300,7 @@ export class BaseForm extends LitElement {
 
     try {
       const data = await ofetch(
-        `/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`,
+        `${this.baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/captcha/-/generate`,
         {
           parseResponse: (txt) => txt,
         }
