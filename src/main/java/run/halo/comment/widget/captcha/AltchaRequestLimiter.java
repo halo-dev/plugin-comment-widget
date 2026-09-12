@@ -11,11 +11,19 @@ final class AltchaRequestLimiter {
     private static final int GLOBAL_LIMIT = 50;
     private static final long WINDOW_NANOS = Duration.ofSeconds(1).toNanos();
     private final Ticker ticker;
+    private final int clientLimit;
+    private final int globalLimit;
     private final Cache<String, Window> clients;
     private final Window global = new Window();
 
     AltchaRequestLimiter(Ticker ticker) {
+        this(ticker, CLIENT_LIMIT, GLOBAL_LIMIT);
+    }
+
+    AltchaRequestLimiter(Ticker ticker, int clientLimit, int globalLimit) {
         this.ticker = ticker;
+        this.clientLimit = clientLimit;
+        this.globalLimit = globalLimit;
         clients = CacheBuilder.newBuilder().maximumSize(10_000)
             .expireAfterAccess(Duration.ofSeconds(10)).ticker(ticker).build();
     }
@@ -28,11 +36,11 @@ final class AltchaRequestLimiter {
             clients.put(client, window);
         }
         window.refresh(now);
-        if (window.count >= CLIENT_LIMIT) {
+        if (window.count >= clientLimit) {
             return false;
         }
         global.refresh(now);
-        if (global.count >= GLOBAL_LIMIT) {
+        if (global.count >= globalLimit) {
             return false;
         }
         window.count++;

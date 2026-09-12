@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import run.halo.comment.widget.SettingConfigGetter;
@@ -124,6 +125,24 @@ class CommentCaptchaFilterTest {
                 .contains(CommentCaptchaFilter.CAPTCHA_INVALID_TYPE);
         }
         verify(manager, times(2)).verify("id", "answer", true);
+    }
+
+    @Test
+    void throttledReplacementDoesNotLeaveAForbiddenCaptchaResponse() {
+        configure(new CaptchaConfig().setEnable(true).setAudience(CaptchaAudience.ALL));
+        when(manager.generate(any(), any())).thenReturn(
+            Mono.error(new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS)));
+        for (var path : SUBMISSION_PATHS) {
+            var exchange = MockServerWebExchange.from(MockServerHttpRequest.post(path));
+            var calls = new AtomicInteger();
+            submit(exchange, authenticated("reader"), e -> Mono.fromRunnable(calls::incrementAndGet));
+            assertThat(calls.get()).isZero();
+            assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
+            assertThat(exchange.getResponse().getHeaders().getFirst("Retry-After")).isEqualTo("1");
+            assertThat(exchange.getResponse().getHeaders().getFirst("X-Require-Captcha")).isNull();
+            assertThat(exchange.getResponse().getBodyAsString().block())
+                .contains("Too Many Requests", "请求过于频繁，请稍后重试");
+        }
     }
 
     @Test
