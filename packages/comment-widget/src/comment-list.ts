@@ -73,6 +73,8 @@ export class CommentList extends LitElement {
   @state()
   loading = false;
 
+  private requestId = 0;
+
   private activeReplyItem?: { closeReplyForm(): void };
 
   private onReplyFormOpen(event: CustomEvent<{ closeReplyForm(): void }>) {
@@ -132,6 +134,7 @@ export class CommentList extends LitElement {
     replyCountFor?: string;
   }) {
     const { page, scrollIntoView, replyCountFor } = options || {};
+    const requestId = ++this.requestId;
     try {
       if (this.comments.items.length === 0) {
         this.loading = true;
@@ -160,6 +163,8 @@ export class CommentList extends LitElement {
         }
       );
 
+      if (requestId !== this.requestId) return;
+
       const lastPage = Math.max(1, data.totalPages);
       if (data.page > lastPage) {
         await this.fetchComments({ ...options, page: lastPage });
@@ -178,23 +183,27 @@ export class CommentList extends LitElement {
           comment.status = { ...comment.status, visibleReplyCount };
         }
       }
+      if (requestId !== this.requestId) return;
       this.comments = data;
     } catch (_error) {
+      if (requestId !== this.requestId) return;
       console.error(_error);
       this.toastManager?.error(
         msg('Failed to load comment list, please try again later')
       );
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) {
+        this.loading = false;
 
-      if (scrollIntoView) {
-        this.scrollIntoView({
-          block: 'start',
-          inline: 'start',
-          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
-            ? 'instant'
-            : 'smooth',
-        });
+        if (scrollIntoView) {
+          this.scrollIntoView({
+            block: 'start',
+            inline: 'start',
+            behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+              ? 'instant'
+              : 'smooth',
+          });
+        }
       }
     }
   }
