@@ -40,6 +40,8 @@ export class CommentReplies extends LitElement {
 
   private preloaded = false;
 
+  private requestId = 0;
+
   @state()
   hasNext = false;
 
@@ -99,6 +101,7 @@ export class CommentReplies extends LitElement {
     size?: number;
     append?: boolean;
   }) {
+    const requestId = ++this.requestId;
     try {
       this.loading = true;
 
@@ -116,6 +119,8 @@ export class CommentReplies extends LitElement {
           },
         }
       );
+
+      if (requestId !== this.requestId) return;
 
       const restoreFocus =
         !data.hasNext &&
@@ -135,6 +140,7 @@ export class CommentReplies extends LitElement {
       this.preloaded = false;
       if (restoreFocus) {
         await this.updateComplete;
+        if (requestId !== this.requestId) return;
         const target =
           this.renderRoot.querySelectorAll<HTMLElement>('reply-item')[
             firstNewReply
@@ -155,12 +161,15 @@ export class CommentReplies extends LitElement {
         target.focus({ preventScroll: true });
       }
     } catch (error) {
+      if (requestId !== this.requestId) return;
       console.error(error);
       this.toastManager?.error(
         msg('Failed to load reply list, please try again later')
       );
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) {
+        this.loading = false;
+      }
     }
   }
 
