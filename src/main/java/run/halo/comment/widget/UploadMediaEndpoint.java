@@ -218,8 +218,8 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         String owner,
         int maxBytes
     ) {
-        return ImageFileValidator.validate(file, maxBytes)
-            .flatMap(validated -> beginAndUpload(validated, settings, hash, owner))
+        return ImageFileValidator.withValidatedFile(file, maxBytes,
+                validated -> beginAndUpload(validated, settings, hash, owner))
             .onErrorResume(error -> Mono.just(UploadedImage.failed(error)));
     }
 

@@ -103,6 +103,14 @@ test('Comment management regression checks', async () => {
           )
         : list([comment]);
     }
+    // Page changes before the fallback response replaces the deleted row.
+    if (
+      deletedComment &&
+      url.pathname.endsWith('/comments') &&
+      url.searchParams.get('page') === '1'
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 80));
+    }
     return new Response(JSON.stringify(data), {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -201,7 +209,12 @@ test('Comment management regression checks', async () => {
   const rootDelete = actionButton(rootManagement, 'Delete');
   rootDelete.focus();
   rootDelete.click();
-  await until(() => deletedComment && comments.comments.page === 1);
+  await until(
+    () =>
+      deletedComment &&
+      comments.comments.page === 1 &&
+      !rootManagement.isConnected
+  );
   assert(
     comments.comments.items.length === 1,
     'Deletion must return to a populated valid page'

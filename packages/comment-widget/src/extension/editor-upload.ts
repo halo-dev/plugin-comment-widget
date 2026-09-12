@@ -145,6 +145,10 @@ function containsFileClipboardIdentifier(types: readonly string[]) {
 const IMAGE_TYPES: Record<string, string> = {
   jpg: 'image/jpeg',
   jpeg: 'image/jpeg',
+  jpe: 'image/jpeg',
+  jif: 'image/jpeg',
+  jfif: 'image/jpeg',
+  jfi: 'image/jpeg',
   png: 'image/png',
   gif: 'image/gif',
   webp: 'image/webp',

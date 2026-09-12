@@ -116,3 +116,32 @@ test('uses the legacy default and reads changed configuration without remounting
   drop();
   expect(images(editor)).toHaveLength(2);
 });
+
+for (const kind of ['paste', 'drop', 'picker']) {
+  test(`${kind} accepts JPEG aliases supported by the backend`, async () => {
+    const form = await mount(1);
+    const editor = form.editorRef.value.editor;
+    const files = ['jpe', 'jif', 'jfif', 'jfi'].map(
+      (ext) => new File(['jpeg'], `image.${ext}`, { type: 'image/jpeg' })
+    );
+    if (kind === 'picker') {
+      let input;
+      vi.spyOn(HTMLInputElement.prototype, 'click').mockImplementation(
+        function () {
+          input = this;
+        }
+      );
+      editor.commands.uploadFile();
+      const data = new DataTransfer();
+      for (const file of files) data.items.add(file);
+      input.files = data.files;
+      input.dispatchEvent(new Event('change'));
+    } else {
+      editor.view.someProp(
+        kind === 'paste' ? 'handlePaste' : 'handleDrop',
+        (handle) => handle(editor.view, filesEvent(files, kind))
+      );
+    }
+    expect(images(editor)).toHaveLength(4);
+  });
+}
