@@ -2,6 +2,7 @@ import type { DetailedUser, User } from '@halo-dev/api-client';
 import { provide } from '@lit/context';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { keyed } from 'lit/directives/keyed.js';
 import {
   AllUserPolicy,
   AnonymousUserPolicy,
@@ -82,10 +83,13 @@ export class CommentWidget extends LitElement {
       ${
         !this.isInitialized
           ? html`<comment-editor-skeleton></comment-editor-skeleton>`
-          : html`
+          : keyed(
+              JSON.stringify([this.group, this.kind, this.version, this.name]),
+              html`
             <comment-form></comment-form>
             <comment-list></comment-list>
           `
+            )
       }
     </div>`;
   }
