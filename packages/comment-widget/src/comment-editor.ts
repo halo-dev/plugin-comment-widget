@@ -180,10 +180,13 @@ export class CommentEditor extends LitElement {
     const { EditorUpload } = await import('./extension/editor-upload');
     const { EditorImage } = await import('./extension/editor-image');
 
-    const draft = await readUploadDraft(
-      this.draftKey,
-      this.draftRevision
-    ).catch(this.reportDraftError);
+    let allowUnavailableStorage = !this.initialContent && !this.draftRevision;
+    const readDraft = async () => {
+      const draft = await readUploadDraft(this.draftKey, this.draftRevision);
+      allowUnavailableStorage = false;
+      return draft;
+    };
+    const draft = await readDraft().catch(this.reportDraftError);
     if (!this.isConnected) return;
     this.loading = false;
 
@@ -261,7 +264,13 @@ export class CommentEditor extends LitElement {
         }
       },
       async () =>
-        (await readUploadDraft(this.draftKey, this.draftRevision))?.session
+        (
+          await readDraft().catch((error) => {
+            // Fresh text forms can work without storage; existing tickets must stay recoverable.
+            // Image submission still requires a successful ticket checkpoint above.
+            if (!allowUnavailableStorage) throw error;
+          })
+        )?.session
     );
 
     this.editor.on('update', () => {
