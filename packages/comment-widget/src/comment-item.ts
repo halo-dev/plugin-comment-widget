@@ -66,7 +66,11 @@ export class CommentItem extends LitElement {
     }
   }
 
+  private upvoting = false;
+
   async handleUpvote() {
+    if (this.upvoting) return;
+
     const upvotedComments = JSON.parse(
       localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
     );
@@ -81,20 +85,28 @@ export class CommentItem extends LitElement {
       group: 'content.halo.run',
     };
 
-    await ofetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`, {
-      method: 'POST',
-      body: voteRequest,
-    });
+    this.upvoting = true;
+    try {
+      await ofetch(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`,
+        {
+          method: 'POST',
+          body: voteRequest,
+        }
+      );
 
-    upvotedComments.push(this.comment?.metadata.name);
-    localStorage.setItem(
-      LS_UPVOTED_COMMENTS_KEY,
-      JSON.stringify(upvotedComments)
-    );
+      upvotedComments.push(this.comment?.metadata.name);
+      localStorage.setItem(
+        LS_UPVOTED_COMMENTS_KEY,
+        JSON.stringify(upvotedComments)
+      );
 
-    this.upvoteCount += 1;
-    this.upvoted = true;
-    this.checkUpvotedStatus();
+      this.upvoteCount += 1;
+      this.upvoted = true;
+      this.checkUpvotedStatus();
+    } finally {
+      this.upvoting = false;
+    }
   }
 
   handleShowReplies() {
