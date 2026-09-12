@@ -238,6 +238,50 @@
   <source>Page</source>
   <target>頁碼</target>
 </trans-unit>
+<trans-unit id="s96668830629e0dfc">
+  <source>Upload</source>
+  <target>上傳</target>
+</trans-unit>
+<trans-unit id="s75206bde78be40fc">
+  <source>Unable to save image draft. Keep this page open.</source>
+  <target>無法儲存圖片草稿，請保持此頁面開啟。</target>
+</trans-unit>
+<trans-unit id="s63ce0636351bf780">
+  <source>Upload results are incomplete. Please retry.</source>
+  <target>上傳結果不完整，請重試。</target>
+</trans-unit>
+<trans-unit id="s5787e20cab57b383">
+  <source>Unknown error</source>
+  <target>未知錯誤</target>
+</trans-unit>
+<trans-unit id="sc0ffeb5d53b60209">
+  <source>Upload failed</source>
+  <target>上傳失敗</target>
+</trans-unit>
+<trans-unit id="sc59a34be5493a0af">
+  <source>Upload failed. Please retry.</source>
+  <target>上傳失敗，請重試。</target>
+</trans-unit>
+<trans-unit id="sd5326f2cc13eb2b8">
+  <source>Your previous comment was submitted. Save your changes before continuing.</source>
+  <target>上次評論已提交成功，請先保留修改內容再繼續。</target>
+</trans-unit>
+<trans-unit id="s15e33945d13c5176">
+  <source>Your previous submission is being confirmed. Please retry later; your images will be kept.</source>
+  <target>上次提交結果正在確認，請稍後重試；圖片會被保留。</target>
+</trans-unit>
+<trans-unit id="s7332f94a3fa137c3">
+  <source>Your submission ticket has expired. Check whether your comment was submitted before continuing.</source>
+  <target>提交憑證已失效，請先核對評論是否已提交成功。</target>
+</trans-unit>
+<trans-unit id="s1d468f888124a55e">
+  <source>Your draft has changed. Reopen it before retrying.</source>
+  <target>草稿已變更，請重新開啟後再重試。</target>
+</trans-unit>
+<trans-unit id="s851926ed399df4e4">
+  <source>Your previous submission was cancelled. Submit again to send your changes.</source>
+        <target>上次提交已取消，請再次提交以送出修改後的內容。</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

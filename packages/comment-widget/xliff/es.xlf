@@ -238,6 +238,50 @@
   <source>Page</source>
   <target>Página</target>
 </trans-unit>
+<trans-unit id="s96668830629e0dfc">
+  <source>Upload</source>
+  <target>Subir</target>
+</trans-unit>
+<trans-unit id="s75206bde78be40fc">
+  <source>Unable to save image draft. Keep this page open.</source>
+  <target>No se pudo guardar el borrador con imágenes. Mantén esta página abierta.</target>
+</trans-unit>
+<trans-unit id="s63ce0636351bf780">
+  <source>Upload results are incomplete. Please retry.</source>
+  <target>Los resultados de la subida están incompletos. Inténtalo de nuevo.</target>
+</trans-unit>
+<trans-unit id="s5787e20cab57b383">
+  <source>Unknown error</source>
+  <target>Error desconocido</target>
+</trans-unit>
+<trans-unit id="sc0ffeb5d53b60209">
+  <source>Upload failed</source>
+  <target>Error al subir</target>
+</trans-unit>
+<trans-unit id="sc59a34be5493a0af">
+  <source>Upload failed. Please retry.</source>
+  <target>Error al subir. Inténtalo de nuevo.</target>
+</trans-unit>
+<trans-unit id="sd5326f2cc13eb2b8">
+  <source>Your previous comment was submitted. Save your changes before continuing.</source>
+  <target>Tu comentario anterior se envió. Guarda los cambios antes de continuar.</target>
+</trans-unit>
+<trans-unit id="s15e33945d13c5176">
+  <source>Your previous submission is being confirmed. Please retry later; your images will be kept.</source>
+  <target>Se está confirmando tu envío anterior. Inténtalo más tarde; se conservarán tus imágenes.</target>
+</trans-unit>
+<trans-unit id="s7332f94a3fa137c3">
+  <source>Your submission ticket has expired. Check whether your comment was submitted before continuing.</source>
+  <target>Tu comprobante de envío ha caducado. Comprueba si se envió tu comentario antes de continuar.</target>
+</trans-unit>
+<trans-unit id="s1d468f888124a55e">
+  <source>Your draft has changed. Reopen it before retrying.</source>
+  <target>Tu borrador ha cambiado. Vuelve a abrirlo antes de reintentar.</target>
+</trans-unit>
+<trans-unit id="s851926ed399df4e4">
+  <source>Your previous submission was cancelled. Submit again to send your changes.</source>
+        <target>El envío anterior se canceló. Vuelve a enviar para publicar tus cambios.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

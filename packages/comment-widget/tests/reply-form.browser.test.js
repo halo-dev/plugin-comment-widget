@@ -1,4 +1,5 @@
 import { assert, test } from 'vitest';
+import { UploadSession } from '../src/utils/upload-session.ts';
 import { mockApi, until } from './browser-helpers.js';
 
 test('Reply form regression checks', async () => {
@@ -71,7 +72,11 @@ test('Reply form regression checks', async () => {
         const submit = () =>
           form.onSubmit(
             new CustomEvent('submit', {
-              detail: { content: '<p>Keep my reply</p>' },
+              detail: {
+                content: '<p>Keep my reply</p>',
+                uploadIds: [],
+                uploadSession: new UploadSession(),
+              },
               cancelable: true,
             })
           );
@@ -130,7 +135,13 @@ test('Reply form regression checks', async () => {
     form.currentUser = { metadata: { name: 'admin' } };
     await new Promise((resolve) => setTimeout(resolve, 20));
     await form.onSubmit(
-      new CustomEvent('submit', { detail: { content: 'Paged reply' } })
+      new CustomEvent('submit', {
+        detail: {
+          content: 'Paged reply',
+          uploadIds: [],
+          uploadSession: new UploadSession(),
+        },
+      })
     );
     await until(() => !list.loading);
     await list.updateComplete;

@@ -11,7 +11,7 @@ import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
 import { msg } from '@lit/localize';
-import { FetchError, type FetchResponse, ofetch } from 'ofetch';
+import { FetchError, type FetchResponse } from 'ofetch';
 import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
@@ -28,6 +28,11 @@ import {
   getCaptchaMessage,
   isRequireCaptcha,
 } from './utils/captcha';
+import {
+  isPendingReview,
+  type SubmissionEvent,
+  submissionErrorMessage,
+} from './utils/submission';
 
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -83,11 +88,11 @@ export class ReplyForm extends LitElement {
       .commentName=${this.comment?.metadata.name || ''}
       .quoteReplyName=${this.quoteReply?.metadata.name || ''}
       ${ref(this.baseFormRef)}
-      @submit="${this.onSubmit}"
+      @submit=${(e: SubmissionEvent) => e.detail.waitUntil(this.onSubmit(e))}
     ></base-form>`;
   }
 
-  async onSubmit(e: CustomEvent) {
+  async onSubmit(e: SubmissionEvent) {
     e.preventDefault();
 
     this.submitting = true;
@@ -132,24 +137,20 @@ export class ReplyForm extends LitElement {
     }
 
     try {
-      const newReply = await ofetch<Reply>(
+      const newReply = await data.uploadSession.submit<Reply>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
+        replyRequest,
+        data.uploadIds,
         {
-          method: 'POST',
-          headers: {
-            ...getCaptchaCodeHeader(data.captchaCode),
-            ...getAltchaHeader(data.altchaPayload),
-            ...(data.turnstileToken
-              ? { 'X-Turnstile-Token': data.turnstileToken }
-              : {}),
-          },
-          body: replyRequest,
-        }
+          ...getCaptchaCodeHeader(data.captchaCode ?? '', data.turnstileToken),
+          ...getAltchaHeader(data.altchaPayload),
+        },
+        this.baseUrl
       );
 
       this.baseFormRef.value?.handleFetchCaptcha();
 
-      if (newReply.spec.approved) {
+      if (!isPendingReview(newReply)) {
         this.toastManager?.success(msg('Comment submitted successfully'));
       } else {
         this.toastManager?.success(
@@ -167,31 +168,34 @@ export class ReplyForm extends LitElement {
       baseForm?.resetForm(submittedDraft);
       window.dispatchEvent(new CustomEvent('halo:comment-reply:created'));
     } catch (error) {
-      if (error instanceof FetchError) {
-        if (
-          isRequireCaptcha(
-            error.response as FetchResponse<CaptchaRequiredResponse>
-          )
-        ) {
-          const response = error.data as CaptchaRequiredResponse;
-          this.captcha = response.captcha ?? '';
-          this.toastManager?.warn(getCaptchaMessage(response));
-          return;
-        }
-
-        const problemDetail = error.data as unknown as ProblemDetail;
-        this.toastManager?.error(
-          [problemDetail?.title, problemDetail?.detail].join(' - ') ||
-            msg('Comment failed, please try again later')
-        );
-        return;
-      }
-
-      this.toastManager?.error(msg('Comment failed, please try again later'));
+      this.reportSubmissionError(error);
     } finally {
       this.baseFormRef.value?.resetVerification();
       this.submitting = false;
     }
+  }
+  private reportSubmissionError(error: unknown) {
+    if (error instanceof FetchError) {
+      if (
+        isRequireCaptcha(
+          error.response as FetchResponse<CaptchaRequiredResponse>
+        )
+      ) {
+        const response = error.data as CaptchaRequiredResponse;
+        this.captcha = response.captcha ?? '';
+        this.toastManager?.warn(getCaptchaMessage(response));
+        return;
+      }
+
+      const problemDetail = error.data as unknown as ProblemDetail;
+      this.toastManager?.error(
+        [problemDetail?.title, problemDetail?.detail].join(' - ') ||
+          msg('Comment failed, please try again later')
+      );
+      return;
+    }
+
+    this.toastManager?.error(submissionErrorMessage(error));
   }
 }
 

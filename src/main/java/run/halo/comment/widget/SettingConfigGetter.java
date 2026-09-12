@@ -7,9 +7,7 @@ import lombok.experimental.Accessors;
 import org.springframework.lang.NonNull;
 import reactor.core.publisher.Mono;
 import run.halo.comment.widget.captcha.CaptchaType;
-
 public interface SettingConfigGetter {
-
     /**
      * Never {@link Mono#empty()}.
      */
@@ -24,6 +22,31 @@ public interface SettingConfigGetter {
      * Never {@link Mono#empty()}.
      */
     Mono<SecurityConfig> getSecurityConfig();
+
+    Mono<EditorConfig> getEditorConfig();
+
+    @Data
+    class EditorConfig {
+
+        public static final String GROUP = "editor";
+        private boolean enableUpload = false;
+        private UploadConfig upload = new UploadConfig();
+    }
+
+    @Data
+    class UploadConfig {
+
+        private boolean allowAnonymous = false;
+
+        private UploadAttachment attachment = new UploadAttachment();
+
+        @Data
+        static class UploadAttachment {
+
+            private String attachmentPolicy;
+            private String attachmentGroup;
+        }
+    }
 
     @Data
     @Accessors(chain = true)

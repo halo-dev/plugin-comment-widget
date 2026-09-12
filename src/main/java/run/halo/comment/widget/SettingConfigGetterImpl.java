@@ -8,23 +8,34 @@ import run.halo.app.plugin.ReactiveSettingFetcher;
 @Component
 @RequiredArgsConstructor
 public class SettingConfigGetterImpl implements SettingConfigGetter {
+
     private final ReactiveSettingFetcher settingFetcher;
 
     @Override
     public Mono<BasicConfig> getBasicConfig() {
-        return settingFetcher.fetch(BasicConfig.GROUP, BasicConfig.class)
+        return settingFetcher
+            .fetch(BasicConfig.GROUP, BasicConfig.class)
             .defaultIfEmpty(new BasicConfig());
     }
 
     @Override
     public Mono<AvatarConfig> getAvatarConfig() {
-        return settingFetcher.fetch(AvatarConfig.GROUP, AvatarConfig.class)
+        return settingFetcher
+            .fetch(AvatarConfig.GROUP, AvatarConfig.class)
             .defaultIfEmpty(new AvatarConfig());
     }
 
     @Override
     public Mono<SecurityConfig> getSecurityConfig() {
-        return settingFetcher.fetch(SecurityConfig.GROUP, SecurityConfig.class)
+        return settingFetcher
+            .fetch(SecurityConfig.GROUP, SecurityConfig.class)
             .defaultIfEmpty(SecurityConfig.empty());
+    }
+
+    @Override
+    public Mono<EditorConfig> getEditorConfig() {
+        return settingFetcher
+            .fetch(EditorConfig.GROUP, EditorConfig.class)
+            .defaultIfEmpty(new EditorConfig());
     }
 }

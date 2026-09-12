@@ -1,4 +1,5 @@
 import { assert, test } from 'vitest';
+import { UploadSession } from '../src/utils/upload-session.ts';
 import { mockApi, until } from './browser-helpers.js';
 
 test('Comment draft regression checks', async () => {
@@ -55,7 +56,13 @@ test('Comment draft regression checks', async () => {
   const content = (form) => form.editorRef.value.editor.getText();
   const submit = (owner) =>
     owner.onSubmit(
-      new CustomEvent('submit', { detail: { content: '<p>draft</p>' } })
+      new CustomEvent('submit', {
+        detail: {
+          content: '<p>draft</p>',
+          uploadIds: [],
+          uploadSession: new UploadSession(),
+        },
+      })
     );
   async function base(owner) {
     await until(

@@ -1,6 +1,6 @@
 import type { User } from '@halo-dev/api-client';
 import { consume } from '@lit/context';
-import { debounce } from 'es-toolkit';
+import type { Editor } from '@tiptap/core';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -14,6 +14,7 @@ import {
   nameContext,
   toastContext,
 } from './context';
+import type { SubmissionDetail } from './utils/submission';
 import './icons/icon-loading';
 import { msg } from '@lit/localize';
 import type { ToastManager } from './lit-toast';
@@ -25,9 +26,16 @@ import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import type { CommentEditor } from './comment-editor';
 import { cleanHtml } from './utils/html';
+import { deleteUploadDraft } from './utils/upload-draft';
 import './base-tooltip';
 import './turnstile-captcha';
 import type { AltchaCaptcha } from './altcha-captcha';
+import {
+  resetUploadSession,
+  uploadEditorFiles,
+  uploadedIds,
+  uploadSession,
+} from './extension/editor-upload';
 import type { TurnstileCaptcha } from './turnstile-captcha';
 
 export class BaseForm extends LitElement {
@@ -42,6 +50,9 @@ export class BaseForm extends LitElement {
   @consume({ context: configMapDataContext })
   @state()
   configMapData: ConfigMapData | undefined;
+
+  @state()
+  uploading = false;
 
   @consume({ context: allowAnonymousCommentsContext, subscribe: true })
   @state()
@@ -97,6 +108,9 @@ export class BaseForm extends LitElement {
   }
 
   private get busy() {
+    if (this.uploading) {
+      return true;
+    }
     if (this.waitingForVerification) {
       return true;
     }
@@ -118,6 +132,7 @@ export class BaseForm extends LitElement {
 
   private draftKey = '';
   private draftContent = '';
+  private draftRevision = '';
   @state() private draftHidden = false;
 
   protected override willUpdate() {
@@ -135,12 +150,15 @@ export class BaseForm extends LitElement {
     }
     this.draftKey = key;
     this.draftContent = '';
+    this.draftRevision = '';
     this.draftHidden = false;
     window.removeEventListener('beforeunload', this.onBeforeUnload);
     try {
       const draft = JSON.parse(localStorage.getItem(key) || 'null');
       if (typeof draft?.content === 'string') {
         this.draftContent = draft.content;
+        this.draftRevision =
+          typeof draft.revision === 'string' ? draft.revision : '';
         this.draftHidden = draft.hidden === true;
         if (this.draftContent) {
           window.addEventListener('beforeunload', this.onBeforeUnload);
@@ -153,11 +171,12 @@ export class BaseForm extends LitElement {
 
   private saveDraft() {
     try {
-      if (this.draftContent) {
+      if (this.draftContent || this.editorRef.value?.hasPendingUpload) {
         localStorage.setItem(
           this.draftKey,
           JSON.stringify({
             content: this.draftContent,
+            revision: this.draftRevision,
             hidden: this.draftHidden,
           })
         );
@@ -297,11 +316,22 @@ export class BaseForm extends LitElement {
   };
 
   private onEditorUpdate(
-    event: CustomEvent<{ content: string; characterCount: number }>
+    event: CustomEvent<{
+      content: string;
+      characterCount: number;
+      revision: string;
+    }>
   ) {
+    const previousRevision = this.draftRevision;
+    this.draftRevision = event.detail.revision;
     this.draftContent =
       event.detail.characterCount > 0 ? event.detail.content : '';
     this.saveDraft();
+    if (!this.draftContent) {
+      void deleteUploadDraft(this.draftKey, previousRevision, true).catch(
+        () => {}
+      );
+    }
     if (event.detail.characterCount > 0) {
       window.addEventListener('beforeunload', this.onBeforeUnload);
     } else {
@@ -380,7 +410,7 @@ export class BaseForm extends LitElement {
   override render() {
     return html`
       <form class="form w-full flex flex-col gap-4" @submit="${this.onSubmit}">
-        ${keyed(this.draftKey, html`<comment-editor .initialContent=${this.draftContent} .enableEmoji=${this.configMapData?.editor?.enableEmoji !== false} ${ref(this.editorRef)} .placeholder=${this.configMapData?.editor?.placeholder} @update=${this.onEditorUpdate}></comment-editor>`)}
+        ${keyed(this.draftKey, html`<comment-editor .draftKey=${this.draftKey} .draftRevision=${this.draftRevision} .disabled=${this.busy} .enableUpload=${this.canUploadImages} .initialContent=${this.draftContent} .enableEmoji=${this.configMapData?.editor?.enableEmoji !== false} ${ref(this.editorRef)} .placeholder=${this.configMapData?.editor?.placeholder} @update=${this.onEditorUpdate}></comment-editor>`)}
 
         ${when(
           !this.currentUser && this.allowAnonymousComments,
@@ -522,77 +552,89 @@ export class BaseForm extends LitElement {
     `;
   }
 
-  private debouncedSubmit = debounce(async () => {
-    if (this.busy) {
-      return;
+  private get canUploadImages() {
+    if (!this.configMapData?.editor?.enableUpload) {
+      return false;
     }
-    const characterCount =
-      this.editorRef.value?.editor?.storage.characterCount.characters();
+    if (this.currentUser) {
+      return true;
+    }
+    return !!this.configMapData.editor.upload?.allowAnonymous;
+  }
 
-    if (!characterCount) {
-      this.toastManager?.warn(msg('Please enter content'));
-      this.editorRef.value?.setFocus();
-      return;
-    }
-
-    let turnstileToken = '';
-    let altchaPayload = '';
-    if (this.showCaptcha && (this.useTurnstile || this.useAltcha)) {
-      this.waitingForVerification = true;
-      if (this.useAltcha) {
-        await this.loadAltchaComponent();
-        await this.updateComplete;
-      }
-      const widget = this.shadowRoot?.querySelector<
-        TurnstileCaptcha | AltchaCaptcha
-      >('turnstile-captcha, comment-altcha-captcha');
-      this.verificationInteractionRequired =
-        widget?.interactionRequired ?? false;
-      this.waitingForVerification = true;
-      let token = '';
-      try {
-        token = (await widget?.waitForToken()) ?? '';
-      } finally {
-        this.waitingForVerification = false;
-      }
-      if (!this.isConnected) {
-        return;
-      }
-      if (!token) {
-        this.toastManager?.warn(
-          msg('Verification unavailable. Click to retry.')
-        );
-        return;
-      }
-      if (this.useAltcha) {
-        altchaPayload = token;
-      } else {
-        turnstileToken = token;
-      }
-    }
-    // Read the current draft after verification so edits made while waiting are retained.
-    const form = this.shadowRoot?.querySelector('form');
-    if (!form?.reportValidity()) {
-      return;
-    }
-    if (!this.editorRef.value?.editor?.storage.characterCount.characters()) {
-      this.toastManager?.warn(msg('Please enter content'));
-      this.editorRef.value?.setFocus();
-      return;
-    }
-    const content = cleanHtml(this.editorRef.value?.editor?.getHTML());
-    const data = Object.fromEntries(new FormData(form).entries());
-    const event = new CustomEvent('submit', {
+  private async dispatchSubmission(
+    data: Record<string, unknown>,
+    content: string,
+    editor: Editor
+  ) {
+    const submissions: Promise<unknown>[] = [];
+    const event = new CustomEvent<SubmissionDetail>('submit', {
       detail: {
         ...data,
-        turnstileToken,
-        altchaPayload,
+        waitUntil: (submission: Promise<unknown>) =>
+          submissions.push(submission),
         content,
+        uploadIds: uploadedIds(editor),
+        uploadSession: uploadSession(editor),
         hidden: data.hidden === 'on',
       },
     });
     this.dispatchEvent(event);
-  }, 300);
+    await Promise.allSettled(submissions);
+  }
+
+  private async submitData() {
+    if (this.busy) {
+      return;
+    }
+    const editor = this.editorRef.value?.editor;
+    if (!editor) {
+      return;
+    }
+    this.uploading = true;
+    editor.setEditable(false, false);
+    try {
+      const uploadedResult = await uploadEditorFiles(
+        this.editorRef.value?.editor,
+        this.baseUrl
+      );
+      if (!uploadedResult) {
+        return;
+      }
+      const content = cleanHtml(this.editorRef.value?.editor?.getHTML());
+      const characterCount =
+        this.editorRef.value?.editor?.storage.characterCount.characters();
+
+      if (!characterCount && !uploadedIds(editor).length) {
+        this.toastManager?.warn(msg('Please enter content'));
+        this.editorRef.value?.setFocus();
+        return;
+      }
+
+      const verification = await this.waitForVerification();
+      if (verification === undefined) {
+        return;
+      }
+      if (!this.isConnected || editor.isDestroyed) {
+        return;
+      }
+      const form = this.shadowRoot?.querySelector('form');
+      if (!form?.reportValidity()) {
+        return;
+      }
+      const data = Object.fromEntries(new FormData(form).entries());
+      await this.dispatchSubmission(
+        { ...data, ...verification },
+        content,
+        editor
+      );
+    } finally {
+      this.uploading = false;
+      if (!editor.isDestroyed) {
+        editor.setEditable(true, false);
+      }
+    }
+  }
 
   onSubmit(e: Event) {
     e.preventDefault();
@@ -610,7 +652,48 @@ export class BaseForm extends LitElement {
       })
     );
 
-    this.debouncedSubmit();
+    void this.submitData();
+  }
+
+  private async waitForVerification(): Promise<
+    { turnstileToken?: string; altchaPayload?: string } | undefined
+  > {
+    if (!this.showCaptcha) {
+      return {};
+    }
+    if (!this.useTurnstile && !this.useAltcha) {
+      return {};
+    }
+    this.waitingForVerification = true;
+    try {
+      if (this.useAltcha) {
+        await this.loadAltchaComponent();
+        await this.updateComplete;
+      }
+      if (!this.isConnected) {
+        return undefined;
+      }
+      const widget = this.shadowRoot?.querySelector<
+        TurnstileCaptcha | AltchaCaptcha
+      >('turnstile-captcha, comment-altcha-captcha');
+      this.verificationInteractionRequired =
+        widget?.interactionRequired ?? false;
+      const token = await widget?.waitForToken();
+      if (token) {
+        if (this.useAltcha) {
+          return { altchaPayload: token };
+        }
+        return { turnstileToken: token };
+      }
+      if (this.isConnected) {
+        this.toastManager?.warn(
+          msg('Verification unavailable. Click to retry.')
+        );
+      }
+      return undefined;
+    } finally {
+      this.waitingForVerification = false;
+    }
   }
 
   resetVerification() {
@@ -625,6 +708,7 @@ export class BaseForm extends LitElement {
   getDraftSnapshot() {
     return {
       key: this.draftKey,
+      revision: this.draftRevision,
       content: this.draftContent,
       hidden: this.draftHidden,
     };
@@ -637,12 +721,16 @@ export class BaseForm extends LitElement {
       );
       if (
         stored &&
-        (stored.content !== submittedDraft.content ||
+        ((stored.revision ?? '') !== submittedDraft.revision ||
+          stored.content !== submittedDraft.content ||
           stored.hidden !== submittedDraft.hidden)
       ) {
         return false;
       }
       localStorage.removeItem(submittedDraft.key);
+      void deleteUploadDraft(submittedDraft.key, submittedDraft.revision).catch(
+        () => {}
+      );
     } catch {
       // A detached form cannot determine whether another editor has a newer draft.
       if (!this.isConnected) {
@@ -651,6 +739,7 @@ export class BaseForm extends LitElement {
     }
     if (
       this.draftKey !== submittedDraft.key ||
+      this.draftRevision !== submittedDraft.revision ||
       this.draftContent !== submittedDraft.content ||
       this.draftHidden !== submittedDraft.hidden
     ) {
@@ -658,9 +747,11 @@ export class BaseForm extends LitElement {
     }
     this.draftContent = '';
     this.draftHidden = false;
-    this.saveDraft();
     const form = this.shadowRoot?.querySelector('form');
     form?.reset();
+    if (this.editorRef.value?.editor) {
+      resetUploadSession(this.editorRef.value.editor);
+    }
     this.editorRef.value?.reset();
     window.removeEventListener('beforeunload', this.onBeforeUnload);
     return true;
