@@ -95,10 +95,13 @@ export class CommentItem extends LitElement {
         }
       );
 
-      upvotedComments.push(this.comment?.metadata.name);
+      const latestUpvotedComments = JSON.parse(
+        localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
+      );
+      latestUpvotedComments.push(voteRequest.name);
       localStorage.setItem(
         LS_UPVOTED_COMMENTS_KEY,
-        JSON.stringify(upvotedComments)
+        JSON.stringify(latestUpvotedComments)
       );
 
       this.upvoteCount += 1;

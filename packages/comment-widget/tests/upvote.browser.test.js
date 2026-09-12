@@ -2,11 +2,11 @@ import { assert, expect, test } from 'vitest';
 import { mockApi, until } from './browser-helpers.js';
 
 for (const tag of ['comment-item', 'reply-item']) {
-  async function mountItem() {
+  async function mountItem(name = 'vote-race') {
     await import('../src/comment-item.ts');
     await import('../src/reply-item.ts');
     const resource = {
-      metadata: { name: 'vote-race' },
+      metadata: { name },
       spec: {
         content: 'test',
         approved: true,
@@ -47,6 +47,34 @@ for (const tag of ['comment-item', 'reply-item']) {
     button.click();
     await el.handleUpvote();
     assert.equal(releases.length, 1);
+  });
+
+  test(`${tag}: concurrent votes on different items survive remount`, async () => {
+    const releases = [];
+    mockApi(
+      () =>
+        new Promise((resolve) =>
+          releases.push(() => resolve(new Response('{}')))
+        )
+    );
+    const first = await mountItem('vote-a');
+    const second = await mountItem('vote-b');
+    const firstVote = first.handleUpvote();
+    const secondVote = second.handleUpvote();
+    await until(() => releases.length === 2);
+    releases[0]();
+    await firstVote;
+    releases[1]();
+    await secondVote;
+    first.remove();
+    second.remove();
+
+    for (const name of ['vote-a', 'vote-b']) {
+      const restored = await mountItem(name);
+      assert.isTrue(restored.upvoted);
+      await restored.handleUpvote();
+    }
+    assert.equal(releases.length, 2);
   });
 
   test(`${tag}: failed upvotes can be retried`, async () => {

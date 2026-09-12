@@ -141,10 +141,13 @@ export class ReplyItem extends LitElement {
         }
       );
 
-      upvotedReplies.push(this.reply?.metadata.name);
+      const latestUpvotedReplies = JSON.parse(
+        localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
+      );
+      latestUpvotedReplies.push(voteRequest.name);
       localStorage.setItem(
         LS_UPVOTED_REPLIES_KEY,
-        JSON.stringify(upvotedReplies)
+        JSON.stringify(latestUpvotedReplies)
       );
 
       this.upvoteCount += 1;
