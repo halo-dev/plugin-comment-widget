@@ -133,6 +133,7 @@ export class BaseForm extends LitElement {
   private draftKey = '';
   private draftContent = '';
   private draftRevision = '';
+  private storedDraft: string | null = null;
   @state() private draftHidden = false;
 
   protected override willUpdate() {
@@ -151,10 +152,12 @@ export class BaseForm extends LitElement {
     this.draftKey = key;
     this.draftContent = '';
     this.draftRevision = '';
+    this.storedDraft = null;
     this.draftHidden = false;
     window.removeEventListener('beforeunload', this.onBeforeUnload);
     try {
-      const draft = JSON.parse(localStorage.getItem(key) || 'null');
+      this.storedDraft = localStorage.getItem(key);
+      const draft = JSON.parse(this.storedDraft || 'null');
       if (typeof draft?.content === 'string') {
         this.draftContent = draft.content;
         this.draftRevision =
@@ -172,16 +175,16 @@ export class BaseForm extends LitElement {
   private saveDraft() {
     try {
       if (this.draftContent || this.editorRef.value?.hasPendingUpload) {
-        localStorage.setItem(
-          this.draftKey,
-          JSON.stringify({
-            content: this.draftContent,
-            revision: this.draftRevision,
-            hidden: this.draftHidden,
-          })
-        );
+        const draft = JSON.stringify({
+          content: this.draftContent,
+          revision: this.draftRevision,
+          hidden: this.draftHidden,
+        });
+        localStorage.setItem(this.draftKey, draft);
+        this.storedDraft = draft;
       } else {
         localStorage.removeItem(this.draftKey);
+        this.storedDraft = null;
       }
     } catch {
       // Keep editing and the unload warning available if storage is full or blocked.
@@ -711,6 +714,7 @@ export class BaseForm extends LitElement {
   getDraftSnapshot() {
     return {
       key: this.draftKey,
+      storedDraft: this.storedDraft,
       revision: this.draftRevision,
       content: this.draftContent,
       hidden: this.draftHidden,
@@ -719,11 +723,11 @@ export class BaseForm extends LitElement {
 
   resetForm(submittedDraft = this.getDraftSnapshot()) {
     try {
-      const stored = JSON.parse(
-        localStorage.getItem(submittedDraft.key) || 'null'
-      );
+      const storedDraft = localStorage.getItem(submittedDraft.key);
+      const stored = JSON.parse(storedDraft || 'null');
       if (
         stored &&
+        storedDraft !== submittedDraft.storedDraft &&
         ((stored.revision ?? '') !== submittedDraft.revision ||
           stored.content !== submittedDraft.content ||
           stored.hidden !== submittedDraft.hidden)
@@ -749,6 +753,7 @@ export class BaseForm extends LitElement {
       return false;
     }
     this.draftContent = '';
+    this.storedDraft = null;
     this.draftHidden = false;
     const form = this.shadowRoot?.querySelector('form');
     form?.reset();

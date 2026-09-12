@@ -3,9 +3,14 @@ import '../src/comment-form.ts';
 import '../src/reply-form.ts';
 import { mockApi, until } from './browser-helpers.js';
 
-test.each(['comment-form', 'reply-form'])(
-  '%s submits when localStorage is full',
-  async (tag) => {
+test.each([
+  ['comment-form', false],
+  ['reply-form', false],
+  ['comment-form', true],
+  ['reply-form', true],
+])(
+  '%s submits when localStorage is full (unsaved edit: %s)',
+  async (tag, editAfterQuota) => {
     const post = vi.fn();
     mockApi(async (input, options) => {
       if (options?.method === 'POST') post(String(input), options.body);
@@ -37,6 +42,15 @@ test.each(['comment-form', 'reply-form'])(
     expect(() =>
       localStorage.setItem('halo-comment-custom-account', '{}')
     ).toThrow();
+    const content = editAfterQuota
+      ? '<p>My comment with more text after quota is exhausted</p>'
+      : '<p>My comment</p>';
+    if (editAfterQuota) {
+      form.editorRef.value.editor.commands.setContent(content);
+      expect(
+        JSON.parse(localStorage.getItem(form.getDraftSnapshot().key)).content
+      ).toBe('<p>My comment</p>');
+    }
     expect(() =>
       form.onSubmit({
         preventDefault() {},
@@ -48,7 +62,11 @@ test.each(['comment-form', 'reply-form'])(
     expect(post.mock.calls[0][0]).toBe(
       tag === 'comment-form' ? endpoint : `${endpoint}/storage-test/reply`
     );
-    expect(JSON.parse(post.mock.calls[0][1]).content).toBe('<p>My comment</p>');
+    expect(JSON.parse(post.mock.calls[0][1]).content).toBe(content);
     expect(form.editorRef.value.editor.getText()).toBe('');
+    expect(localStorage.getItem(form.getDraftSnapshot().key)).toBeNull();
+    await until(() => !form.uploading);
+    await form.submitData();
+    expect(post).toHaveBeenCalledTimes(1);
   }
 );
