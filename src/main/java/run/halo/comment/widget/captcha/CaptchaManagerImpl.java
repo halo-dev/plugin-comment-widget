@@ -27,9 +27,10 @@ public class CaptchaManagerImpl implements CaptchaManager {
 
     @Override
     public Mono<Boolean> verify(String key, String captchaCode, boolean ignoreCase) {
-        return Mono.justOrEmpty(captchaCache.getIfPresent(key))
+        return Mono.defer(() -> Mono.justOrEmpty(captchaCache.getIfPresent(key)))
             .filter(captcha -> ignoreCase ? captcha.code().equalsIgnoreCase(captchaCode) : captcha.code().equals(captchaCode))
-            .hasElement();
+            .map(captcha -> captchaCache.asMap().remove(key, captcha))
+            .defaultIfEmpty(false);
     }
 
     @Override
