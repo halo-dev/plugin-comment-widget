@@ -642,15 +642,18 @@ export class BaseForm extends LitElement {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    // store account info
-    localStorage.setItem(
-      'halo-comment-custom-account',
-      JSON.stringify({
-        displayName: data.displayName,
-        email: data.email,
-        website: data.website,
-      })
-    );
+    try {
+      localStorage.setItem(
+        'halo-comment-custom-account',
+        JSON.stringify({
+          displayName: data.displayName,
+          email: data.email,
+          website: data.website,
+        })
+      );
+    } catch {
+      // Saving account info must not prevent submission if storage is unavailable.
+    }
 
     void this.submitData();
   }
