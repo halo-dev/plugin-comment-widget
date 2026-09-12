@@ -26,6 +26,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.server.WebFilterChain;
+import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -36,6 +38,10 @@ import run.halo.app.security.AfterSecurityWebFilter;
 public class UploadSubmissionFilter implements AfterSecurityWebFilter {
 
     private static final String PREFIX = "/apis/api.halo.run/v1alpha1/comments";
+    private static final PathPattern COMMENT_PATH = PathPatternParser.defaultInstance.parse(PREFIX);
+    private static final PathPattern REPLY_PATH = PathPatternParser.defaultInstance.parse(
+        PREFIX + "/{name}/reply"
+    );
     private static final ResolvableType JSON_TYPE = ResolvableType.forClass(
         tools.jackson.databind.JsonNode.class
     );
@@ -76,11 +82,8 @@ public class UploadSubmissionFilter implements AfterSecurityWebFilter {
         if (exchange.getRequest().getMethod() != HttpMethod.POST) {
             return false;
         }
-        String path = exchange.getRequest().getPath().value();
-        if (path.equals(PREFIX)) {
-            return true;
-        }
-        return path.matches(PREFIX + "/[^/]+/reply");
+        var path = exchange.getRequest().getPath().pathWithinApplication();
+        return COMMENT_PATH.matches(path) || REPLY_PATH.matches(path);
     }
 
     private MediaType decoderContentType(MediaType contentType) {
@@ -143,7 +146,7 @@ public class UploadSubmissionFilter implements AfterSecurityWebFilter {
     }
 
     private String targetKind(ServerWebExchange exchange) {
-        if (exchange.getRequest().getPath().value().equals(PREFIX)) {
+        if (COMMENT_PATH.matches(exchange.getRequest().getPath().pathWithinApplication())) {
             return "Comment";
         }
         return "Reply";

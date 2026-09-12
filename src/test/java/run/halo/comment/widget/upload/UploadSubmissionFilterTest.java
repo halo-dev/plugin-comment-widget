@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -13,11 +14,13 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.core.io.buffer.DataBufferLimitException;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
@@ -56,8 +59,12 @@ class UploadSubmissionFilterTest {
     }
 
     MockServerWebExchange exchange() {
+        return exchange("/apis/api.halo.run/v1alpha1/comments");
+    }
+
+    MockServerWebExchange exchange(String path) {
         return mockExchange(
-            MockServerHttpRequest.post("/apis/api.halo.run/v1alpha1/comments")
+            MockServerHttpRequest.method(HttpMethod.POST, URI.create(path))
                 .header(UploadIdentity.TOKEN_HEADER, "a".repeat(64))
                 .header(UploadIdentity.SUBMISSION_HEADER, id)
                 .header("X-Comment-Uploads", "upload")
@@ -180,10 +187,16 @@ class UploadSubmissionFilterTest {
         verify(service).unknown(id);
     }
 
-    @Test
-    void bindsBeforeDeliveringResponse() {
+    @ParameterizedTest
+    @CsvSource({
+        "/apis/api.halo.run/v1alpha1/comments, Comment",
+        "/apis/api.halo.run/v1alpha1/%63omments, Comment",
+        "/apis/api.halo.run/v1alpha1/comments/parent/reply, Reply",
+        "/apis/api.halo.run/v1alpha1/comments/parent/%72eply, Reply",
+    })
+    void bindsBeforeDeliveringResponse(String path, String kind) {
         managed();
-        var exchange = exchange();
+        var exchange = exchange(path);
         doAnswer(call -> {
             assertThat(exchange.getResponse().isCommitted()).isFalse();
             return null;
@@ -201,13 +214,13 @@ class UploadSubmissionFilterTest {
                                 .getResponse()
                                 .bufferFactory()
                                 .wrap(
-                                    "{\"kind\":\"Comment\",\"metadata\":{\"name\":\"created\"}}".getBytes()
+                                    "{\"kind\":\"%s\",\"metadata\":{\"name\":\"created\"}}".formatted(kind).getBytes()
                                 )
                         )
                     );
             })
             .block();
-        verify(service).bind(id, "Comment", "created");
+        verify(service).bind(id, kind, "created");
         assertThat(exchange.getResponse().getBodyAsString().block()).contains("created");
         verify(service, never()).unknown(any());
     }
@@ -486,12 +499,14 @@ class UploadSubmissionFilterTest {
         strings = {
             "/apis/api.halo.run/v1alpha1/comments",
             "/apis/api.halo.run/v1alpha1/comments/parent/reply",
+            "/apis/api.halo.run/v1alpha1/%63omments",
+            "/apis/api.halo.run/v1alpha1/comments/parent/%72eply",
         }
     )
     void temporaryManagedImageCannotBypassOwnershipWithoutHeaders(String path) {
         managed();
         var exchange = mockExchange(
-            MockServerHttpRequest.post(path)
+            MockServerHttpRequest.method(HttpMethod.POST, URI.create(path))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{\"content\":\"<img src='https://example.com/a.png'>\"}")
         );
@@ -505,12 +520,18 @@ class UploadSubmissionFilterTest {
         verify(service, never()).reserve(any(), any(), any(), any(), any(), any());
     }
 
-    @Test
-    void boundManagedImageCannotBypassOwnershipWithoutHeaders() {
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "/apis/api.halo.run/v1alpha1/comments",
+        "/apis/api.halo.run/v1alpha1/comments/parent/reply",
+        "/apis/api.halo.run/v1alpha1/%63omments",
+        "/apis/api.halo.run/v1alpha1/comments/parent/%72eply",
+    })
+    void boundManagedImageCannotBypassOwnershipWithoutHeaders(String path) {
         var conflict = new ResponseStatusException(HttpStatus.CONFLICT);
         doThrow(conflict).when(service).rejectBoundImages(any());
         var exchange = mockExchange(
-            MockServerHttpRequest.post("/apis/api.halo.run/v1alpha1/comments")
+            MockServerHttpRequest.method(HttpMethod.POST, URI.create(path))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body("{\"content\":\"<img src='https://example.com/a.png'>\"}")
         );
