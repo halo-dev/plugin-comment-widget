@@ -183,11 +183,12 @@ export class CommentReplies extends LitElement {
     super.connectedCallback();
 
     if (this.configMapData?.basic.withReplies) {
-      const preloadedReplies = (
-        this.comment as (CommentVo & { replies?: ReplyVoList }) | undefined
-      )?.replies;
+      const comment = this.comment as
+        | (CommentVo & { replies?: ReplyVoList })
+        | undefined;
+      const preloadedReplies = comment?.replies;
 
-      if (!preloadedReplies) {
+      if (!comment || !preloadedReplies) {
         this.fetchReplies();
         return;
       }
@@ -197,6 +198,8 @@ export class CommentReplies extends LitElement {
       this.currentPageSize = preloadedReplies.size;
       this.hasNext = preloadedReplies.hasNext;
       this.preloaded = true;
+      // Only use the initial snapshot once; reopening must fetch current replies.
+      delete comment.replies;
     } else {
       this.fetchReplies();
     }
