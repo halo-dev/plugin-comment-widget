@@ -147,6 +147,9 @@ export class CommentEditor extends LitElement {
   @property({ type: Boolean })
   enableUpload = false;
 
+  @property({ type: Number })
+  maxFileSize = 10;
+
   @property({ type: Boolean })
   disabled = false;
 
@@ -232,6 +235,7 @@ export class CommentEditor extends LitElement {
 
         EditorUpload.configure({
           enabled: () => this.enableUpload,
+          maxFileSize: () => this.maxFileSize,
           baseUrl: this.baseUrl,
         }),
       ],

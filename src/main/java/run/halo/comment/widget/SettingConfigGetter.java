@@ -1,5 +1,6 @@
 package run.halo.comment.widget;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import lombok.Data;
 import lombok.Getter;
@@ -37,6 +38,8 @@ public interface SettingConfigGetter {
     class UploadConfig {
 
         private boolean allowAnonymous = false;
+
+        private BigDecimal maxFileSize = BigDecimal.TEN;
 
         private UploadAttachment attachment = new UploadAttachment();
 

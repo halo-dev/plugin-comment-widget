@@ -3,7 +3,7 @@
     // Re-generate this file by running lit-localize
 
     import {html} from 'lit';
-    
+    import {str} from '@lit/localize';
 
     /* eslint-disable no-irregular-whitespace */
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -12,6 +12,7 @@
       'h6a83761bb66bbcc5': html`${0} 条评论`,
 's023f646163e63d90': `操作失败，请重试。`,
 's053945ad43e9d1d6': `请输入验证码`,
+'s065307503771fd8d': `仅支持 JPEG、PNG、GIF、WebP 和 AVIF 图片。`,
 's067e961bb67cf3f6': `正在验证…`,
 's09c7e0ff5f4e18cb': `取消回复`,
 's0b7ae9543c001867': `回复`,
@@ -52,6 +53,7 @@
 's84b033b2f7360187': `请先登录或者完善信息`,
 's851926ed399df4e4': `上次提交已取消，请再次提交以发送修改后的内容。`,
 's8db89619f41917b4': `置顶`,
+'s8e176d64f6528d3d': str`单张图片大小不能超过 ${0} MiB。`,
 's96668830629e0dfc': `上传`,
 's98a5f7789c49dd3f': `审核中`,
 's9df212d89cab196d': `隐藏`,
@@ -79,5 +81,6 @@
 'sf77128b082955d42': `（或登录账号）`,
 'sf7c0eba7c822e3d6': `粗体`,
 'sf9709983d4da2c54': `点赞`,
+'sff08dba77ae75e40': `图片上传暂不可用，请联系站点管理员。`,
     };
   

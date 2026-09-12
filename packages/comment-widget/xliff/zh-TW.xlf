@@ -282,6 +282,18 @@
   <source>Your previous submission was cancelled. Submit again to send your changes.</source>
         <target>上次提交已取消，請再次提交以送出修改後的內容。</target>
 </trans-unit>
+<trans-unit id="sff08dba77ae75e40">
+  <source>Image upload is unavailable. Please contact the site administrator.</source>
+  <target>圖片上傳暫不可用，請聯絡網站管理員。</target>
+</trans-unit>
+<trans-unit id="s8e176d64f6528d3d">
+  <source>Image size must not exceed <x id="0" equiv-text="${maxFileSize}"/> MiB.</source>
+  <target>單張圖片大小不能超過 <x id="0" equiv-text="${maxFileSize}"/> MiB。</target>
+</trans-unit>
+<trans-unit id="s065307503771fd8d">
+  <source>Only JPEG, PNG, GIF, WebP, and AVIF images are supported.</source>
+  <target>僅支援 JPEG、PNG、GIF、WebP 和 AVIF 圖片。</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
