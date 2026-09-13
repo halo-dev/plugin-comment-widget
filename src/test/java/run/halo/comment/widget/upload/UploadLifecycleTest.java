@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.web.server.ResponseStatusException;
 import run.halo.app.core.extension.attachment.Attachment;
@@ -635,6 +637,67 @@ class UploadLifecycleTest {
         );
         assertThat(client.fetch(CommentSubmission.class, ticket.getMetadata().getName())).isEmpty();
         assertThat(client.fetch(Attachment.class, u.getSpec().getAttachmentName())).isPresent();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "https://example.com/a.png", "https://example.com:443/a.png", "/a.png"
+    })
+    void removedImageIsCollectedUnlessReferencedAndRestoringItResetsTheDeadline(String restoredUrl)
+        throws Exception {
+        var upload = uploaded();
+        var ticket = reserve(upload);
+        var original = comment("original");
+        service.bind(ticket.getMetadata().getName(), "Comment", "original");
+        new UploadReconciler(client, service).reconcile(
+            new Reconciler.Request(upload.getMetadata().getName())
+        );
+        String name = upload.getSpec().getAttachmentName();
+        var reconciler = new CommentUploadReconciler(service);
+
+        original.getSpec().setContent("text only");
+        save(original);
+        reconciler.reconcile(new Reconciler.Request("original"));
+        var pending = client.fetch(Attachment.class, name).orElseThrow();
+        assertThat(UploadMetadata.annotation(pending, UploadMetadata.DELETE_AFTER)).isNotNull();
+        assertThat(UploadMetadata.label(pending, UploadMetadata.GC_PENDING)).isEqualTo("true");
+        service.reconcileAttachment(name);
+        assertThat(client.fetch(Attachment.class, name)).isPresent();
+
+        service.updateAttachment(name, a ->
+            MetadataUtil.nullSafeAnnotations(a).put(
+                UploadMetadata.DELETE_AFTER, Instant.now().minusSeconds(1).toString()
+            )
+        );
+        original.getSpec().setContent("<img src='" + restoredUrl + "'>");
+        save(original);
+        reconciler.reconcile(new Reconciler.Request("original"));
+        var restored = client.fetch(Attachment.class, name).orElseThrow();
+        assertThat(UploadMetadata.annotation(restored, UploadMetadata.DELETE_AFTER)).isNull();
+        assertThat(UploadMetadata.label(restored, UploadMetadata.GC_PENDING)).isNull();
+
+        original.getSpec().setContent("text only");
+        save(original);
+        var removedAt = Instant.now();
+        reconciler.reconcile(new Reconciler.Request("original"));
+        var rescheduled = client.fetch(Attachment.class, name).orElseThrow();
+        assertThat(Instant.parse(UploadMetadata.annotation(rescheduled, UploadMetadata.DELETE_AFTER)))
+            .isAfterOrEqualTo(removedAt.plus(UploadLifecycleService.DELETE_DELAY));
+        var other = comment("other");
+        service.updateAttachment(name, a ->
+            MetadataUtil.nullSafeAnnotations(a).put(
+                UploadMetadata.DELETE_AFTER, Instant.now().minusSeconds(1).toString()
+            )
+        );
+        service.reconcileAttachment(name);
+        assertThat(client.fetch(Attachment.class, name)).isPresent();
+
+        other.getSpec().setContent("text only");
+        save(other);
+        reconciler.reconcile(new Reconciler.Request("other"));
+        service.reconcileAttachment(name);
+        assertThat(client.fetch(Attachment.class, name)).isEmpty();
+        assertThat(client.fetch(Comment.class, "original")).isPresent();
     }
 
     @Test
