@@ -89,7 +89,7 @@ const uploadActionItem: ActionItem = {
   name: 'upload',
   displayName: () => msg('Upload'),
   type: 'action',
-  icon: 'i-mingcute-upload-line',
+  icon: 'i-mingcute-pic-line',
   run: (editor?: Editor) => editor?.chain().focus().uploadFile().run(),
 };
 
