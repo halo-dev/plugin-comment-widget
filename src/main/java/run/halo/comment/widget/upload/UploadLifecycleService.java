@@ -356,9 +356,6 @@ public class UploadLifecycleService {
 
     public void targetChanged(String kind, String name) {
         indexReferences(kind, name);
-        if (targetContent(kind, name).isPresent()) {
-            return;
-        }
         var options = UploadMetadata.matching(
             UploadMetadata.TARGET_KEY,
             UploadMetadata.key(kind + "/" + name)

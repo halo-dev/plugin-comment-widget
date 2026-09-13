@@ -136,7 +136,20 @@ final class UploadAttachmentService {
             }
             return Optional.empty();
         }
-        if (references.targetContent(kind, target).isPresent()) {
+        String url = UploadMetadata.annotation(attachment, UploadMetadata.URL);
+        if (references.targetContent(kind, target)
+            .filter(content -> url == null
+                || UploadReferences.images(content).stream()
+                    .map(UploadMetadata::urlKey)
+                    .anyMatch(UploadMetadata.urlKey(url)::equals))
+            .isPresent()) {
+            if (UploadMetadata.annotation(attachment, UploadMetadata.DELETE_AFTER) != null
+                || UploadMetadata.label(attachment, UploadMetadata.GC_PENDING) != null) {
+                updateAttachment(name, latest -> {
+                    MetadataUtil.nullSafeAnnotations(latest).remove(UploadMetadata.DELETE_AFTER);
+                    MetadataUtil.nullSafeLabels(latest).remove(UploadMetadata.GC_PENDING);
+                });
+            }
             return Optional.empty();
         }
         String after = UploadMetadata.annotation(attachment, UploadMetadata.DELETE_AFTER);
@@ -160,7 +173,6 @@ final class UploadAttachmentService {
         if (!delay.isNegative() && !delay.isZero()) {
             return Optional.of(delay);
         }
-        String url = UploadMetadata.annotation(attachment, UploadMetadata.URL);
         if (url == null) {
             return Optional.of(Duration.ofMinutes(15));
         }
