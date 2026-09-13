@@ -24,6 +24,7 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 import run.halo.app.security.AfterSecurityWebFilter;
+import run.halo.comment.widget.RateLimitExceededException;
 import run.halo.comment.widget.SettingConfigGetter;
 
 @Component
@@ -132,17 +133,35 @@ public class CommentCaptchaFilter implements AfterSecurityWebFilter {
     private Mono<Void> sendCaptchaRequiredResponse(ServerWebExchange exchange,
                                                    SettingConfigGetter.CaptchaConfig captchaConfig,
                                                    ResponseStatusException e) {
-        addHeaderIfAbsent(exchange.getResponse().getHeaders(), CAPTCHA_REQUIRED_HEADER, Boolean.TRUE.toString());
-        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
         return captchaManager.generate(exchange, captchaConfig)
             .flatMap(captcha -> {
+                addHeaderIfAbsent(exchange.getResponse().getHeaders(), CAPTCHA_REQUIRED_HEADER, Boolean.TRUE.toString());
+                exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
                 var problemDetail = toProblemDetail(e);
                 problemDetail.setProperty("captcha", captcha.imageBase64());
                 var responseData = getResponseData(problemDetail);
                 addHeaderIfAbsent(exchange.getResponse().getHeaders(), HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
                 return exchange.getResponse()
                     .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(responseData)));
-            });
+            })
+            .onErrorResume(error -> tooManyRequests(exchange, error));
+    }
+
+    private Mono<Void> tooManyRequests(ServerWebExchange exchange, Throwable error) {
+        if (!(error instanceof ResponseStatusException status)
+            || status.getStatusCode() != HttpStatus.TOO_MANY_REQUESTS) {
+            return Mono.error(error);
+        }
+        exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
+        addHeaderIfAbsent(exchange.getResponse().getHeaders(), HttpHeaders.RETRY_AFTER, "1");
+        addHeaderIfAbsent(exchange.getResponse().getHeaders(), HttpHeaders.CACHE_CONTROL, "no-store");
+        addHeaderIfAbsent(exchange.getResponse().getHeaders(), HttpHeaders.CONTENT_TYPE, CONTENT_TYPE);
+        var problem = ProblemDetail.forStatusAndDetail(
+            HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后重试");
+        problem.setType(URI.create(RateLimitExceededException.REQUEST_NOT_PERMITTED_TYPE));
+        problem.setTitle("Too Many Requests");
+        return exchange.getResponse()
+            .writeWith(Mono.just(exchange.getResponse().bufferFactory().wrap(getResponseData(problem))));
     }
 
     private byte[] getResponseData(ProblemDetail problemDetail) {
