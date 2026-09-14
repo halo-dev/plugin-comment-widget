@@ -250,7 +250,10 @@ public class UploadMediaEndpoint implements CustomEndpoint {
             .flatMap(record -> storeFile(file, settings, owner, record));
     }
 
-    /** Unknown client IPs must not share one creator quota bucket. */
+    /**
+     * Unknown client IPs must not share one creator quota bucket. Drafts can never be
+     * created with an unknown IP anyway: the upload rate limiter rejects it with 403.
+     */
     private static String creatorKey(String owner, String clientIp) {
         if (IpAddressUtils.UNKNOWN.equalsIgnoreCase(clientIp)) {
             return null;

@@ -327,6 +327,10 @@ class UploadLifecycleTest {
             service.issue(credential, owner, null);
         }
         assertThat(service.begin(hash, owner, null)).isNotNull();
+        // The first credential still has an eligible draft and room in its own quota,
+        // so a 101st submission proves the creator submission quota is also skipped.
+        var firstCredential = UploadIdentity.credential(String.format("%064d", 1));
+        assertThat(service.issue(firstCredential, owner, null)).isNotNull();
     }
 
     @Test
