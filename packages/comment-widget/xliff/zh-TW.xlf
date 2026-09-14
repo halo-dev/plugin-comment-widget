@@ -302,6 +302,38 @@
   <source>Zoom image</source>
   <target>放大圖片</target>
 </trans-unit>
+<trans-unit id="sa862e76e95967816">
+  <source>Comment updated successfully</source>
+  <target>評論更新成功</target>
+</trans-unit>
+<trans-unit id="s176fe95698857ad9">
+  <source>This comment or reply has changed. Copy your draft, then reopen the editor to load the latest version.</source>
+  <target>評論或回覆已發生變更。請先複製草稿，再重新開啟編輯框取得最新版本。</target>
+</trans-unit>
+<trans-unit id="s63efea23113001ee">
+  <source>Could not save. Your draft has been kept.</source>
+  <target>儲存失敗，草稿已保留。</target>
+</trans-unit>
+<trans-unit id="s2254107bb49631da">
+  <source>This comment or reply has been deleted.</source>
+  <target>該評論或回覆已被刪除。</target>
+</trans-unit>
+<trans-unit id="s22ae36191f9a1a8d">
+  <source>Failed to load the latest content. Please try again later.</source>
+  <target>載入最新內容失敗，請稍後再試。</target>
+</trans-unit>
+<trans-unit id="s33f85f24c0f5f008">
+  <source>Save</source>
+  <target>儲存</target>
+</trans-unit>
+<trans-unit id="s2ceb11be2290bb1b">
+  <source>Cancel</source>
+  <target>取消</target>
+</trans-unit>
+<trans-unit id="s64ef2a6c2dd1d3d1">
+  <source>Edit</source>
+  <target>編輯</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

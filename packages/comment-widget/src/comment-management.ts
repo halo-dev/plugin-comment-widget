@@ -108,6 +108,20 @@ export class CommentManagement extends LitElement {
     }
   }
 
+  private startEdit() {
+    if (
+      !this.canManage ||
+      this.busy ||
+      !this.target ||
+      this.target.metadata.deletionTimestamp
+    )
+      return;
+    this.close(this.matches(':focus-within'));
+    this.dispatchEvent(
+      new CustomEvent('comment-edit', { bubbles: true, composed: true })
+    );
+  }
+
   override render() {
     if (
       !this.canManage ||
@@ -127,6 +141,9 @@ export class CommentManagement extends LitElement {
         <span class="icon-button-text">${msg('Manage')}</span>
       </summary>
       <div class="actions bg-muted-3 text-text-1 rounded-base border border-muted-1 p-1 shadow-lg" aria-busy=${this.busy}>
+        <button type="button" ?disabled=${this.busy} @click=${() => this.startEdit()}>
+          ${msg('Edit')}
+        </button>
         ${
           this.resource === 'comments'
             ? html`

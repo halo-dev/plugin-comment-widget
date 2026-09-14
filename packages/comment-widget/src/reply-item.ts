@@ -6,6 +6,7 @@ import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
 import './comment-management';
+import './comment-edit-form';
 import './reply-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
@@ -34,6 +35,9 @@ export class ReplyItem extends LitElement {
 
   @state()
   showReplyForm = false;
+
+  @state()
+  showEditForm = false;
 
   @state()
   upvoted = false;
@@ -82,6 +86,15 @@ export class ReplyItem extends LitElement {
 
   closeReplyForm() {
     this.showReplyForm = false;
+  }
+
+  private async handleCloseEditForm() {
+    this.showEditForm = false;
+    await this.updateComplete;
+    this.renderRoot
+      .querySelector('comment-management')
+      ?.shadowRoot?.querySelector('summary')
+      ?.focus({ preventScroll: true });
   }
 
   onReplyCreated(
@@ -170,6 +183,7 @@ export class ReplyItem extends LitElement {
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
         .ua=${this.reply?.spec.userAgent}
         .private=${this.comment?.spec.hidden || this.reply?.spec.hidden}
+        .editing=${this.showEditForm}
       >
         <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
           <div class="icon-button-icon ">
@@ -189,7 +203,16 @@ export class ReplyItem extends LitElement {
           </div>
           <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}</span>
         </button>
-      <comment-management slot="action" .target=${this.reply} resource="replies"></comment-management>
+      <comment-management slot="action" .target=${this.reply} resource="replies" @comment-edit=${() => (this.showEditForm = true)}></comment-management>
+        ${when(
+          this.showEditForm,
+          () => html`<comment-edit-form
+            slot="content-edit"
+            .target=${this.reply}
+            resource="replies"
+            @close=${this.handleCloseEditForm}
+          ></comment-edit-form>`
+        )}
         ${when(
           this.showReplyForm,
           () => html`<div class="reply-form mt-2" slot="footer">
