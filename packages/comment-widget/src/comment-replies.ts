@@ -87,7 +87,7 @@ export class CommentReplies extends LitElement {
               )}
             </div>`
       )}
-      ${when(this.targetOnly, () => html`<button type="button" class="replies-next-button pagination-button text-sm" ?disabled=${this.loading} @click=${this.showAllReplies}>${msg('View all replies')}</button>`)}
+      ${when(this.targetOnly, () => html`<button type="button" class="replies-next-button pagination-button text-sm" aria-disabled=${this.loading} aria-busy=${this.loading} @click=${this.showAllReplies}>${msg('View all replies')}</button>`)}
       ${when(this.loading, () => html` <loading-block></loading-block>`)}
       ${when(
         this.hasNext,
@@ -103,11 +103,12 @@ export class CommentReplies extends LitElement {
   }
 
   private showAllReplies() {
+    if (this.loading) return;
     return this.fetchReplies();
   }
 
   refreshReplies() {
-    if (this.targetOnly) return this.showAllReplies();
+    if (this.targetOnly) return this.fetchReplies();
     const size = this.configMapData?.basic.replySize ?? 10;
     return this.fetchReplies({
       size: Math.max(1, Math.ceil(this.replies.length / size)) * size,

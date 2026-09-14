@@ -91,7 +91,10 @@ export class CommentWidget extends LitElement {
     if (this.commentTarget) this.returnToList();
   };
 
-  private returnToList() {
+  private async returnToList() {
+    const restoreFocus = this.renderRoot
+      .querySelector('comment-detail')
+      ?.matches(':focus-within');
     const url = new URL(location.href);
     const params = new URLSearchParams(url.hash.slice(1));
     params.delete('halo-comment');
@@ -99,6 +102,12 @@ export class CommentWidget extends LitElement {
     url.hash = params.toString();
     history.pushState(history.state, '', url);
     window.dispatchEvent(new Event('hashchange'));
+    await this.updateComplete;
+    const list = this.renderRoot.querySelector('comment-list');
+    if (restoreFocus && this.isConnected && list) {
+      list.tabIndex = -1;
+      list.focus({ preventScroll: true });
+    }
   }
 
   override disconnectedCallback() {

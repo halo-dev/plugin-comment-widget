@@ -229,8 +229,9 @@ export class CommentItem extends LitElement {
           `
         )}
         ${when(
-          this.showReplies,
+          this.detail || this.showReplies,
           () => html`<comment-replies
+              ?hidden=${!this.showReplies}
               ${ref(this.commentRepliesRef)}
               .comment="${this.comment}"
               .showReplyForm=${this.showReplyForm}

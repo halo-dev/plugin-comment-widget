@@ -262,3 +262,72 @@ test('copy failure keeps the link selected for manual copying on a narrow screen
   expect(panel.scrollWidth).toBeLessThanOrEqual(panel.clientWidth);
   await page.viewport(1200, 800);
 });
+
+test('view-all preserves focus while loading and moves it to the replies', async () => {
+  let resolveList;
+  const requests = api({
+    [`${root}/c1/reply`]: () =>
+      new Promise((resolve) => {
+        resolveList = resolve;
+      }),
+  });
+  const widget = await mount('#halo-comment=c1&reply=r99');
+  await until(() => repliesOf(widget)?.replies.length === 1);
+  const replies = repliesOf(widget);
+  await replies.updateComplete;
+  const button = replies.shadowRoot.querySelector('button');
+  button.focus();
+  expect(replies.shadowRoot.activeElement).toBe(button);
+  button.click();
+  await until(() => resolveList && replies.loading);
+  await replies.updateComplete;
+  button.click();
+  expect(requests.filter((path) => path === `${root}/c1/reply`)).toHaveLength(
+    1
+  );
+  expect(replies.shadowRoot.activeElement).toBe(button);
+  resolveList(Response.json(list([reply])));
+  await until(() => !replies.loading);
+  await replies.updateComplete;
+  expect(replies.shadowRoot.activeElement).toBe(
+    replies.shadowRoot.querySelector('reply-item')
+  );
+});
+
+test('collapsing detail replies preserves the expanded list', async () => {
+  const other = { ...reply, metadata: { name: 'r100' } };
+  api({ [`${root}/c1/reply`]: () => Response.json(list([reply, other])) });
+  const widget = await mount('#halo-comment=c1&reply=r99');
+  await until(() => repliesOf(widget)?.replies.length === 1);
+  const replies = repliesOf(widget);
+  await replies.updateComplete;
+  replies.shadowRoot.querySelector('button').click();
+  await until(() => replies.replies.length === 2);
+  const item = itemOf(widget);
+  item.shadowRoot.querySelector('.show-replies-button').click();
+  await until(() => repliesOf(widget)?.hidden);
+  expect(replies.getClientRects()).toHaveLength(0);
+  item.shadowRoot.querySelector('.show-replies-button').click();
+  await until(() => !repliesOf(widget)?.hidden);
+  expect(repliesOf(widget)).toBe(replies);
+  expect(repliesOf(widget).replies).toHaveLength(2);
+  expect(repliesOf(widget).shadowRoot.textContent).not.toContain(
+    'View all replies'
+  );
+});
+test('returning to the list moves keyboard focus to the list', async () => {
+  api();
+  const widget = await mount('#halo-comment=c1&reply=r99');
+  await until(() => repliesOf(widget)?.replies.length === 1);
+  const detail = detailOf(widget);
+  const back = detail.shadowRoot.querySelector('.back');
+  back.focus();
+  expect(detail.shadowRoot.activeElement).toBe(back);
+  back.click();
+  await until(
+    () => widget.shadowRoot.querySelector('comment-list')?.comments.items.length
+  );
+  expect(widget.shadowRoot.activeElement).toBe(
+    widget.shadowRoot.querySelector('comment-list')
+  );
+});
