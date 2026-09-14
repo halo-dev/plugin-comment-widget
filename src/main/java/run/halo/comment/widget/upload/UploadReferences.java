@@ -30,7 +30,8 @@ public final class UploadReferences {
         try {
             var uri = URI.create(value).normalize();
             var host = uri.getHost();
-            return authority(host, uri.getPort()) + uri.getPath();
+            // Keep encoded delimiters intact when urlKey parses this reference again.
+            return authority(host, uri.getPort()) + uri.getRawPath();
         } catch (IllegalArgumentException e) {
             return value;
         }
@@ -41,8 +42,8 @@ public final class UploadReferences {
             var uri = URI.create(src).normalize();
             // Halo may return root-relative permalinks. Also recognize an absolute
             // spelling of that path, conservatively protecting the managed image.
-            if (uri.getHost() != null && uri.getPath() != null) {
-                result.add(uri.getPath());
+            if (uri.getHost() != null && uri.getRawPath() != null) {
+                result.add(uri.getRawPath());
             }
         } catch (IllegalArgumentException ignored) {}
     }

@@ -757,6 +757,55 @@ class UploadLifecycleTest {
         ).containsExactlyInAnyOrder("example.com/a.png", "/a.png");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "/upload/a%23b.png", "/upload/a%3Fb.png", "/upload/a%2523b.png",
+        "https://example.com/a%23b.png", "https://example.com/a%3Fb.png"
+    })
+    void encodedImagePathsRemainProtectedUntilTheirReferencesAreRemoved(String url)
+        throws Exception {
+        var upload = uploaded();
+        String name = upload.getSpec().getAttachmentName();
+        service.uploaded(upload.getMetadata().getName(),
+            client.fetch(Attachment.class, name).orElseThrow(), url);
+        upload = service.getUpload(upload.getMetadata().getName());
+        String content = "<img src='" + url + "'>";
+        var ticket = service.reserve(service.issue(hash, owner).getMetadata().getName(),
+            hash, owner, "/comments", mapper.createObjectNode().put("content", content),
+            List.of(upload));
+        var original = comment("original");
+        original.getSpec().setContent(content);
+        save(original);
+        service.indexReferences("Comment", "original");
+        service.bind(ticket.getMetadata().getName(), "Comment", "original");
+        new UploadReconciler(client, service).reconcile(
+            new Reconciler.Request(upload.getMetadata().getName())
+        );
+
+        assertThat(service.referencedElsewhere(url)).isTrue();
+        service.updateAttachment(name, attachment -> {
+            MetadataUtil.nullSafeAnnotations(attachment).put(UploadMetadata.DELETE_AFTER,
+                Instant.now().minusSeconds(1).toString());
+            MetadataUtil.nullSafeLabels(attachment).put(UploadMetadata.GC_PENDING, "true");
+        });
+        service.reconcileAttachment(name);
+        var preserved = client.fetch(Attachment.class, name).orElseThrow();
+        assertThat(UploadMetadata.annotation(preserved, UploadMetadata.DELETE_AFTER)).isNull();
+        assertThat(UploadMetadata.label(preserved, UploadMetadata.GC_PENDING)).isNull();
+
+        original.getSpec().setContent("text only");
+        save(original);
+        service.indexReferences("Comment", "original");
+        assertThat(service.referencedElsewhere(url)).isFalse();
+        service.reconcileAttachment(name);
+        service.updateAttachment(name, attachment ->
+            MetadataUtil.nullSafeAnnotations(attachment).put(UploadMetadata.DELETE_AFTER,
+                Instant.now().minusSeconds(1).toString())
+        );
+        service.reconcileAttachment(name);
+        assertThat(client.fetch(Attachment.class, name)).isEmpty();
+    }
+
     private boolean matchesLabels(Extension resource, ListOptions options) {
         if (options.getLabelSelector() == null) {
             return true;
