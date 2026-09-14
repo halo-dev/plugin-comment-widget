@@ -294,6 +294,14 @@
   <source>Only JPEG, PNG, GIF, WebP, and AVIF images are supported.</source>
   <target>僅支援 JPEG、PNG、GIF、WebP 和 AVIF 圖片。</target>
 </trans-unit>
+<trans-unit id="s5fc35a09a85fe63e">
+  <source>Close image</source>
+  <target>關閉圖片</target>
+</trans-unit>
+<trans-unit id="se2a73d664d3d2bfb">
+  <source>Zoom image</source>
+  <target>放大圖片</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

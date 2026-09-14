@@ -29,6 +29,13 @@ export class CommentContent extends LitElement {
       template.innerHTML = `<style>
         .medium-zoom-overlay { z-index: 2147483646; }
         .medium-zoom-image--opened { z-index: 2147483647; }
+        .medium-zoom-image--opened:focus-visible { outline: 2px solid white; }
+        @media (prefers-reduced-motion: reduce) {
+          /* Keep transitionend for Medium Zoom's open/close lifecycle. */
+          .medium-zoom-overlay, .medium-zoom-image--opened {
+            transition-duration: 0.001ms !important;
+          }
+        }
       </style>`;
       imageZoom = mediumZoom({
         margin: 24,
@@ -44,18 +51,40 @@ export class CommentContent extends LitElement {
       () => {
         queueMicrotask(() => zoom.detach(target));
         this.zoomedImage = undefined;
+        if (this.isConnected && this.renderRoot.contains(target)) {
+          target.focus({ preventScroll: true });
+        }
       },
       { once: true }
     );
-    void zoom
-      .attach(target)
-      .open({ target })
-      .then(() => {
-        // close() is ignored during the opening animation.
-        if (!this.isConnected || !this.renderRoot.contains(target)) {
-          void zoom.close();
-        }
-      });
+    // Both the normal and srcset clones inherit this marker.
+    target.setAttribute('data-halo-cw-zoom', '');
+    const opened = zoom.attach(target).open({ target });
+    target.removeAttribute('data-halo-cw-zoom');
+    void opened.then(() => {
+      // close() is ignored during the opening animation.
+      if (!this.isConnected || !this.renderRoot.contains(target)) {
+        void zoom.close();
+        return;
+      }
+      const clones = Array.from(
+        document.querySelectorAll<HTMLImageElement>('[data-halo-cw-zoom]')
+      );
+      const topmost = clones[clones.length - 1];
+      for (const clone of clones) {
+        clone.tabIndex = clone === topmost ? 0 : -1;
+        clone.setAttribute('role', 'button');
+        clone.setAttribute('aria-label', msg('Close image'));
+        if (clone !== topmost) clone.setAttribute('aria-hidden', 'true');
+        clone.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            void zoom.close();
+          }
+        });
+      }
+      topmost.focus({ preventScroll: true });
+    });
   }
 
   override disconnectedCallback() {
@@ -108,6 +137,21 @@ export class CommentContent extends LitElement {
       if (this.zoomedImage) void imageZoom?.close();
       this.applyLinkAttributes();
       this.renderRoot.querySelectorAll('.content img').forEach((image) => {
+        const anchor = image.closest('a');
+        if (anchor) {
+          // Split the link around the image, preserving linked text on both sides.
+          const range = document.createRange();
+          range.selectNodeContents(anchor);
+          range.setStartAfter(image);
+          const trailing = anchor.cloneNode(false) as HTMLAnchorElement;
+          trailing.removeAttribute('name');
+          trailing.append(range.extractContents());
+          anchor.after(image, trailing);
+          for (const link of [anchor, trailing]) {
+            if (!link.textContent?.trim() && !link.querySelector('img'))
+              link.remove();
+          }
+        }
         image.setAttribute('tabindex', '0');
         image.setAttribute('role', 'button');
         image.setAttribute(
