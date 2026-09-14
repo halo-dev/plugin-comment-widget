@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -62,6 +64,35 @@ class UploadResponseBodyTest {
         await()
             .atMost(Duration.ofSeconds(5))
             .untilAsserted(() -> assertThat(path.get()).doesNotExist());
+    }
+
+    @Test
+    void removesSpoolCreatedDuringCancellation() throws Exception {
+        var path = Files.createTempFile("response-cancellation-test-", ".json");
+        var created = new CountDownLatch(1);
+        var release = new CompletableFuture<Void>();
+        var consumed = new AtomicBoolean();
+        var subscription = UploadResponseBody.use(Mono.empty(), body -> {
+            consumed.set(true);
+            return Mono.empty();
+        }, () -> {
+            created.countDown();
+            // Hold resource delivery across cancellation, even if the worker is interrupted.
+            release.join();
+            return path;
+        }).subscribe();
+        try {
+            assertThat(created.await(5, TimeUnit.SECONDS)).isTrue();
+            subscription.dispose();
+            release.complete(null);
+            await().atMost(Duration.ofSeconds(5))
+                .untilAsserted(() -> assertThat(path).doesNotExist());
+            assertThat(consumed).isFalse();
+        } finally {
+            subscription.dispose();
+            release.complete(null);
+            Files.deleteIfExists(path);
+        }
     }
 
     @Test

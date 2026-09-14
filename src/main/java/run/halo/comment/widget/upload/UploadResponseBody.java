@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -26,11 +27,19 @@ final class UploadResponseBody {
         Publisher<? extends DataBuffer> source,
         Function<UploadResponseBody, Mono<Void>> consume
     ) {
-        var resource = Mono.fromCallable(() ->
-            new UploadResponseBody(Files.createTempFile("comment-upload-response-", ".json"))
-        )
+        return use(source, consume, () -> Files.createTempFile("comment-upload-response-", ".json"));
+    }
+
+    static Mono<Void> use(
+        Publisher<? extends DataBuffer> source,
+        Function<UploadResponseBody, Mono<Void>> consume,
+        Callable<Path> createTempFile
+    ) {
+        var resource = Mono.fromCallable(() -> new UploadResponseBody(createTempFile.call()))
+            // Preserve discard handling if file creation returns after cancellation.
+            .hide()
             .subscribeOn(Schedulers.boundedElastic())
-            .doOnDiscard(UploadResponseBody.class, UploadResponseBody::delete);
+            .doOnDiscard(UploadResponseBody.class, body -> body.cleanup().subscribe());
         return Mono.usingWhen(
             resource,
             body ->
