@@ -1,5 +1,6 @@
 import { msg } from '@lit/localize';
 import { ofetch } from 'ofetch';
+import { randomHex } from './random-hex';
 
 export interface UploadedImage {
   uploadId: string;
@@ -41,11 +42,7 @@ export class UploadSession {
       UploadSessionSnapshot | undefined
     > = async () => undefined
   ) {
-    this.token =
-      snapshot?.token ??
-      Array.from(crypto.getRandomValues(new Uint8Array(32)))
-        .map((value) => value.toString(16).padStart(2, '0'))
-        .join('');
+    this.token = snapshot?.token ?? randomHex(32);
     this.pending = snapshot?.pending;
   }
 
