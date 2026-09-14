@@ -165,6 +165,8 @@ export class ReplyItem extends LitElement {
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
         .creationTime="${this.reply?.spec.creationTime}"
+        .commentName=${this.comment?.metadata.name}
+        .replyName=${this.reply?.metadata.name}
         .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}

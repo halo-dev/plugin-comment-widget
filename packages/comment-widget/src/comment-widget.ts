@@ -30,7 +30,9 @@ import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
 import './comment-list';
+import './comment-detail';
 import { ofetch } from 'ofetch';
+import { readCommentTarget } from './utils/comment-link';
 import './comment-editor-skeleton';
 import { fetchManagementPermission } from './utils/comment-management';
 
@@ -78,6 +80,34 @@ export class CommentWidget extends LitElement {
   @state()
   isInitialized = false;
 
+  @state()
+  private commentTarget = readCommentTarget();
+
+  private onLocationChange = () => {
+    this.commentTarget = readCommentTarget();
+  };
+
+  private onCommentCreated = () => {
+    if (this.commentTarget) this.returnToList();
+  };
+
+  private returnToList() {
+    const url = new URL(location.href);
+    const params = new URLSearchParams(url.hash.slice(1));
+    params.delete('halo-comment');
+    params.delete('reply');
+    url.hash = params.toString();
+    history.pushState(history.state, '', url);
+    window.dispatchEvent(new Event('hashchange'));
+  }
+
+  override disconnectedCallback() {
+    window.removeEventListener('halo:comment:created', this.onCommentCreated);
+    window.removeEventListener('hashchange', this.onLocationChange);
+    window.removeEventListener('popstate', this.onLocationChange);
+    super.disconnectedCallback();
+  }
+
   override render() {
     return html` <div class="comment-widget w-full">
       ${
@@ -87,7 +117,14 @@ export class CommentWidget extends LitElement {
               JSON.stringify([this.group, this.kind, this.version, this.name]),
               html`
             <comment-form></comment-form>
-            <comment-list></comment-list>
+            ${
+              this.commentTarget
+                ? keyed(
+                    JSON.stringify(this.commentTarget),
+                    html`<comment-detail .target=${this.commentTarget} @comment-list-requested=${this.returnToList}></comment-detail>`
+                  )
+                : html`<comment-list></comment-list>`
+            }
           `
             )
       }
@@ -149,6 +186,10 @@ export class CommentWidget extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
+    this.onLocationChange();
+    window.addEventListener('halo:comment:created', this.onCommentCreated);
+    window.addEventListener('hashchange', this.onLocationChange);
+    window.addEventListener('popstate', this.onLocationChange);
     this.init();
   }
 

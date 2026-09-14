@@ -69,3 +69,29 @@ function App() {
 
 export default App;
 ```
+
+## 评论固定链接
+
+点击评论或回复的发布时间，可以查看完整时间并复制固定链接。链接基于当前前台页面地址生成，和 `baseUrl` 指向的 API 地址无关：
+
+```text
+/archives/example#halo-comment=<commentName>
+/archives/example#halo-comment=<commentName>&reply=<replyName>
+```
+
+组件初始化时识别上述 hash，直接进入详情模式，不请求主评论列表：
+
+- 评论链接展示根评论并分页加载回复。
+- 回复链接展示根评论和指定回复；点击“查看全部回复”后才加载回复列表。
+- 点击“返回评论列表”清除定位参数并加载正常列表，浏览器后退可返回详情。
+- 根评论必须属于当前组件的 `group`、`kind`、`name`；不存在或不可见的内容不会展示。
+
+主题保持原来的挂载方式即可。相同页面内修改 hash 会更新详情；Headless 应用若通过 `history.pushState` 切换 URL，需要由应用通知组件（派发 `hashchange`）或重新挂载。使用 hash 路由的应用需自行协调路由片段，不能直接覆盖其路由 hash。内容页地址变更后的旧链接跳转由站点维护。
+
+指定回复通过插件公开接口查询：
+
+```text
+GET /apis/api.commentwidget.halo.run/v1alpha1/comments/{commentName}/replies/{replyName}
+```
+
+接口校验根评论、回复归属和当前访问者的可见性，并返回脱敏展示数据；根评论详情及回复列表继续使用 Halo Core 接口。
