@@ -34,6 +34,7 @@ public class CommentSubmission extends AbstractExtension {
 
         private String credentialHash;
         private String owner;
+        private String creatorKey;
         private String requestHash;
         private List<String> uploadIds;
         private State state;

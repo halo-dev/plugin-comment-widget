@@ -54,10 +54,16 @@ public class UploadLifecycleService {
     public static final Duration TEMP_TTL = Duration.ofHours(24);
     public static final Duration SUBMISSION_TTL = Duration.ofHours(24);
     public static final Duration DELETE_DELAY = Duration.ofHours(1);
+    /** The credential is client-minted, so quotas also apply per creator (owner + client IP). */
+    static final int MAX_CREATOR_DRAFTS = 100;
+    static final int MAX_CREATOR_SUBMISSIONS = 100;
 
-    public synchronized CommentUpload begin(String hash, String owner) {
+    public synchronized CommentUpload begin(String hash, String owner, String creatorKey) {
         long count = byCredential(CommentUpload.class, hash).getTotal();
         if (count >= 20) {
+            throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft upload limit reached");
+        }
+        if (byCreatorKey(CommentUpload.class, creatorKey).getTotal() >= MAX_CREATOR_DRAFTS) {
             throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft upload limit reached");
         }
         var upload = new CommentUpload();
@@ -67,6 +73,7 @@ public class UploadLifecycleService {
         var spec = new CommentUpload.Spec();
         spec.setCredentialHash(hash);
         spec.setOwner(owner);
+        spec.setCreatorKey(creatorKey);
         spec.setState(UPLOADING);
         spec.setExpiresAt(Instant.now().plus(TEMP_TTL));
         upload.setSpec(spec);
@@ -110,12 +117,26 @@ public class UploadLifecycleService {
         );
     }
 
-    public synchronized CommentSubmission issue(String hash, String owner) {
+    private <E extends Extension> ListResult<E> byCreatorKey(Class<E> type, String creatorKey) {
+        return client.listBy(
+            type,
+            ListOptions.builder().andQuery(equal("creatorKey", creatorKey)).build(),
+            PageRequestImpl.ofSize(20)
+        );
+    }
+
+    public synchronized CommentSubmission issue(String hash, String owner, String creatorKey) {
         var uploads = byCredential(CommentUpload.class, hash).getItems();
         if (uploads.stream().noneMatch(u -> eligibleDraft(u, owner))) {
             throw error(HttpStatus.CONFLICT, "No eligible draft images");
         }
         if (byCredential(CommentSubmission.class, hash).getTotal() >= 20) {
+            throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft submission limit reached");
+        }
+        if (
+            byCreatorKey(CommentSubmission.class, creatorKey).getTotal()
+                >= MAX_CREATOR_SUBMISSIONS
+        ) {
             throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft submission limit reached");
         }
         var submission = new CommentSubmission();
@@ -125,6 +146,7 @@ public class UploadLifecycleService {
         var spec = new CommentSubmission.Spec();
         spec.setCredentialHash(hash);
         spec.setOwner(owner);
+        spec.setCreatorKey(creatorKey);
         spec.setState(CommentSubmission.State.ISSUED);
         spec.setUploadIds(List.of());
         spec.setStartedAt(Instant.now());

@@ -42,9 +42,15 @@ import run.halo.app.core.extension.attachment.Attachment;
 import run.halo.app.core.extension.service.AttachmentService;
 import run.halo.app.extension.Metadata;
 import run.halo.comment.widget.upload.CommentUpload;
+import run.halo.comment.widget.upload.UploadIdentity;
 import run.halo.comment.widget.upload.UploadLifecycleService;
 
 class UploadMediaEndpointTest {
+
+    // Mock requests have no remote address, so the client IP resolves to "unknown".
+    private static final String ALICE_CREATOR = UploadIdentity.creatorKey("alice", "unknown");
+    private static final String ANONYMOUS_CREATOR =
+        UploadIdentity.creatorKey("anonymousUser", "unknown");
 
     private final UploadLifecycleService lifecycle = mock(UploadLifecycleService.class);
     private final AttachmentService attachments = mock(AttachmentService.class);
@@ -71,7 +77,7 @@ class UploadMediaEndpointTest {
         metadata.setName("upload-id");
         record.setMetadata(metadata);
         record.setSpec(new CommentUpload.Spec());
-        when(lifecycle.begin("draft", "alice")).thenReturn(record);
+        when(lifecycle.begin("draft", "alice", ALICE_CREATOR)).thenReturn(record);
         when(attachments.getPermalink(attachment)).thenReturn(Mono.just(URI.create("/image.avif")));
         when(
             attachments.upload(
@@ -116,7 +122,7 @@ class UploadMediaEndpointTest {
         metadata.setName("anonymous-upload");
         record.setMetadata(metadata);
         record.setSpec(new CommentUpload.Spec());
-        when(lifecycle.begin("draft", "anonymousUser")).thenReturn(record);
+        when(lifecycle.begin("draft", "anonymousUser", ANONYMOUS_CREATOR)).thenReturn(record);
         when(
             attachments.upload(
                 eq("anonymousUser"),
@@ -132,7 +138,8 @@ class UploadMediaEndpointTest {
             "readAndUpload",
             request(300 * 1024, 1),
             "draft",
-            config
+            config,
+            "unknown"
         );
 
         assertThat(result.block()).singleElement().satisfies(image -> {
@@ -244,6 +251,15 @@ class UploadMediaEndpointTest {
     }
 
     @Test
+    void rejectsRequestsWithTooManyFiles() {
+        assertThatThrownBy(() -> upload(request(1, 21)).block()).isInstanceOfSatisfying(
+            ResponseStatusException.class,
+            error -> assertThat(error.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST)
+        );
+        verifyNoInteractions(attachments, lifecycle);
+    }
+
+    @Test
     void preservesResultsBeforeDraftQuotaIsReached() {
         var record = new CommentUpload();
         var metadata = new Metadata();
@@ -251,8 +267,8 @@ class UploadMediaEndpointTest {
         record.setMetadata(metadata);
         record.setSpec(new CommentUpload.Spec());
         var attempts = new java.util.concurrent.atomic.AtomicInteger();
-        when(lifecycle.begin("draft", "alice")).thenAnswer(invocation -> {
-            if (attempts.incrementAndGet() > 20) {
+        when(lifecycle.begin("draft", "alice", ALICE_CREATOR)).thenAnswer(invocation -> {
+            if (attempts.incrementAndGet() > 19) {
                 throw new ResponseStatusException(
                     HttpStatus.TOO_MANY_REQUESTS,
                     "Draft upload limit reached"
@@ -260,10 +276,10 @@ class UploadMediaEndpointTest {
             }
             return record;
         });
-        var results = upload(request(1, 21)).block();
-        assertThat(results).hasSize(21);
-        assertThat(results.subList(0, 20)).allMatch(image -> image.uploadId() != null);
-        assertThat(results.get(20).error().status()).isEqualTo(429);
+        var results = upload(request(1, 20)).block();
+        assertThat(results).hasSize(20);
+        assertThat(results.subList(0, 19)).allMatch(image -> image.uploadId() != null);
+        assertThat(results.get(19).error().status()).isEqualTo(429);
     }
 
     @Test
@@ -296,7 +312,11 @@ class UploadMediaEndpointTest {
         assertThat(results.get(0).uploadId()).isEqualTo("upload-id");
         assertThat(results.get(1).error().status()).isEqualTo(415);
         assertThat(results.get(2).uploadId()).isEqualTo("upload-id");
-        org.mockito.Mockito.verify(lifecycle, org.mockito.Mockito.times(2)).begin("draft", "alice");
+        org.mockito.Mockito.verify(lifecycle, org.mockito.Mockito.times(2)).begin(
+            "draft",
+            "alice",
+            ALICE_CREATOR
+        );
     }
 
     private static class PolicyRejection extends ResponseStatusException {
@@ -333,7 +353,8 @@ class UploadMediaEndpointTest {
             "readAndUpload",
             request,
             "draft",
-            config
+            config,
+            "unknown"
         );
         return result.contextWrite(
             ReactiveSecurityContextHolder.withAuthentication(
