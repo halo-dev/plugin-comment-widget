@@ -6,7 +6,7 @@ import baseStyles from './styles/base';
 import { formatDate, timeAgo } from './utils/date';
 import './commenter-ua-bar';
 import { consume } from '@lit/context';
-import { configMapDataContext } from './context';
+import { canManageCommentsContext, configMapDataContext } from './context';
 import type { ConfigMapData } from './types';
 import './comment-content';
 import { ifDefined } from 'lit/directives/if-defined.js';
@@ -47,6 +47,10 @@ export class BaseCommentItem extends LitElement {
   @state()
   configMapData: ConfigMapData | undefined;
 
+  @consume({ context: canManageCommentsContext, subscribe: true })
+  @state()
+  canManageComments = false;
+
   override render() {
     return html`<div class="item flex gap-3 py-4 ${this.breath ? 'animate-breath' : ''}">
       <div class="item-avatar flex-none">
@@ -76,7 +80,9 @@ export class BaseCommentItem extends LitElement {
           )}
 
           ${when(
-            this.private && this.configMapData?.basic.showPrivateCommentBadge,
+            this.private &&
+              (this.canManageComments ||
+                this.configMapData?.basic.showPrivateCommentBadge),
             () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
                 <i class="i-ri-git-repository-private-line opacity-90 size-3" aria-hidden="true"></i>
                 <span class="text-xs text-text-2">${msg('Private')}</span>
