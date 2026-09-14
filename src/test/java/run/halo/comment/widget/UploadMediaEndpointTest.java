@@ -47,10 +47,7 @@ import run.halo.comment.widget.upload.UploadLifecycleService;
 
 class UploadMediaEndpointTest {
 
-    // Mock requests have no remote address, so the client IP resolves to "unknown".
-    private static final String ALICE_CREATOR = UploadIdentity.creatorKey("alice", "unknown");
-    private static final String ANONYMOUS_CREATOR =
-        UploadIdentity.creatorKey("anonymousUser", "unknown");
+    // The upload helper passes an "unknown" client IP, so the creator key is skipped (null).
 
     private final UploadLifecycleService lifecycle = mock(UploadLifecycleService.class);
     private final AttachmentService attachments = mock(AttachmentService.class);
@@ -77,7 +74,7 @@ class UploadMediaEndpointTest {
         metadata.setName("upload-id");
         record.setMetadata(metadata);
         record.setSpec(new CommentUpload.Spec());
-        when(lifecycle.begin("draft", "alice", ALICE_CREATOR)).thenReturn(record);
+        when(lifecycle.begin("draft", "alice", null)).thenReturn(record);
         when(attachments.getPermalink(attachment)).thenReturn(Mono.just(URI.create("/image.avif")));
         when(
             attachments.upload(
@@ -122,7 +119,7 @@ class UploadMediaEndpointTest {
         metadata.setName("anonymous-upload");
         record.setMetadata(metadata);
         record.setSpec(new CommentUpload.Spec());
-        when(lifecycle.begin("draft", "anonymousUser", ANONYMOUS_CREATOR)).thenReturn(record);
+        when(lifecycle.begin("draft", "anonymousUser", null)).thenReturn(record);
         when(
             attachments.upload(
                 eq("anonymousUser"),
@@ -267,7 +264,7 @@ class UploadMediaEndpointTest {
         record.setMetadata(metadata);
         record.setSpec(new CommentUpload.Spec());
         var attempts = new java.util.concurrent.atomic.AtomicInteger();
-        when(lifecycle.begin("draft", "alice", ALICE_CREATOR)).thenAnswer(invocation -> {
+        when(lifecycle.begin("draft", "alice", null)).thenAnswer(invocation -> {
             if (attempts.incrementAndGet() > 19) {
                 throw new ResponseStatusException(
                     HttpStatus.TOO_MANY_REQUESTS,
@@ -315,8 +312,22 @@ class UploadMediaEndpointTest {
         org.mockito.Mockito.verify(lifecycle, org.mockito.Mockito.times(2)).begin(
             "draft",
             "alice",
-            ALICE_CREATOR
+            null
         );
+    }
+
+    @Test
+    void passesCreatorKeyForKnownClientIp() {
+        var record = new CommentUpload();
+        var metadata = new Metadata();
+        metadata.setName("upload-id");
+        record.setMetadata(metadata);
+        record.setSpec(new CommentUpload.Spec());
+        var creatorKey = UploadIdentity.creatorKey("alice", "127.0.0.1");
+        when(lifecycle.begin("draft", "alice", creatorKey)).thenReturn(record);
+        var results = upload(request(1, 1), "127.0.0.1").block();
+        assertThat(results.getFirst().uploadId()).isEqualTo("upload-id");
+        org.mockito.Mockito.verify(lifecycle).begin("draft", "alice", creatorKey);
     }
 
     private static class PolicyRejection extends ResponseStatusException {
@@ -347,20 +358,27 @@ class UploadMediaEndpointTest {
     }
 
     @SuppressWarnings("unchecked")
-    private Mono<List<UploadMediaEndpoint.UploadedImage>> upload(ServerRequest request) {
+    private Mono<List<UploadMediaEndpoint.UploadedImage>> upload(
+        ServerRequest request,
+        String clientIp
+    ) {
         Mono<List<UploadMediaEndpoint.UploadedImage>> result = ReflectionTestUtils.invokeMethod(
             endpoint,
             "readAndUpload",
             request,
             "draft",
             config,
-            "unknown"
+            clientIp
         );
         return result.contextWrite(
             ReactiveSecurityContextHolder.withAuthentication(
                 UsernamePasswordAuthenticationToken.authenticated("alice", "", List.of())
             )
         );
+    }
+
+    private Mono<List<UploadMediaEndpoint.UploadedImage>> upload(ServerRequest request) {
+        return upload(request, "unknown");
     }
 
     private ServerRequest request(int size, int count) {

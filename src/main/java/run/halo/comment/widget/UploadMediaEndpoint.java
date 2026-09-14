@@ -245,9 +245,17 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         String clientIp
     ) {
         return Mono.fromCallable(() ->
-                lifecycle.begin(hash, owner, UploadIdentity.creatorKey(owner, clientIp)))
+                lifecycle.begin(hash, owner, creatorKey(owner, clientIp)))
             .subscribeOn(Schedulers.boundedElastic())
             .flatMap(record -> storeFile(file, settings, owner, record));
+    }
+
+    /** Unknown client IPs must not share one creator quota bucket. */
+    private static String creatorKey(String owner, String clientIp) {
+        if (IpAddressUtils.UNKNOWN.equalsIgnoreCase(clientIp)) {
+            return null;
+        }
+        return UploadIdentity.creatorKey(owner, clientIp);
     }
 
     private Mono<UploadedImage> storeFile(

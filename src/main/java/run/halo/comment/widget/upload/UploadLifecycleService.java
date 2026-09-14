@@ -58,12 +58,14 @@ public class UploadLifecycleService {
     static final int MAX_CREATOR_DRAFTS = 100;
     static final int MAX_CREATOR_SUBMISSIONS = 100;
 
+    /** A null creatorKey means the client IP is unknown; the creator quota is then skipped. */
     public synchronized CommentUpload begin(String hash, String owner, String creatorKey) {
         long count = byCredential(CommentUpload.class, hash).getTotal();
         if (count >= 20) {
             throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft upload limit reached");
         }
-        if (byCreatorKey(CommentUpload.class, creatorKey).getTotal() >= MAX_CREATOR_DRAFTS) {
+        if (creatorKey != null
+            && byCreatorKey(CommentUpload.class, creatorKey).getTotal() >= MAX_CREATOR_DRAFTS) {
             throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft upload limit reached");
         }
         var upload = new CommentUpload();
@@ -134,8 +136,9 @@ public class UploadLifecycleService {
             throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft submission limit reached");
         }
         if (
-            byCreatorKey(CommentSubmission.class, creatorKey).getTotal()
-                >= MAX_CREATOR_SUBMISSIONS
+            creatorKey != null
+                && byCreatorKey(CommentSubmission.class, creatorKey).getTotal()
+                    >= MAX_CREATOR_SUBMISSIONS
         ) {
             throw error(HttpStatus.TOO_MANY_REQUESTS, "Draft submission limit reached");
         }

@@ -315,6 +315,21 @@ class UploadLifecycleTest {
     }
 
     @Test
+    void unknownClientIpSkipsTheCreatorQuotas() {
+        // A null creator key means the client IP is unknown: no shared quota bucket.
+        for (int i = 0; i < 100; i++) {
+            var credential = UploadIdentity.credential(String.format("%064d", i + 1));
+            var draft = service.begin(credential, owner, null);
+            var fetched = client.fetch(CommentUpload.class, draft.getMetadata().getName())
+                .orElseThrow();
+            fetched.getSpec().setState(CommentUpload.State.TEMPORARY);
+            save(fetched);
+            service.issue(credential, owner, null);
+        }
+        assertThat(service.begin(hash, owner, null)).isNotNull();
+    }
+
+    @Test
     void rejectionCleanupKeepsAnyCreatedAttachmentAnchor() {
         var upload = service.begin(hash, owner, creatorKey);
         var attachment = new Attachment();

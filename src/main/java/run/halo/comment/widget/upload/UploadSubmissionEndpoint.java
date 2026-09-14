@@ -77,10 +77,11 @@ public class UploadSubmissionEndpoint implements CustomEndpoint {
     }
 
     private SubmissionTicket issueTicket(ServerRequest request, String owner) {
-        var creatorKey = UploadIdentity.creatorKey(
-            owner,
-            IpAddressUtils.getClientIp(request)
-        );
+        var clientIp = IpAddressUtils.getClientIp(request);
+        // Unknown client IPs must not share one creator quota bucket.
+        var creatorKey = IpAddressUtils.UNKNOWN.equalsIgnoreCase(clientIp)
+            ? null
+            : UploadIdentity.creatorKey(owner, clientIp);
         var submission = lifecycle.issue(credential(request), owner, creatorKey);
         return new SubmissionTicket(
             submission.getMetadata().getName(),
