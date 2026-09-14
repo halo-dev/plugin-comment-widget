@@ -21,6 +21,21 @@ export async function uploadFiles(
   session: UploadSession,
   baseUrl?: string
 ): Promise<FileUploadResult[]> {
+  // The server accepts at most 20 files per request.
+  const results: FileUploadResult[] = [];
+  for (let start = 0; start < files.length; start += 20) {
+    results.push(
+      ...(await uploadBatch(files.slice(start, start + 20), session, baseUrl))
+    );
+  }
+  return results;
+}
+
+async function uploadBatch(
+  files: File[],
+  session: UploadSession,
+  baseUrl?: string
+): Promise<FileUploadResult[]> {
   try {
     const formData = new FormData();
     files.forEach((file) => {

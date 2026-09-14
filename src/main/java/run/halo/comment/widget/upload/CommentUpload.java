@@ -35,6 +35,7 @@ public class CommentUpload extends AbstractExtension {
 
         private String credentialHash;
         private String owner;
+        private String creatorKey;
         private String attachmentName;
         private String url;
         private State state;

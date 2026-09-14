@@ -51,6 +51,9 @@ import run.halo.comment.widget.upload.UploadLifecycleService;
 @RequiredArgsConstructor
 public class UploadMediaEndpoint implements CustomEndpoint {
 
+    /** Beyond this many files per request, the per-credential draft limit could never pass. */
+    static final int MAX_FILES_PER_REQUEST = 20;
+
     private final UploadLifecycleService lifecycle;
     private final SettingConfigGetter settingConfigGetter;
     private final AttachmentService attachmentService;
@@ -109,20 +112,22 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         var hash = UploadIdentity.credential(
             request.headers().firstHeader(UploadIdentity.TOKEN_HEADER)
         );
-        return validateUploadPermission(config).then(readAndUpload(request, hash, config));
+        var clientIp = IpAddressUtils.getClientIp(request);
+        return validateUploadPermission(config).then(readAndUpload(request, hash, config, clientIp));
     }
 
     private Mono<List<UploadedImage>> readAndUpload(
         ServerRequest request,
         String hash,
-        SettingConfigGetter.EditorConfig config
+        SettingConfigGetter.EditorConfig config,
+        String clientIp
     ) {
         var maxBytes = ImageFileValidator.maxBytes(config.getUpload().getMaxFileSize());
         return Mono.usingWhen(
             request
                 .multipartData()
                 .map(parts -> parts.values().stream().flatMap(List::stream).toList()),
-            parts -> uploadParts(parts, config, hash, maxBytes),
+            parts -> uploadParts(parts, config, hash, maxBytes, clientIp),
             this::deleteParts,
             (parts, error) -> deleteParts(parts),
             this::deleteParts
@@ -139,10 +144,16 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         List<Part> parts,
         SettingConfigGetter.EditorConfig config,
         String hash,
-        int maxBytes
+        int maxBytes,
+        String clientIp
     ) {
         if (parts.isEmpty()) {
             return Mono.error(new ServerWebInputException("At least one file is required"));
+        }
+        if (parts.size() > MAX_FILES_PER_REQUEST) {
+            return Mono.error(new ServerWebInputException(
+                "Too many files in one request; at most " + MAX_FILES_PER_REQUEST + " are allowed"
+            ));
         }
         if (parts.stream().anyMatch(this::isInvalidPart)) {
             return Mono.error(new ServerWebInputException("Only files parts are accepted"));
@@ -151,7 +162,8 @@ public class UploadMediaEndpoint implements CustomEndpoint {
             parts.stream().map(FilePart.class::cast).toList(),
             config.getUpload().getAttachment(),
             hash,
-            maxBytes
+            maxBytes,
+            clientIp
         );
     }
 
@@ -199,14 +211,15 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         List<FilePart> files,
         SettingConfigGetter.UploadConfig.UploadAttachment settings,
         String hash,
-        int maxBytes
+        int maxBytes,
+        String clientIp
     ) {
         if (StringUtils.isBlank(settings.getAttachmentPolicy())) {
             return Mono.error(new ServerWebInputException("Please configure the upload policy"));
         }
         return UploadIdentity.currentOwner().flatMap(owner ->
             Flux.fromIterable(files)
-                .concatMap(file -> uploadOne(file, settings, hash, owner, maxBytes))
+                .concatMap(file -> uploadOne(file, settings, hash, owner, maxBytes, clientIp))
                 .collectList()
         );
     }
@@ -216,10 +229,11 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         SettingConfigGetter.UploadConfig.UploadAttachment settings,
         String hash,
         String owner,
-        int maxBytes
+        int maxBytes,
+        String clientIp
     ) {
         return ImageFileValidator.withValidatedFile(file, maxBytes,
-                validated -> beginAndUpload(validated, settings, hash, owner))
+                validated -> beginAndUpload(validated, settings, hash, owner, clientIp))
             .onErrorResume(error -> Mono.just(UploadedImage.failed(error)));
     }
 
@@ -227,11 +241,24 @@ public class UploadMediaEndpoint implements CustomEndpoint {
         FilePart file,
         SettingConfigGetter.UploadConfig.UploadAttachment settings,
         String hash,
-        String owner
+        String owner,
+        String clientIp
     ) {
-        return Mono.fromCallable(() -> lifecycle.begin(hash, owner))
+        return Mono.fromCallable(() ->
+                lifecycle.begin(hash, owner, creatorKey(owner, clientIp)))
             .subscribeOn(Schedulers.boundedElastic())
             .flatMap(record -> storeFile(file, settings, owner, record));
+    }
+
+    /**
+     * Unknown client IPs must not share one creator quota bucket. Drafts can never be
+     * created with an unknown IP anyway: the upload rate limiter rejects it with 403.
+     */
+    private static String creatorKey(String owner, String clientIp) {
+        if (IpAddressUtils.UNKNOWN.equalsIgnoreCase(clientIp)) {
+            return null;
+        }
+        return UploadIdentity.creatorKey(owner, clientIp);
     }
 
     private Mono<UploadedImage> storeFile(

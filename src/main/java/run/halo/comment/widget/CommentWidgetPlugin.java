@@ -67,15 +67,25 @@ public class CommentWidgetPlugin extends BasePlugin {
                     UploadReferences.canonical(u.getSpec().getUrl())
                 )
             );
+            specs.add(
+                IndexSpecs.<CommentUpload, String>single("creatorKey", String.class).indexFunc(
+                    u -> u.getSpec().getCreatorKey()
+                )
+            );
         });
-        schemeManager.register(CommentSubmission.class, specs ->
+        schemeManager.register(CommentSubmission.class, specs -> {
             specs.add(
                 IndexSpecs.<CommentSubmission, String>single(
                     "credentialHash",
                     String.class
                 ).indexFunc(s -> s.getSpec().getCredentialHash())
-            )
-        );
+            );
+            specs.add(
+                IndexSpecs.<CommentSubmission, String>single("creatorKey", String.class).indexFunc(
+                    s -> s.getSpec().getCreatorKey()
+                )
+            );
+        });
     }
 
     @Override

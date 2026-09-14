@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import run.halo.app.core.extension.endpoint.CustomEndpoint;
 import run.halo.app.extension.GroupVersion;
+import run.halo.comment.widget.IpAddressUtils;
 
 /** Issues submission tickets and exposes their recovery status; no attachment management. */
 @Component
@@ -76,7 +77,12 @@ public class UploadSubmissionEndpoint implements CustomEndpoint {
     }
 
     private SubmissionTicket issueTicket(ServerRequest request, String owner) {
-        var submission = lifecycle.issue(credential(request), owner);
+        var clientIp = IpAddressUtils.getClientIp(request);
+        // Unknown client IPs must not share one creator quota bucket.
+        var creatorKey = IpAddressUtils.UNKNOWN.equalsIgnoreCase(clientIp)
+            ? null
+            : UploadIdentity.creatorKey(owner, clientIp);
+        var submission = lifecycle.issue(credential(request), owner, creatorKey);
         return new SubmissionTicket(
             submission.getMetadata().getName(),
             submission.getSpec().getExpiresAt()

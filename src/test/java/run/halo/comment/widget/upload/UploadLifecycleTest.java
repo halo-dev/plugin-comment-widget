@@ -41,6 +41,7 @@ class UploadLifecycleTest {
     final String token = "a".repeat(64);
     final String hash = UploadIdentity.credential(token);
     final String owner = "anonymousUser";
+    final String creatorKey = UploadIdentity.creatorKey(owner, "127.0.0.1");
 
     @BeforeEach
     void setup() {
@@ -114,7 +115,7 @@ class UploadLifecycleTest {
         var referenced = service.referenced(content);
         assertThat(referenced).extracting(u -> u.getMetadata().getName())
             .containsExactly(renewed.getMetadata().getName());
-        var ticket = service.issue(hash, owner);
+        var ticket = service.issue(hash, owner, creatorKey);
         var submission = service.reserve(ticket.getMetadata().getName(), hash, owner,
             "/comments", mapper.readTree("{\"content\":\"" + content + "\"}"), referenced);
         assertThat(submission.getSpec().getUploadIds())
@@ -124,7 +125,7 @@ class UploadLifecycleTest {
     @Test
     void cancelIssuedTicketThroughEndpointChecksOwnershipAndPreservesImages() {
         var upload = uploaded();
-        var ticket = service.issue(hash, owner);
+        var ticket = service.issue(hash, owner, creatorKey);
         var web = org.springframework.test.web.reactive.server.WebTestClient
             .bindToRouterFunction(new UploadSubmissionEndpoint(service).endpoint()).build();
         var path = "/submissions/" + ticket.getMetadata().getName();
@@ -145,7 +146,7 @@ class UploadLifecycleTest {
         uploaded();
         for (var state : CommentSubmission.State.values()) {
             if (state == CommentSubmission.State.ISSUED) continue;
-            var ticket = service.issue(hash, owner);
+            var ticket = service.issue(hash, owner, creatorKey);
             ticket.getSpec().setState(state);
             save(ticket);
             assertThatThrownBy(() -> service.cancelIssued(ticket.getMetadata().getName(), hash, owner))
@@ -158,7 +159,7 @@ class UploadLifecycleTest {
     @Test
     void cancellationCannotOverwriteAConcurrentReservation() {
         uploaded();
-        var ticket = service.issue(hash, owner);
+        var ticket = service.issue(hash, owner, creatorKey);
         doAnswer(call -> {
             CommentSubmission candidate = call.getArgument(0);
             var concurrent = service.getSubmission(candidate.getMetadata().getName(), hash, owner);
@@ -175,7 +176,7 @@ class UploadLifecycleTest {
     @Test
     void cancellationWinsAgainstADelayedReservation() throws Exception {
         var upload = uploaded();
-        var ticket = service.issue(hash, owner);
+        var ticket = service.issue(hash, owner, creatorKey);
         doAnswer(call -> {
             CommentSubmission candidate = call.getArgument(0);
             if (candidate.getSpec().getState() == CommentSubmission.State.PREPARING) {
@@ -209,6 +210,16 @@ class UploadLifecycleTest {
                     : ((CommentSubmission) e).getSpec().getCredentialHash();
             return options.getFieldSelector().toString().contains(value);
         }
+        if (
+            options.getFieldSelector() != null &&
+            options.getFieldSelector().toString().contains("creatorKey")
+        ) {
+            String value =
+                e instanceof CommentUpload u
+                    ? u.getSpec().getCreatorKey()
+                    : ((CommentSubmission) e).getSpec().getCreatorKey();
+            return value != null && options.getFieldSelector().toString().contains(value);
+        }
         return true;
     }
 
@@ -225,7 +236,7 @@ class UploadLifecycleTest {
     }
 
     CommentUpload uploaded() {
-        var u = service.begin(hash, owner);
+        var u = service.begin(hash, owner, creatorKey);
         var a = new Attachment();
         var m = new Metadata();
         m.setName("attachment-" + u.getMetadata().getName());
@@ -238,7 +249,7 @@ class UploadLifecycleTest {
 
     CommentSubmission reserve(CommentUpload u) throws Exception {
         return service.reserve(
-            service.issue(hash, owner).getMetadata().getName(),
+            service.issue(hash, owner, creatorKey).getMetadata().getName(),
             hash,
             owner,
             "/comments",
@@ -264,16 +275,67 @@ class UploadLifecycleTest {
     @Test
     void rejectedUploadsReleaseTheirDraftQuota() {
         for (int i = 0; i < 25; i++) {
-            var upload = service.begin(hash, owner);
+            var upload = service.begin(hash, owner, creatorKey);
             service.discardRejectedUpload(upload.getMetadata().getName());
             assertThat(client.fetch(CommentUpload.class, upload.getMetadata().getName())).isEmpty();
         }
-        assertThat(service.begin(hash, owner)).isNotNull();
+        assertThat(service.begin(hash, owner, creatorKey)).isNotNull();
+    }
+
+    @Test
+    void freshCredentialsDoNotBypassTheCreatorDraftQuota() {
+        for (int i = 0; i < 100; i++) {
+            service.begin(UploadIdentity.credential(String.format("%064d", i + 1)), owner,
+                creatorKey);
+        }
+        assertThatThrownBy(() -> service.begin(hash, owner, creatorKey))
+            .isInstanceOfSatisfying(ResponseStatusException.class,
+                error -> assertThat(error.getStatusCode().value()).isEqualTo(429));
+        // A creator on another network (different creator key) is unaffected.
+        var otherKey = UploadIdentity.creatorKey(owner, "10.0.0.1");
+        assertThat(service.begin(hash, owner, otherKey)).isNotNull();
+    }
+
+    @Test
+    void freshCredentialsDoNotBypassTheCreatorSubmissionQuota() {
+        for (int i = 0; i < 100; i++) {
+            var credential = UploadIdentity.credential(String.format("%064d", i + 1));
+            var draft = service.begin(credential, owner, creatorKey);
+            var fetched = client.fetch(CommentUpload.class, draft.getMetadata().getName())
+                .orElseThrow();
+            fetched.getSpec().setState(CommentUpload.State.TEMPORARY);
+            save(fetched);
+            service.issue(credential, owner, creatorKey);
+        }
+        // The first credential still has an eligible draft and room in its own quota.
+        var credential = UploadIdentity.credential(String.format("%064d", 1));
+        assertThatThrownBy(() -> service.issue(credential, owner, creatorKey))
+            .isInstanceOfSatisfying(ResponseStatusException.class,
+                error -> assertThat(error.getStatusCode().value()).isEqualTo(429));
+    }
+
+    @Test
+    void unknownClientIpSkipsTheCreatorQuotas() {
+        // A null creator key means the client IP is unknown: no shared quota bucket.
+        for (int i = 0; i < 100; i++) {
+            var credential = UploadIdentity.credential(String.format("%064d", i + 1));
+            var draft = service.begin(credential, owner, null);
+            var fetched = client.fetch(CommentUpload.class, draft.getMetadata().getName())
+                .orElseThrow();
+            fetched.getSpec().setState(CommentUpload.State.TEMPORARY);
+            save(fetched);
+            service.issue(credential, owner, null);
+        }
+        assertThat(service.begin(hash, owner, null)).isNotNull();
+        // The first credential still has an eligible draft and room in its own quota,
+        // so a 101st submission proves the creator submission quota is also skipped.
+        var firstCredential = UploadIdentity.credential(String.format("%064d", 1));
+        assertThat(service.issue(firstCredential, owner, null)).isNotNull();
     }
 
     @Test
     void rejectionCleanupKeepsAnyCreatedAttachmentAnchor() {
-        var upload = service.begin(hash, owner);
+        var upload = service.begin(hash, owner, creatorKey);
         var attachment = new Attachment();
         var metadata = new Metadata();
         metadata.setName("already-created");
@@ -342,7 +404,7 @@ class UploadLifecycleTest {
 
     @Test
     void expiredKnownAttachmentWithoutPermalinkIsCollected() {
-        var u = service.begin(hash, owner);
+        var u = service.begin(hash, owner, creatorKey);
         var a = new Attachment();
         var m = new Metadata();
         m.setName("no-link");
@@ -362,7 +424,7 @@ class UploadLifecycleTest {
     @Test
     void rejectsForeignDraft() throws Exception {
         var u = uploaded();
-        var ticket = service.issue(hash, owner);
+        var ticket = service.issue(hash, owner, creatorKey);
         assertThatThrownBy(() ->
             service.reserve(
                 ticket.getMetadata().getName(),
@@ -513,7 +575,7 @@ class UploadLifecycleTest {
     @Test
     void expiredUploadsWithoutAttachmentsReleaseTheirQuota() {
         for (int i = 0; i < 20; i++) {
-            var upload = service.begin(hash, owner);
+            var upload = service.begin(hash, owner, creatorKey);
             upload.getSpec().setExpiresAt(Instant.now().minus(Duration.ofDays(7)));
             save(upload);
             new UploadReconciler(client, service).reconcile(
@@ -521,13 +583,13 @@ class UploadLifecycleTest {
             );
             assertThat(client.fetch(CommentUpload.class, upload.getMetadata().getName())).isEmpty();
         }
-        assertThatCode(() -> service.begin(hash, owner)).doesNotThrowAnyException();
+        assertThatCode(() -> service.begin(hash, owner, creatorKey)).doesNotThrowAnyException();
         verify(client, never()).delete(any(Attachment.class));
     }
 
     @Test
     void recoveryDoesNotRaceAnActiveUpload() {
-        var u = service.begin(hash, owner);
+        var u = service.begin(hash, owner, creatorKey);
         new UploadReconciler(client, service).reconcile(
             new Reconciler.Request(u.getMetadata().getName())
         );
@@ -553,7 +615,7 @@ class UploadLifecycleTest {
     @Test
     void expiredAndPurgedTicketCannotBeRecreated() throws Exception {
         var u = uploaded();
-        var ticket = service.issue(hash, owner);
+        var ticket = service.issue(hash, owner, creatorKey);
         ticket.getSpec().setExpiresAt(Instant.now().minus(Duration.ofHours(2)));
         save(ticket);
         assertThatThrownBy(() ->
@@ -770,7 +832,7 @@ class UploadLifecycleTest {
             client.fetch(Attachment.class, name).orElseThrow(), url);
         upload = service.getUpload(upload.getMetadata().getName());
         String content = "<img src='" + url + "'>";
-        var ticket = service.reserve(service.issue(hash, owner).getMetadata().getName(),
+        var ticket = service.reserve(service.issue(hash, owner, creatorKey).getMetadata().getName(),
             hash, owner, "/comments", mapper.createObjectNode().put("content", content),
             List.of(upload));
         var original = comment("original");

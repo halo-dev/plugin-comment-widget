@@ -32,6 +32,14 @@ public final class UploadIdentity {
         return hash(value);
     }
 
+    /**
+     * Server-side quota identity: unlike the client-minted credential, the client cannot
+     * reset this by choosing a new value.
+     */
+    public static String creatorKey(String owner, String clientIp) {
+        return hash(owner + "\n" + clientIp);
+    }
+
     public static String hash(String value) {
         try {
             return HexFormat.of().formatHex(

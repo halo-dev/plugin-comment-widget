@@ -20,6 +20,7 @@ import {
 import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import { cleanHtml } from './utils/html';
+import { randomHex } from './utils/random-hex';
 import { readUploadDraft } from './utils/upload-draft';
 
 interface ActionItem {
@@ -274,11 +275,7 @@ export class CommentEditor extends LitElement {
     );
 
     this.editor.on('update', () => {
-      this.draftRevision = Array.from(
-        crypto.getRandomValues(new Uint8Array(16))
-      )
-        .map((value) => value.toString(16).padStart(2, '0'))
-        .join('');
+      this.draftRevision = randomHex(16);
       this.dispatchEvent(
         new CustomEvent('update', {
           detail: {
