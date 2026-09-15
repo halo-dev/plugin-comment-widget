@@ -13,6 +13,7 @@ import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
+import { scrollWhenVisible } from './utils/comment-link';
 import { getNextReplyRequest } from './utils/reply-pagination';
 
 export class CommentReplies extends LitElement {
@@ -50,6 +51,7 @@ export class CommentReplies extends LitElement {
   private preloaded = false;
 
   private requestId = 0;
+  private cancelScroll?: () => void;
 
   @state()
   hasNext = false;
@@ -153,6 +155,7 @@ export class CommentReplies extends LitElement {
         this.replies = data.items;
       }
 
+      this.cancelScroll?.();
       this.targetOnly = false;
       this.hasNext = data.hasNext;
       this.page = data.page;
@@ -216,9 +219,8 @@ export class CommentReplies extends LitElement {
       this.replies = [this.targetReply];
       void this.updateComplete.then(() => {
         if (this.isConnected && this.targetOnly) {
-          this.renderRoot
-            .querySelector('reply-item')
-            ?.scrollIntoView({ block: 'center' });
+          const target = this.renderRoot.querySelector('reply-item');
+          if (target) this.cancelScroll = scrollWhenVisible(target, 'center');
         }
       });
       return;
@@ -244,6 +246,11 @@ export class CommentReplies extends LitElement {
     } else {
       this.fetchReplies();
     }
+  }
+
+  override disconnectedCallback() {
+    this.cancelScroll?.();
+    super.disconnectedCallback();
   }
 
   static override styles = [

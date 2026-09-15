@@ -12,7 +12,8 @@ import {
   nameContext,
 } from './context';
 import baseStyles from './styles/base';
-import type { CommentTarget } from './utils/comment-link';
+import { type CommentTarget, scrollWhenVisible } from './utils/comment-link';
+import type { CommentManagedDetail } from './utils/comment-management';
 import './comment-item';
 import './loading-block';
 
@@ -28,6 +29,7 @@ export class CommentDetail extends LitElement {
   @state() private error = '';
   @state() private retryable = false;
   private requestId = 0;
+  private cancelScroll?: () => void;
   private activeReplyItem?: { closeReplyForm(): void };
 
   override connectedCallback() {
@@ -37,11 +39,13 @@ export class CommentDetail extends LitElement {
 
   override disconnectedCallback() {
     ++this.requestId;
+    this.cancelScroll?.();
     this.activeReplyItem?.closeReplyForm();
     super.disconnectedCallback();
   }
 
   private async load() {
+    this.cancelScroll?.();
     const requestId = ++this.requestId;
     this.loading = true;
     this.error = '';
@@ -59,7 +63,8 @@ export class CommentDetail extends LitElement {
         subject.kind !== this.kind ||
         subject.name !== this.name
       ) {
-        this.error = msg('Comment not found or unavailable');
+        ++this.requestId;
+        this.dispatchEvent(new CustomEvent('comment-subject-mismatch'));
         return;
       }
       const reply = this.target.replyName
@@ -86,7 +91,7 @@ export class CommentDetail extends LitElement {
           this.isConnected &&
           (!this.target.replyName || this.error)
         ) {
-          this.scrollIntoView({ block: 'start' });
+          this.cancelScroll = scrollWhenVisible(this, 'start');
         }
       }
     }
@@ -108,9 +113,15 @@ export class CommentDetail extends LitElement {
   }
 
   override render() {
-    return html`<div class="detail mt-5" @comment-managed=${() => this.load()} @reply-form-open=${(
-      event: CustomEvent<{ closeReplyForm(): void }>
+    return html`<div class="detail mt-5" @comment-managed=${(
+      event: CustomEvent<CommentManagedDetail>
     ) => {
+      if (event.detail.restoreFocus) {
+        this.tabIndex = -1;
+        this.focus({ preventScroll: true });
+      }
+      void this.load();
+    }} @reply-form-open=${(event: CustomEvent<{ closeReplyForm(): void }>) => {
       event.stopPropagation();
       if (this.activeReplyItem !== event.detail)
         this.activeReplyItem?.closeReplyForm();

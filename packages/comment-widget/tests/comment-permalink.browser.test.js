@@ -1,8 +1,6 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { mockApi, until } from './browser-helpers.js';
 
-vi.mock('@halo-dev/comment-widget', () => import('../src/index.ts'));
-
 const originalUrl = location.href;
 afterEach(() => {
   history.replaceState(null, '', originalUrl);
@@ -311,27 +309,13 @@ test('reply detail loads only the target until all replies are requested', async
   expect(requests).not.toContain(root);
 });
 
-test.each(['missing', 'different-subject', 'missing-reply'])(
+test.each(['missing', 'missing-reply'])(
   'unavailable detail (%s) does not render foreign content or fall back to a list',
   async (reason) => {
-    const overrides =
-      reason === 'missing-reply'
-        ? { [replyPath]: () => new Response('', { status: 404 }) }
-        : {
-            [`${root}/c1`]: () =>
-              reason === 'missing'
-                ? new Response('', { status: 404 })
-                : Response.json({
-                    ...comment,
-                    spec: {
-                      ...comment.spec,
-                      subjectRef: {
-                        ...comment.spec.subjectRef,
-                        name: 'another-post',
-                      },
-                    },
-                  }),
-          };
+    const overrides = {
+      [reason === 'missing-reply' ? replyPath : `${root}/c1`]: () =>
+        new Response('', { status: 404 }),
+    };
     const requests = api(overrides);
     const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
     const widget = await mount('#halo-comment=c1&reply=r99');
@@ -600,3 +584,133 @@ test.each([`${root}/c1`, replyPath])(
     expect(detail.shadowRoot.querySelector('.retry')).toBeNull();
   }
 );
+
+test('management reload preserves keyboard focus after pinning a comment', async () => {
+  let pinned = false;
+  const requests = api({
+    '/apis/api.console.halo.run/v1alpha1/users/-': () =>
+      Response.json({ user: { metadata: { name: 'admin' }, spec: {} } }),
+    '/apis/api.console.halo.run/v1alpha1/users/-/permissions': () =>
+      Response.json({ uiPermissions: ['*'] }),
+    '/apis/content.halo.run/v1alpha1/comments/c1': () => {
+      pinned = true;
+      return Response.json({});
+    },
+    [`${root}/c1`]: () =>
+      Response.json({ ...comment, spec: { ...comment.spec, top: pinned } }),
+  });
+  const widget = await mount('#halo-comment=c1');
+  await until(() => itemOf(widget));
+  const oldItem = itemOf(widget);
+  await oldItem.updateComplete;
+  const management = oldItem.shadowRoot.querySelector('comment-management');
+  await management.updateComplete;
+  management.shadowRoot.querySelector('summary').click();
+  await management.updateComplete;
+  const pin = [...management.shadowRoot.querySelectorAll('button')].find(
+    (b) => b.textContent.trim() === 'Pin'
+  );
+  pin.focus();
+  expect(management.matches(':focus-within')).toBe(true);
+  pin.click();
+  await until(
+    () =>
+      itemOf(widget) &&
+      itemOf(widget) !== oldItem &&
+      itemOf(widget).comment.spec.top
+  );
+  expect(requests).toContain('/apis/content.halo.run/v1alpha1/comments/c1');
+  expect(widget.shadowRoot.activeElement).toBe(detailOf(widget));
+});
+
+test.each(['#halo-comment=c1', '#halo-comment=c1&reply=r99'])(
+  'mounted widget locates a target loaded while hidden (%s)',
+  async (hash) => {
+    api();
+    const { parent } = await lazyContainer('');
+    parent.scrollIntoView();
+    await until(() => parent.firstElementChild?.isInitialized);
+    const widget = parent.firstElementChild;
+    await until(
+      () =>
+        widget.shadowRoot.querySelector('comment-list')?.comments.items.length
+    );
+    parent.hidden = true;
+    window.scrollTo(0, 0);
+    history.replaceState(null, '', hash);
+    window.dispatchEvent(new Event('hashchange'));
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    await new Promise((r) =>
+      requestAnimationFrame(() => requestAnimationFrame(r))
+    );
+    parent.hidden = false;
+    await new Promise((r) =>
+      requestAnimationFrame(() => requestAnimationFrame(r))
+    );
+    await until(() => window.scrollY > 0);
+    expect(parent.getBoundingClientRect().top).toBeLessThan(innerHeight);
+  }
+);
+
+test('a later nonmatching widget keeps its list without stealing the target scroll', async () => {
+  let resolveForeign;
+  let calls = 0;
+  api({
+    [`${root}/c1`]: () =>
+      ++calls === 1
+        ? Response.json(comment)
+        : new Promise((resolve) => {
+            resolveForeign = resolve;
+          }),
+  });
+  const scrolls = vi.spyOn(Element.prototype, 'scrollIntoView');
+  const target = await mount('#halo-comment=c1');
+  await until(() => repliesOf(target)?.replies.length === 1);
+  const foreign = document.createElement('comment-widget');
+  foreign.group = target.group;
+  foreign.kind = target.kind;
+  foreign.name = 'other';
+  document.body.append(foreign);
+  await until(() => resolveForeign);
+  resolveForeign(Response.json(comment));
+  await until(() => foreign.shadowRoot.querySelector('comment-list'));
+  expect(location.hash).toBe('#halo-comment=c1');
+  expect(scrolls.mock.instances.at(-1)).toBe(detailOf(target));
+  expect(detailOf(foreign)).toBeNull();
+});
+
+test.each(['#halo-comment=c1', '#halo-comment=c1&reply=r99'])(
+  'leaving a hidden target cancels its pending scroll (%s)',
+  async (hash) => {
+    api();
+    const widget = await mount('');
+    widget.style.display = 'none';
+    const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
+    history.replaceState(null, '', hash);
+    window.dispatchEvent(new Event('hashchange'));
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    expect(detailOf(widget).getClientRects()).toHaveLength(0);
+    expect(scroll).not.toHaveBeenCalled();
+    history.replaceState(null, '', location.pathname);
+    window.dispatchEvent(new Event('hashchange'));
+    await until(() => !detailOf(widget));
+    widget.style.display = '';
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
+    expect(scroll).not.toHaveBeenCalled();
+  }
+);
+
+test('a mismatched widget rechecks the permalink when its subject changes', async () => {
+  const requests = api();
+  const widget = await mount('');
+  widget.name = 'other';
+  history.replaceState(null, '', '#halo-comment=c1');
+  window.dispatchEvent(new Event('hashchange'));
+  await until(() => requests.includes(`${root}/c1`) && !detailOf(widget));
+  widget.name = 'post';
+  await until(() => itemOf(widget));
+  expect(itemOf(widget).comment.metadata.name).toBe('c1');
+  expect(location.hash).toBe('#halo-comment=c1');
+});

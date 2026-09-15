@@ -1,6 +1,6 @@
 import type { DetailedUser, User } from '@halo-dev/api-client';
 import { provide } from '@lit/context';
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, type PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { keyed } from 'lit/directives/keyed.js';
 import {
@@ -117,6 +117,12 @@ export class CommentWidget extends LitElement {
     super.disconnectedCallback();
   }
 
+  override willUpdate(changed: PropertyValues<this>) {
+    if (changed.has('group') || changed.has('kind') || changed.has('name')) {
+      this.onLocationChange();
+    }
+  }
+
   override render() {
     return html` <div class="comment-widget w-full">
       ${
@@ -130,7 +136,9 @@ export class CommentWidget extends LitElement {
               this.commentTarget
                 ? keyed(
                     JSON.stringify(this.commentTarget),
-                    html`<comment-detail .target=${this.commentTarget} @comment-list-requested=${this.returnToList}></comment-detail>`
+                    html`<comment-detail .target=${this.commentTarget} @comment-subject-mismatch=${() => {
+                      this.commentTarget = undefined;
+                    }} @comment-list-requested=${this.returnToList}></comment-detail>`
                   )
                 : html`<comment-list></comment-list>`
             }

@@ -12,3 +12,21 @@ export function readCommentTarget(
     ? { commentName, replyName: params.get('reply') || undefined }
     : undefined;
 }
+
+export function scrollWhenVisible(
+  target: Element,
+  block: ScrollLogicalPosition
+) {
+  const observer = new ResizeObserver(scroll);
+  function scroll() {
+    if (!target.isConnected) {
+      observer.disconnect();
+    } else if (target.getClientRects().length) {
+      observer.disconnect();
+      target.scrollIntoView({ block });
+    }
+  }
+  observer.observe(target);
+  scroll();
+  return () => observer.disconnect();
+}
