@@ -1,8 +1,13 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { mockApi, until } from './browser-helpers.js';
 
+vi.mock('@halo-dev/comment-widget', () => import('../src/index.ts'));
+
 const originalUrl = location.href;
-afterEach(() => history.replaceState(null, '', originalUrl));
+afterEach(() => {
+  history.replaceState(null, '', originalUrl);
+  window.scrollTo(0, 0);
+});
 const root = '/apis/api.halo.run/v1alpha1/comments';
 const replyPath =
   '/apis/api.commentwidget.halo.run/v1alpha1/comments/c1/replies/r99';
@@ -83,6 +88,192 @@ const itemOf = (widget) =>
 const repliesOf = (widget) =>
   itemOf(widget)?.shadowRoot.querySelector('comment-replies');
 
+async function lazyContainer(hash) {
+  history.replaceState(
+    null,
+    '',
+    `${location.pathname}${location.search}${hash}`
+  );
+  const { init } = await import('../../widget/src/index.ts');
+  const parent = document.createElement('div');
+  parent.id = 'theme-comments';
+  parent.style.cssText = 'margin: 200vh 0; min-height: 1px';
+  document.body.append(parent);
+  window.scrollTo(0, 0);
+  const scroll = vi.spyOn(parent, 'scrollIntoView');
+  init('#theme-comments', {
+    group: 'content.halo.run',
+    kind: 'Post',
+    name: 'post',
+  });
+  return { parent, scroll };
+}
+
+test.each(['#halo-comment=c1', '#halo-comment=c1&reply=r99'])(
+  'an offscreen permalink mounts immediately and scrolls only its target (%s)',
+  async (hash) => {
+    const requests = api();
+    const allScrolls = vi.spyOn(Element.prototype, 'scrollIntoView');
+    const { parent } = await lazyContainer(hash);
+    expect(parent.childElementCount).toBe(1);
+    const widget = parent.firstElementChild;
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    await until(() => allScrolls.mock.calls.length > 0);
+    expect(allScrolls).toHaveBeenCalledTimes(1);
+    expect(allScrolls.mock.instances[0].tagName).toBe(
+      hash.includes('reply=') ? 'REPLY-ITEM' : 'COMMENT-DETAIL'
+    );
+    expect(window.scrollY).toBeGreaterThan(0);
+    expect(requests).not.toContain(root);
+    expect(parent.childElementCount).toBe(1);
+  }
+);
+
+test.each(['', '#chapter', '#halo-comment=', '#reply=r99'])(
+  'the plugin entry keeps ordinary visits lazy (%s)',
+  async (hash) => {
+    const requests = api();
+    const { parent, scroll } = await lazyContainer(hash);
+    await new Promise((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(resolve))
+    );
+    expect(parent.childElementCount).toBe(0);
+    expect(requests).toHaveLength(0);
+    expect(scroll).not.toHaveBeenCalled();
+    parent.scrollIntoView();
+    await until(() => parent.firstElementChild?.isInitialized);
+    await until(() => requests.includes(root));
+    history.replaceState(null, '', '#halo-comment=c1');
+    window.dispatchEvent(new Event('hashchange'));
+    await until(() => itemOf(parent.firstElementChild));
+    expect(parent.childElementCount).toBe(1);
+    expect(scroll).toHaveBeenCalledTimes(1);
+  }
+);
+
+test.each(['hashchange', 'popstate'])(
+  'the plugin entry wakes an offscreen widget on %s and then leaves scrolling to the component',
+  async (event) => {
+    api();
+    const { parent, scroll } = await lazyContainer('');
+    expect(parent.childElementCount).toBe(0);
+    history.replaceState(null, '', '#halo-comment=c1&reply=r99');
+    window.dispatchEvent(new Event(event));
+    expect(parent.childElementCount).toBe(1);
+    expect(scroll).not.toHaveBeenCalled();
+    const widget = parent.firstElementChild;
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    history.replaceState(null, '', '#halo-comment=c1');
+    window.dispatchEvent(new Event(event));
+    await until(() => itemOf(widget) && !detailOf(widget).target.replyName);
+    expect(parent.firstElementChild).toBe(widget);
+    expect(scroll).not.toHaveBeenCalled();
+  }
+);
+
+test.each(['#halo-comment=c1', '#halo-comment=c1&reply=r99'])(
+  'a named target waits for the theme to reveal the page and scrolls once (%s)',
+  async (hash) => {
+    const requests = api();
+    const allScrolls = vi.spyOn(Element.prototype, 'scrollIntoView');
+    document.body.hidden = true;
+    try {
+      const { parent } = await lazyContainer(hash);
+      expect(parent.childElementCount).toBe(0);
+      expect(requests).toHaveLength(0);
+      document.body.hidden = false;
+      await until(() => allScrolls.mock.calls.length > 0);
+      expect(allScrolls).toHaveBeenCalledTimes(1);
+      expect(allScrolls.mock.instances[0].tagName).toBe(
+        hash.includes('reply=') ? 'REPLY-ITEM' : 'COMMENT-DETAIL'
+      );
+      expect(window.scrollY).toBeGreaterThan(0);
+    } finally {
+      document.body.hidden = false;
+    }
+  }
+);
+
+test.each(['initial', 'hashchange', 'popstate'])(
+  'the bare comment anchor scrolls to the list before and after mounting (%s)',
+  async (event) => {
+    const requests = api();
+    const { parent, scroll } = await lazyContainer(
+      event === 'initial' ? '#halo-comment' : ''
+    );
+    if (event === 'hashchange') {
+      location.hash = '#halo-comment';
+      await until(() => parent.childElementCount === 1);
+    } else if (event === 'popstate') {
+      history.replaceState(null, '', '#halo-comment');
+      window.dispatchEvent(new Event(event));
+    }
+    expect(parent.childElementCount).toBe(1);
+    expect(scroll).toHaveBeenCalledExactlyOnceWith({
+      block: 'start',
+      behavior: 'instant',
+    });
+    expect(window.scrollY).toBeGreaterThan(0);
+    const widget = parent.firstElementChild;
+    await until(
+      () =>
+        widget.shadowRoot.querySelector('comment-list')?.comments.items.length
+    );
+    expect(detailOf(widget)).toBeNull();
+    expect(requests).not.toContain(`${root}/c1`);
+
+    history.replaceState(null, '', '#halo-comment=c1&reply=r99');
+    window.dispatchEvent(new Event('hashchange'));
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    expect(scroll).toHaveBeenCalledTimes(1);
+    window.scrollTo(0, 0);
+    history.replaceState(null, '', '#halo-comment');
+    window.dispatchEvent(new Event('hashchange'));
+    expect(scroll).toHaveBeenCalledTimes(2);
+    expect(window.scrollY).toBeGreaterThan(0);
+    await until(
+      () =>
+        widget.shadowRoot.querySelector('comment-list')?.comments.items.length
+    );
+    expect(detailOf(widget)).toBeNull();
+    expect(parent.firstElementChild).toBe(widget);
+  }
+);
+
+test('the comment anchor scrolls after the theme reveals the page', async () => {
+  api();
+  const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior = 'smooth';
+  document.body.hidden = true;
+  try {
+    const { parent, scroll } = await lazyContainer('#halo-comment');
+    let scrolledImmediately = false;
+    scroll.mockImplementation((options) => {
+      Element.prototype.scrollIntoView.call(parent, options);
+      scrolledImmediately = window.scrollY > 0;
+    });
+    const widget = parent.firstElementChild;
+    await until(
+      () =>
+        widget?.shadowRoot.querySelector('comment-list')?.comments.items.length
+    );
+    expect(window.scrollY).toBe(0);
+    document.body.hidden = false;
+    await until(() => {
+      const rect = parent.getBoundingClientRect();
+      return rect.top >= 0 && rect.top < innerHeight;
+    });
+    expect(scrolledImmediately).toBe(true);
+    expect(scroll).toHaveBeenCalledExactlyOnceWith({
+      block: 'start',
+      behavior: 'instant',
+    });
+  } finally {
+    document.body.hidden = false;
+    document.documentElement.style.scrollBehavior = previousScrollBehavior;
+  }
+});
+
 test('comment detail skips the list, loads replies, returns to the list and follows history', async () => {
   const requests = api();
   const widget = await mount('#halo-comment=c1');
@@ -141,6 +332,7 @@ test.each(['missing', 'different-subject', 'missing-reply'])(
                   }),
           };
     const requests = api(overrides);
+    const scroll = vi.spyOn(Element.prototype, 'scrollIntoView');
     const widget = await mount('#halo-comment=c1&reply=r99');
     await until(() =>
       detailOf(widget)?.shadowRoot.querySelector('[role=status]')
@@ -152,6 +344,8 @@ test.each(['missing', 'different-subject', 'missing-reply'])(
     expect(detailOf(widget).shadowRoot.textContent).toContain(
       'Comment not found or unavailable'
     );
+    expect(scroll).toHaveBeenCalledTimes(1);
+    expect(scroll.mock.instances[0]).toBe(detailOf(widget));
   }
 );
 

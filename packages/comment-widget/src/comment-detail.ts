@@ -82,9 +82,7 @@ export class CommentDetail extends LitElement {
         if (
           requestId === this.requestId &&
           this.isConnected &&
-          this.comment &&
-          !this.target.replyName &&
-          !this.error
+          (!this.target.replyName || this.error)
         ) {
           this.scrollIntoView({ block: 'start' });
         }
