@@ -302,6 +302,50 @@
   <source>Zoom image</source>
   <target>Ampliar imagen</target>
 </trans-unit>
+<trans-unit id="sa862e76e95967816">
+  <source>Comment updated successfully</source>
+  <target>Comentario actualizado correctamente</target>
+</trans-unit>
+<trans-unit id="s176fe95698857ad9">
+  <source>This comment or reply has changed. Copy your draft, then reopen the editor to load the latest version.</source>
+  <target>El comentario o la respuesta ha cambiado. Copia tu borrador y vuelve a abrir el editor para cargar la última versión.</target>
+</trans-unit>
+<trans-unit id="s63efea23113001ee">
+  <source>Could not save. Your draft has been kept.</source>
+  <target>No se pudo guardar. Se ha conservado tu borrador.</target>
+</trans-unit>
+<trans-unit id="s2254107bb49631da">
+  <source>This comment or reply has been deleted.</source>
+  <target>Este comentario o respuesta ha sido eliminado.</target>
+</trans-unit>
+<trans-unit id="s22ae36191f9a1a8d">
+  <source>Failed to load the latest content. Please try again later.</source>
+  <target>No se pudo cargar el contenido más reciente. Inténtalo de nuevo más tarde.</target>
+</trans-unit>
+<trans-unit id="s33f85f24c0f5f008">
+  <source>Save</source>
+  <target>Guardar</target>
+</trans-unit>
+<trans-unit id="s2ceb11be2290bb1b">
+  <source>Cancel</source>
+  <target>Cancelar</target>
+</trans-unit>
+<trans-unit id="s64ef2a6c2dd1d3d1">
+  <source>Edit</source>
+  <target>Editar</target>
+</trans-unit>
+<trans-unit id="s2df0abe59a97747a">
+  <source>Discard your changes?</source>
+  <target>¿Descartar los cambios?</target>
+</trans-unit>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>Reintentar</target>
+</trans-unit>
+<trans-unit id="s4d76c6944ffb0540">
+  <source>Could not save. The comment may have been deleted, or the current Halo version does not support editing. Your draft has been kept.</source>
+  <target>No se pudo guardar. Es posible que el comentario se haya eliminado o que la versión actual de Halo no admita la edición. Tu borrador se ha conservado.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

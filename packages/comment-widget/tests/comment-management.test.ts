@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { test } from 'vitest';
 import {
+  fetchCommentContent,
   fetchManagementPermission,
   manageComment,
+  updateCommentContent,
 } from '../src/utils/comment-management.ts';
 
 test('management permissions fail closed and mutations follow Halo contracts', async ({
@@ -103,4 +105,69 @@ test('management permissions fail closed and mutations follow Halo contracts', a
   const count = requests.length;
   await assert.rejects(manageComment(baseUrl, 'comments', 'name', 'delete'));
   assert.equal(requests.length, count + 1);
+});
+
+test('content editing endpoints follow Halo contracts', async ({
+  onTestFinished,
+}) => {
+  const requests: {
+    method?: string;
+    url?: string;
+    type?: string;
+    body: unknown;
+  }[] = [];
+  const server = createServer(async (req, res) => {
+    let body = '';
+    for await (const chunk of req) body += chunk;
+    requests.push({
+      method: req.method,
+      url: req.url,
+      type: req.headers['content-type'],
+      body: body ? JSON.parse(body) : undefined,
+    });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(
+      JSON.stringify({
+        metadata: { name: 'name', version: 7 },
+        spec: { raw: '<p>hi</p>', content: '<p>hi</p>' },
+      })
+    );
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  onTestFinished(
+    () =>
+      new Promise<void>((resolve, reject) =>
+        server.close((error) => (error ? reject(error) : resolve()))
+      )
+  );
+  const address = server.address();
+  assert.ok(address && typeof address !== 'string');
+  const baseUrl = `http://127.0.0.1:${address.port}`;
+
+  for (const resource of ['comments', 'replies'] as const) {
+    const latest = await fetchCommentContent(
+      baseUrl,
+      resource,
+      'name/with space'
+    );
+    assert.equal(latest.metadata.version, 7);
+    assert.deepEqual(requests.at(-1), {
+      method: 'GET',
+      url: `/apis/content.halo.run/v1alpha1/${resource}/name%2Fwith%20space`,
+      type: undefined,
+      body: undefined,
+    });
+
+    await updateCommentContent(baseUrl, resource, 'name/with space', {
+      raw: '<p>edited</p>',
+      content: '<p>edited</p>',
+      version: 7,
+    });
+    assert.deepEqual(requests.at(-1), {
+      method: 'PUT',
+      url: `/apis/api.console.halo.run/v1alpha1/${resource}/name%2Fwith%20space/content`,
+      type: 'application/json',
+      body: { raw: '<p>edited</p>', content: '<p>edited</p>', version: 7 },
+    });
+  }
 });
