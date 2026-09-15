@@ -7,23 +7,46 @@ test('toEditorContent keeps HTML raw unchanged', () => {
   assert.equal(toEditorContent(html), html);
 });
 
-test('toEditorContent converts plain text to paragraphs without losing whitespace', () => {
+test('toEditorContent converts plain text lines to hard breaks without losing whitespace', () => {
   assert.equal(
     toEditorContent('first line\nsecond  line'),
-    '<p>first line</p><p>second\u00a0 line</p>'
+    'first line<br>second\u00a0 line'
   );
 });
 
 test('toEditorContent preserves blank lines and edge spaces', () => {
   assert.equal(
     toEditorContent(' leading\n\ntrailing '),
-    '<p>\u00a0leading</p><p></p><p>trailing\u00a0</p>'
+    '\u00a0leading<br><br>trailing\u00a0'
   );
 });
 
 test('toEditorContent escapes plain text that looks like markup', () => {
+  assert.equal(toEditorContent('1 < 2 & 3 > 2'), '1 &lt; 2 &amp; 3 &gt; 2');
+});
+
+test('toEditorContent keeps existing entities encoded once', () => {
   assert.equal(
-    toEditorContent('1 < 2 & 3 > 2'),
-    '<p>1 &lt; 2 &amp; 3 &gt; 2</p>'
+    toEditorContent('A &lt; B &amp; C &#65;'),
+    'A &lt; B &amp; C &#65;'
   );
+});
+
+test('toEditorContent normalizes CRLF line endings', () => {
+  assert.equal(toEditorContent('a\r\nb\rc'), 'a<br>b<br>c');
+});
+
+test('toEditorContent expands tabs to preserved spaces', () => {
+  assert.equal(toEditorContent('a\tb'), 'a\u00a0\u00a0\u00a0\u00a0b');
+});
+
+test('toEditorContent escapes angle-bracket text that cleaning would strip', () => {
+  assert.equal(
+    toEditorContent('see <https://x.com>'),
+    'see &lt;https://x.com&gt;'
+  );
+});
+
+test('toEditorContent keeps in-prose tags that survive cleaning as HTML', () => {
+  assert.equal(toEditorContent('use the <p> tag'), 'use the <p> tag');
 });

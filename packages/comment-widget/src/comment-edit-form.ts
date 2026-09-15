@@ -18,7 +18,7 @@ import {
 import './comment-editor';
 import './loading-block';
 import './icons/icon-loading';
-import { toEditorContent } from './utils/html';
+import { cleanHtml, toEditorContent } from './utils/html';
 
 export class CommentEditForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -63,6 +63,8 @@ export class CommentEditForm extends LitElement {
   private initialRaw = '';
 
   private editorContent = '';
+
+  private baseline = '';
 
   private editorRef: Ref<CommentEditor> = createRef<CommentEditor>();
 
@@ -127,6 +129,14 @@ export class CommentEditForm extends LitElement {
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
     if (this.isConnected && editor.editor) {
+      // The editor normalizes the initial content (e.g. wrapping plain text
+      // in a paragraph), so the serialized HTML differs from the raw source.
+      // Record it as the baseline for the dirty check to avoid treating an
+      // unchanged or undone document as modified.
+      this.baseline = cleanHtml(editor.editor.getHTML());
+      if (this.content === this.initialRaw) {
+        this.content = this.baseline;
+      }
       editor.setFocus();
     }
   }
@@ -151,11 +161,15 @@ export class CommentEditForm extends LitElement {
     );
   }
 
+  private get dirty() {
+    return this.baseline !== '' && this.content !== this.baseline;
+  }
+
   private get canSave() {
     return (
       !this.saving &&
       this.version !== undefined &&
-      this.content !== this.initialRaw &&
+      this.dirty &&
       this.hasContent
     );
   }
@@ -205,7 +219,7 @@ export class CommentEditForm extends LitElement {
             )
           : status === 404
             ? msg(
-                'The current Halo version does not support editing comments. Please upgrade Halo.'
+                'Could not save. The comment may have been deleted, or the current Halo version does not support editing. Your draft has been kept.'
               )
             : msg('Could not save. Your draft has been kept.');
       this.saving = false;
@@ -213,10 +227,7 @@ export class CommentEditForm extends LitElement {
   }
 
   private handleCancel() {
-    if (
-      this.content !== this.initialRaw &&
-      !window.confirm(msg('Discard your changes?'))
-    ) {
+    if (this.dirty && !window.confirm(msg('Discard your changes?'))) {
       return;
     }
     this.dispatchEvent(

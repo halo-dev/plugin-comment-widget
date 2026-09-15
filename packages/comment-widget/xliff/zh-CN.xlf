@@ -334,10 +334,6 @@
   <source>Edit</source>
   <target>编辑</target>
 </trans-unit>
-<trans-unit id="s44bcc271c1166c56">
-  <source>The current Halo version does not support editing comments. Please upgrade Halo.</source>
-  <target>当前 Halo 版本不支持编辑评论，请升级 Halo。</target>
-</trans-unit>
 <trans-unit id="s2df0abe59a97747a">
   <source>Discard your changes?</source>
   <target>确定要丢弃所做的修改吗？</target>
@@ -345,6 +341,10 @@
 <trans-unit id="s2c8189544e3ea679">
   <source>Retry</source>
   <target>重试</target>
+</trans-unit>
+<trans-unit id="s4d76c6944ffb0540">
+  <source>Could not save. The comment may have been deleted, or the current Halo version does not support editing. Your draft has been kept.</source>
+  <target>保存失败。该评论可能已被删除，或当前 Halo 版本不支持编辑。你的草稿已保留。</target>
 </trans-unit>
 </body>
 </file>
