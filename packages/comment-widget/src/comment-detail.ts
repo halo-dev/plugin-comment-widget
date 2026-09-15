@@ -26,6 +26,7 @@ export class CommentDetail extends LitElement {
   @state() private reply?: ReplyVo;
   @state() private loading = true;
   @state() private error = '';
+  @state() private retryable = false;
   private requestId = 0;
   private activeReplyItem?: { closeReplyForm(): void };
 
@@ -44,6 +45,7 @@ export class CommentDetail extends LitElement {
     const requestId = ++this.requestId;
     this.loading = true;
     this.error = '';
+    this.retryable = false;
     try {
       const commentName = encodeURIComponent(this.target.commentName);
       const comment = await ofetch<CommentVo>(
@@ -62,7 +64,7 @@ export class CommentDetail extends LitElement {
       }
       const reply = this.target.replyName
         ? await ofetch<ReplyVo>(
-            `${this.baseUrl}/apis/api.commentwidget.halo.run/v1alpha1/comments/${commentName}/replies/${encodeURIComponent(this.target.replyName)}`,
+            `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${commentName}/reply/${encodeURIComponent(this.target.replyName)}`,
             { retry: 0 }
           )
         : undefined;
@@ -71,10 +73,10 @@ export class CommentDetail extends LitElement {
       this.reply = reply;
     } catch (error) {
       if (requestId !== this.requestId) return;
-      this.error =
-        (error as { status?: number }).status === 404
-          ? msg('Comment not found or unavailable')
-          : msg('Failed to load comment, please try again');
+      this.retryable = (error as { status?: number }).status !== 404;
+      this.error = !this.retryable
+        ? msg('Comment not found or unavailable')
+        : msg('Failed to load comment, please try again');
     } finally {
       if (requestId === this.requestId) {
         this.loading = false;
@@ -88,6 +90,12 @@ export class CommentDetail extends LitElement {
         }
       }
     }
+  }
+
+  private retry() {
+    this.tabIndex = -1;
+    this.focus({ preventScroll: true });
+    void this.load();
   }
 
   private returnToList() {
@@ -109,7 +117,7 @@ export class CommentDetail extends LitElement {
       this.activeReplyItem = event.detail;
     }}>
       <button type="button" class="back text-sm text-primary-1" @click=${this.returnToList}>${msg('Back to comments')}</button>
-      ${this.loading ? html`<loading-block></loading-block>` : this.error ? html`<p role="status" class="text-sm text-text-2 my-3">${this.error}</p>` : keyed(this.requestId, html`<comment-item .comment=${this.comment} .detail=${true} .targetReply=${this.reply}></comment-item>`)}
+      ${this.loading ? html`<loading-block></loading-block>` : this.error ? html`<p role="status" class="text-sm text-text-2 my-3">${this.error}</p>${this.retryable ? html`<button type="button" class="retry back text-sm text-primary-1" @click=${this.retry}>${msg('Retry')}</button>` : ''}` : keyed(this.requestId, html`<comment-item .comment=${this.comment} .detail=${true} .targetReply=${this.reply}></comment-item>`)}
     </div>`;
   }
 

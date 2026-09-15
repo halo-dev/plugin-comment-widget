@@ -28,6 +28,7 @@
 's2406b89e991a4524': `Actualizar código de verificación`,
 's26e4d65f2801ac9c': `Por favor, ingrese el contenido`,
 's299b10f3a58a09fd': `Haga clic en OK para ir a la página de cierre de sesión, Por favor, asegúrese de que el contenido editado haya sido guardado.`,
+'s2c8189544e3ea679': `Reintentar`,
 's2ca7699f7c5a4996': `Administrar`,
 's2e192b19ed15fcf6': `Página`,
 's34239948d1de01f1': `Verificación no disponible. Haz clic para reintentar.`,

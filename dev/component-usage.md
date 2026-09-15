@@ -72,7 +72,7 @@ export default App;
 
 ## 评论固定链接
 
-点击评论或回复的发布时间，可以查看完整时间并复制固定链接。链接基于当前前台页面地址生成，和 `baseUrl` 指向的 API 地址无关：
+插件及独立 npm 组件要求 Halo 2.27.0 或更高版本。点击评论或回复的发布时间，可以查看完整时间并复制 Core 返回的顶层 `permalink`。缺少链接时仅显示日期，不提供复制入口，也不自行拼造链接。相对链接在复制时基于当前前台 URL 解析为完整地址，绝对链接保持原样；不会使用 API 的 `baseUrl` 替换前台地址：
 
 ```text
 /archives/example#halo-comment=<commentName>
@@ -88,10 +88,10 @@ export default App;
 
 主题保持原来的挂载方式即可。相同页面内修改 hash 会更新详情；Headless 应用若通过 `history.pushState` 切换 URL，需要由应用通知组件（派发 `hashchange`）或重新挂载。使用 hash 路由的应用需自行协调路由片段，不能直接覆盖其路由 hash。内容页地址变更后的旧链接跳转由站点维护。
 
-指定回复通过插件公开接口查询：
+指定回复通过 Halo Core 公开接口查询：
 
 ```text
-GET /apis/api.commentwidget.halo.run/v1alpha1/comments/{commentName}/replies/{replyName}
+GET /apis/api.halo.run/v1alpha1/comments/{commentName}/reply/{replyName}
 ```
 
-接口校验根评论、回复归属和当前访问者的可见性，并返回脱敏展示数据；根评论详情及回复列表继续使用 Halo Core 接口。
+接口校验根评论、回复归属和当前访问者的可见性，并返回脱敏展示数据；根评论详情及回复列表同样使用 Halo Core 接口。网络或服务失败时可以重试；不存在或不可见时提供返回列表入口。不保留旧 Core 的接口回退。

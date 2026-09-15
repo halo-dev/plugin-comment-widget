@@ -25,6 +25,3 @@ rules:
   - apiGroups: [ "api.commentwidget.halo.run" ]
     resources: [ "submissions" ]
     verbs: [ "create" ]
-  - apiGroups: [ "api.commentwidget.halo.run" ]
-    resources: [ "comments/replies" ]
-    verbs: [ "get" ]

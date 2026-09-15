@@ -26,10 +26,7 @@ export class BaseCommentItem extends LitElement {
   creationTime: string | undefined;
 
   @property()
-  commentName = '';
-
-  @property()
-  replyName = '';
+  permalink?: string;
 
   @property({ type: Boolean })
   approved: boolean | undefined;
@@ -105,7 +102,7 @@ export class BaseCommentItem extends LitElement {
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
-          <comment-link .commentName=${this.commentName} .replyName=${this.replyName} .creationTime=${this.creationTime}></comment-link>
+          <comment-link .permalink=${this.permalink} .creationTime=${this.creationTime}></comment-link>
 
           ${when(!this.approved, () => html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`)}
         </div>

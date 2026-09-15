@@ -9,9 +9,9 @@ afterEach(() => {
   window.scrollTo(0, 0);
 });
 const root = '/apis/api.halo.run/v1alpha1/comments';
-const replyPath =
-  '/apis/api.commentwidget.halo.run/v1alpha1/comments/c1/replies/r99';
+const replyPath = '/apis/api.halo.run/v1alpha1/comments/c1/reply/r99';
 const comment = {
+  permalink: '/archives/canonical?lang=en#halo-comment=c1',
   metadata: { name: 'c1' },
   spec: {
     subjectRef: { group: 'content.halo.run', kind: 'Post', name: 'post' },
@@ -26,6 +26,7 @@ const comment = {
   status: { visibleReplyCount: 99 },
 };
 const reply = {
+  permalink: 'https://frontend.example/discussion#halo-comment=c1&reply=r99',
   metadata: { name: 'r99' },
   spec: { ...comment.spec, content: '<p>Target reply</p>', commentName: 'c1' },
   owner: { displayName: 'Author' },
@@ -338,6 +339,7 @@ test.each(['missing', 'different-subject', 'missing-reply'])(
       detailOf(widget)?.shadowRoot.querySelector('[role=status]')
     );
     expect(itemOf(widget)).toBeNull();
+    expect(detailOf(widget).shadowRoot.querySelector('.retry')).toBeNull();
     expect(requests).not.toContain(root);
     expect(requests).not.toContain(`${root}/c1/reply`);
     if (reason !== 'missing-reply') expect(requests).not.toContain(replyPath);
@@ -383,9 +385,7 @@ test('timestamps open a copyable frontend URL, select it, close with Escape and 
   trigger.click();
   await until(() => link.shadowRoot.querySelector('input'));
   const input = link.shadowRoot.querySelector('input');
-  expect(input.value).toBe(
-    `${location.origin}${location.pathname}${location.search}#halo-comment=c1&reply=r99`
-  );
+  expect(input.value).toBe(reply.permalink);
   expect(input.readOnly).toBe(true);
   await until(() => input.selectionEnd === input.value.length);
   const clipboard = vi
@@ -432,7 +432,7 @@ test('copy failure keeps the link selected for manual copying on a narrow screen
   await page.viewport(390, 844);
   await import('../src/comment-link.ts');
   const link = document.createElement('comment-link');
-  link.commentName = 'c1';
+  link.permalink = comment.permalink;
   link.creationTime = comment.spec.creationTime;
   document.body.append(link);
   await link.updateComplete;
@@ -525,3 +525,78 @@ test('returning to the list moves keyboard focus to the list', async () => {
     widget.shadowRoot.querySelector('comment-list')
   );
 });
+
+test('list timestamps copy the Core relative permalink using the frontend URL', async () => {
+  api();
+  const widget = await mount('');
+  widget.baseUrl = 'https://api.example';
+  const list = widget.shadowRoot.querySelector('comment-list');
+  await until(() => list?.comments.items.length);
+  await list.updateComplete;
+  const item = list.shadowRoot.querySelector('comment-item');
+  await item.updateComplete;
+  const base = item.shadowRoot.querySelector('base-comment-item');
+  await base.updateComplete;
+  const link = base.shadowRoot.querySelector('comment-link');
+  await link.updateComplete;
+  link.shadowRoot.querySelector('.trigger').click();
+  await until(() => link.shadowRoot.querySelector('input'));
+  const expected = new URL(comment.permalink, location.href).href;
+  expect(link.shadowRoot.querySelector('input').value).toBe(expected);
+  const clipboard = vi
+    .spyOn(navigator.clipboard, 'writeText')
+    .mockResolvedValue();
+  link.shadowRoot.querySelector('.copy').click();
+  await until(() => clipboard.mock.calls.length);
+  expect(clipboard).toHaveBeenCalledWith(expected);
+});
+
+test.each([undefined, null, ''])(
+  'missing permalink (%s) renders only the date',
+  async (permalink) => {
+    api({
+      [`${root}/c1`]: () => Response.json({ ...comment, permalink }),
+      [replyPath]: () => Response.json({ ...reply, permalink }),
+    });
+    const widget = await mount('#halo-comment=c1&reply=r99');
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    const replies = repliesOf(widget);
+    await replies.updateComplete;
+    const replyItem = replies.shadowRoot.querySelector('reply-item');
+    for (const item of [itemOf(widget), replyItem]) {
+      await item.updateComplete;
+      const base = item.shadowRoot.querySelector('base-comment-item');
+      await base.updateComplete;
+      const link = base.shadowRoot.querySelector('comment-link');
+      await link.updateComplete;
+      expect(link.shadowRoot.querySelector('time')).not.toBeNull();
+      expect(link.shadowRoot.querySelector('button')).toBeNull();
+      expect(link.shadowRoot.querySelector('input')).toBeNull();
+    }
+  }
+);
+
+test.each([`${root}/c1`, replyPath])(
+  'a failed Core request (%s) can be retried without loading the list',
+  async (path) => {
+    let fail = true;
+    const requests = api({
+      [path]: () =>
+        fail
+          ? new Response('', { status: 503 })
+          : Response.json(path === replyPath ? reply : comment),
+    });
+    const widget = await mount('#halo-comment=c1&reply=r99');
+    await until(() => detailOf(widget)?.shadowRoot.querySelector('.retry'));
+    const detail = detailOf(widget);
+    const retry = detail.shadowRoot.querySelector('.retry');
+    retry.focus();
+    fail = false;
+    retry.click();
+    await until(() => repliesOf(widget)?.replies.length === 1);
+    expect(widget.shadowRoot.activeElement).toBe(detail);
+    expect(requests).not.toContain(root);
+    expect(requests.filter((url) => url === path)).toHaveLength(2);
+    expect(detail.shadowRoot.querySelector('.retry')).toBeNull();
+  }
+);

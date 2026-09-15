@@ -9,12 +9,10 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import { commentLink } from './utils/comment-link';
 import { formatDate, timeAgo } from './utils/date';
 
 export class CommentLink extends LitElement {
-  @property() commentName = '';
-  @property() replyName = '';
+  @property() permalink?: string;
   @property() creationTime = '';
   @state() private open = false;
   @state() private feedback = '';
@@ -66,9 +64,10 @@ export class CommentLink extends LitElement {
   }
 
   private async copy() {
+    if (!this.permalink) return;
     try {
       await navigator.clipboard.writeText(
-        commentLink(this.commentName, this.replyName)
+        new URL(this.permalink, location.href).href
       );
       this.feedback = msg('Link copied');
     } catch {
@@ -78,6 +77,9 @@ export class CommentLink extends LitElement {
   }
 
   override render() {
+    if (!this.permalink) {
+      return html`<time datetime=${this.creationTime} title=${formatDate(this.creationTime)}>${timeAgo(this.creationTime)}</time>`;
+    }
     return html`<span @keydown=${(event: KeyboardEvent) => {
       if (event.key === 'Escape' && this.open) {
         event.preventDefault();
@@ -93,7 +95,7 @@ export class CommentLink extends LitElement {
           ? html`<div id="comment-link-panel" class="panel bg-muted-3 text-text-1 rounded-base border border-muted-1 shadow-lg">
         <div class="date">${formatDate(this.creationTime)}</div>
         <div class="link-row">
-          <input aria-label=${msg('Comment link')} readonly .value=${commentLink(this.commentName, this.replyName)} @click=${this.selectLink} />
+          <input aria-label=${msg('Comment link')} readonly .value=${new URL(this.permalink, location.href).href} @click=${this.selectLink} />
           <button class="copy" type="button" @click=${this.copy}>${msg('Copy link')}</button>
         </div>
         <span role="status">${this.feedback}</span>

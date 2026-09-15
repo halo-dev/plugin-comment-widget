@@ -12,11 +12,3 @@ export function readCommentTarget(
     ? { commentName, replyName: params.get('reply') || undefined }
     : undefined;
 }
-
-export function commentLink(commentName: string, replyName?: string): string {
-  const url = new URL(location.href);
-  const params = new URLSearchParams({ 'halo-comment': commentName });
-  if (replyName) params.set('reply', replyName);
-  url.hash = params.toString();
-  return url.href;
-}

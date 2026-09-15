@@ -1,6 +1,6 @@
 # plugin-comment-widget
 
-Halo 2.0 的通用评论组件插件，为前台提供完整的评论解决方案。
+适用于 Halo 2.27.0 及以上版本的通用评论组件插件，为前台提供完整的评论解决方案。
 
 ![Cover](./images/cover.png)
 

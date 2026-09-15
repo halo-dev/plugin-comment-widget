@@ -334,6 +334,10 @@
   <source>View all replies</source>
   <target>查看所有回覆</target>
 </trans-unit>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>重試</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

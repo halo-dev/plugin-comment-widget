@@ -170,7 +170,7 @@ export class CommentItem extends LitElement {
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
-      .commentName=${this.comment?.metadata.name}
+      .permalink=${this.comment?.permalink}
       .approved=${this.comment?.spec.approved}
       .pinned=${this.comment?.spec.top}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
