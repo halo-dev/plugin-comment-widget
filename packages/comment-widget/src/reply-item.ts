@@ -210,7 +210,7 @@ export class ReplyItem extends LitElement {
             slot="content-edit"
             .target=${this.reply}
             resource="replies"
-            @close=${this.handleCloseEditForm}
+            @edit-close=${this.handleCloseEditForm}
           ></comment-edit-form>`
         )}
         ${when(

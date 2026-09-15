@@ -229,7 +229,7 @@ export class CommentItem extends LitElement {
           slot="content-edit"
           .target=${this.comment}
           resource="comments"
-          @close=${this.handleCloseEditForm}
+          @edit-close=${this.handleCloseEditForm}
         ></comment-edit-form>`
       )}
       <div slot="footer">

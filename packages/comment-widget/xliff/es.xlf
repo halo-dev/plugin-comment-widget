@@ -334,6 +334,18 @@
   <source>Edit</source>
   <target>Editar</target>
 </trans-unit>
+<trans-unit id="s44bcc271c1166c56">
+  <source>The current Halo version does not support editing comments. Please upgrade Halo.</source>
+  <target>La versión actual de Halo no admite editar comentarios. Actualiza Halo.</target>
+</trans-unit>
+<trans-unit id="s2df0abe59a97747a">
+  <source>Discard your changes?</source>
+  <target>¿Descartar los cambios?</target>
+</trans-unit>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>Reintentar</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

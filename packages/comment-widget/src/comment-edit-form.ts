@@ -18,6 +18,7 @@ import {
 import './comment-editor';
 import './loading-block';
 import './icons/icon-loading';
+import { toEditorContent } from './utils/html';
 
 export class CommentEditForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -61,6 +62,8 @@ export class CommentEditForm extends LitElement {
 
   private initialRaw = '';
 
+  private editorContent = '';
+
   private editorRef: Ref<CommentEditor> = createRef<CommentEditor>();
 
   override connectedCallback(): void {
@@ -83,6 +86,8 @@ export class CommentEditForm extends LitElement {
 
   private async loadLatest() {
     if (!this.target) {
+      this.loading = false;
+      this.loadFailed = true;
       return;
     }
     this.loading = true;
@@ -99,11 +104,30 @@ export class CommentEditForm extends LitElement {
       }
       this.version = latest.metadata.version ?? undefined;
       this.initialRaw = latest.spec.raw || '';
+      this.editorContent = toEditorContent(this.initialRaw);
       this.content = this.initialRaw;
     } catch {
       this.loadFailed = true;
     } finally {
       this.loading = false;
+    }
+    if (!this.loadFailed && !this.deleted) {
+      void this.focusEditor();
+    }
+  }
+
+  private async focusEditor() {
+    await this.updateComplete;
+    const editor = this.editorRef.value;
+    if (!editor) {
+      return;
+    }
+    // The editor is created asynchronously after its dynamic imports resolve.
+    for (let i = 0; i < 100 && !editor.editor && this.isConnected; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    if (this.isConnected && editor.editor) {
+      editor.setFocus();
     }
   }
 
@@ -169,28 +193,43 @@ export class CommentEditForm extends LitElement {
         })
       );
       this.dispatchEvent(
-        new CustomEvent('close', { bubbles: true, composed: true })
+        new CustomEvent('edit-close', { bubbles: true, composed: true })
       );
     } catch (error) {
+      const status =
+        error instanceof FetchError ? error.response?.status : undefined;
       this.errorMessage =
-        error instanceof FetchError && error.response?.status === 409
+        status === 409
           ? msg(
               'This comment or reply has changed. Copy your draft, then reopen the editor to load the latest version.'
             )
-          : msg('Could not save. Your draft has been kept.');
+          : status === 404
+            ? msg(
+                'The current Halo version does not support editing comments. Please upgrade Halo.'
+              )
+            : msg('Could not save. Your draft has been kept.');
       this.saving = false;
     }
   }
 
   private handleCancel() {
+    if (
+      this.content !== this.initialRaw &&
+      !window.confirm(msg('Discard your changes?'))
+    ) {
+      return;
+    }
     this.dispatchEvent(
-      new CustomEvent('close', { bubbles: true, composed: true })
+      new CustomEvent('edit-close', { bubbles: true, composed: true })
     );
   }
 
   override render() {
     if (this.loading) {
-      return html`<loading-block></loading-block>`;
+      return html`<loading-block></loading-block>
+        <div class="edit-form-actions mt-2 flex justify-end items-center gap-2">
+          ${this.renderCancelButton()}
+        </div>`;
     }
     if (this.deleted) {
       return html`<div class="edit-form-message text-sm text-text-3 py-2" role="alert">
@@ -202,12 +241,21 @@ export class CommentEditForm extends LitElement {
       return html`<div class="edit-form-message text-sm text-text-3 py-2" role="alert">
           ${msg('Failed to load the latest content. Please try again later.')}
         </div>
-        ${this.renderCancelButton()}`;
+        <div class="edit-form-actions mt-2 flex justify-end items-center gap-2">
+          ${this.renderCancelButton()}
+          <button
+            type="button"
+            @click=${() => void this.loadLatest()}
+            class="edit-form-retry outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-white px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
+          >
+            ${msg('Retry')}
+          </button>
+        </div>`;
     }
     return html`
       <comment-editor
         ${ref(this.editorRef)}
-        .initialContent=${this.initialRaw}
+        .initialContent=${this.editorContent}
         .disabled=${this.saving}
         .enableEmoji=${this.configMapData?.editor?.enableEmoji !== false}
         @update=${this.onEditorUpdate}

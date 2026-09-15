@@ -334,6 +334,18 @@
   <source>Edit</source>
   <target>編輯</target>
 </trans-unit>
+<trans-unit id="s44bcc271c1166c56">
+  <source>The current Halo version does not support editing comments. Please upgrade Halo.</source>
+  <target>目前 Halo 版本不支援編輯評論，請升級 Halo。</target>
+</trans-unit>
+<trans-unit id="s2df0abe59a97747a">
+  <source>Discard your changes?</source>
+  <target>確定要捨棄所做的修改嗎？</target>
+</trans-unit>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>重試</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
