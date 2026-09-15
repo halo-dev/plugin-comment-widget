@@ -302,6 +302,42 @@
   <source>Zoom image</source>
   <target>放大圖片</target>
 </trans-unit>
+<trans-unit id="s78f95c3c2b1b0512">
+  <source>Comment link</source>
+  <target>留言連結</target>
+</trans-unit>
+<trans-unit id="s19172ed3838854fc">
+  <source>Copy link</source>
+  <target>複製連結</target>
+</trans-unit>
+<trans-unit id="s1f224cf8b88cb893">
+  <source>Link copied</source>
+  <target>連結已複製</target>
+</trans-unit>
+<trans-unit id="sef8291267fe91bbb">
+  <source>Select and copy the link manually</source>
+  <target>請選取並手動複製連結</target>
+</trans-unit>
+<trans-unit id="sb490fb4653620603">
+  <source>Back to comments</source>
+  <target>返回留言列表</target>
+</trans-unit>
+<trans-unit id="sd68dcf08044cb636">
+  <source>Comment not found or unavailable</source>
+  <target>留言不存在或暫時無法查看</target>
+</trans-unit>
+<trans-unit id="s879ba21b93adbbbd">
+  <source>Failed to load comment, please try again</source>
+  <target>留言載入失敗，請重試</target>
+</trans-unit>
+<trans-unit id="sc29d248fb3e5c59b">
+  <source>View all replies</source>
+  <target>查看所有回覆</target>
+</trans-unit>
+<trans-unit id="s2c8189544e3ea679">
+  <source>Retry</source>
+  <target>重試</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
