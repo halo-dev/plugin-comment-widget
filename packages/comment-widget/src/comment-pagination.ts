@@ -176,7 +176,7 @@ export class CommentPagination extends LitElement {
             ${this.page} / ${this.totalPages}
             <i class="i-tabler:chevron-down size-4 text-text-3" aria-hidden="true"></i>
           </summary>
-          <div
+          <div tabindex="-1"
             class="pagination-pages p-1 text-sm text-text-1 bg-muted-3 border border-solid border-muted-1 rounded-base shadow-lg">
             ${Array.from({ length: this.totalPages }, (_, i) => i + 1).map(
               (page) => html`

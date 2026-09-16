@@ -111,3 +111,22 @@ test('Page dropdown stays in view and supports efficient keyboard navigation', a
     'Closed dropdown does not swallow Escape'
   );
 });
+
+test('Clicking dropdown padding preserves the menu and keyboard dismissal', async () => {
+  const pagination = document.createElement('comment-pagination');
+  pagination.total = 30;
+  document.body.append(pagination);
+  await pagination.updateComplete;
+  const root = pagination.shadowRoot;
+  const details = root.querySelector('details');
+  const dropdown = root.querySelector('.pagination-pages');
+  const trigger = root.querySelector('summary');
+  await userEvent.click(trigger);
+  await vi.waitFor(() => assert.equal(root.activeElement.tagName, 'BUTTON'));
+  await userEvent.click(dropdown, { position: { x: 2, y: 15 } });
+  assert(details.open, 'Clicking inside the menu must not dismiss it');
+  assert.equal(root.activeElement, dropdown);
+  await userEvent.keyboard('{Escape}');
+  assert(!details.open);
+  assert.equal(root.activeElement, trigger);
+});
