@@ -30,7 +30,7 @@ test('Page dropdown supports selection, dismissal, theme colors and scrolling', 
       dark ? 'rgb(249, 250, 251)' : 'rgb(15, 23, 42)'
     );
     assert(dropdown.scrollHeight > dropdown.clientHeight);
-    await userEvent.keyboard('{Tab}{Enter}');
+    await userEvent.keyboard('{ArrowDown}{Enter}');
     assert.equal(change.mock.lastCall[0].detail.page, 2);
     assert(!details.open);
     assert.equal(root.activeElement, trigger);
@@ -67,4 +67,47 @@ test('Page dropdown supports selection, dismissal, theme colors and scrolling', 
   trigger.click();
   await userEvent.click(outside);
   assert(!details.open);
+});
+
+test('Page dropdown stays in view and supports efficient keyboard navigation', async () => {
+  const pagination = document.createElement('comment-pagination');
+  pagination.total = 1000;
+  pagination.page = 50;
+  pagination.style.cssText = 'position:fixed;bottom:0;left:0;width:100%';
+  document.body.append(pagination);
+  await pagination.updateComplete;
+  const root = pagination.shadowRoot;
+  const trigger = root.querySelector('summary');
+  const details = root.querySelector('details');
+  const dropdown = root.querySelector('.pagination-pages');
+  assert.include(trigger.getAttribute('aria-label'), '50 / 100');
+  trigger.focus();
+  await userEvent.keyboard('{Enter}');
+  await vi.waitFor(() => {
+    assert.equal(root.activeElement.textContent.trim(), '50 / 100');
+    const rect = dropdown.getBoundingClientRect();
+    assert(rect.top >= 0 && rect.bottom <= innerHeight);
+    const current = root.activeElement.getBoundingClientRect();
+    assert(current.top >= rect.top && current.bottom <= rect.bottom);
+  });
+  await userEvent.keyboard('{End}');
+  assert.equal(root.activeElement.textContent.trim(), '100 / 100');
+  await userEvent.keyboard('{Home}{ArrowDown}');
+  assert.equal(root.activeElement.textContent.trim(), '2 / 100');
+  await userEvent.keyboard('{ArrowUp}');
+  assert.equal(root.activeElement.textContent.trim(), '1 / 100');
+  assert.equal(dropdown.querySelectorAll('[tabindex="0"]').length, 1);
+  await userEvent.keyboard('{Tab}');
+  assert(!details.open, 'Tab leaves the dropdown without visiting every page');
+  assert.equal(root.activeElement.getAttribute('rel'), 'next');
+  trigger.focus();
+  const onEscape = vi.fn();
+  document.addEventListener('keydown', onEscape);
+  await userEvent.keyboard('{Escape}');
+  document.removeEventListener('keydown', onEscape);
+  assert.equal(
+    onEscape.mock.calls.length,
+    1,
+    'Closed dropdown does not swallow Escape'
+  );
 });
