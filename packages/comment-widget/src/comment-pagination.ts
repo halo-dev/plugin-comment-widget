@@ -8,7 +8,7 @@ import {
 } from '@floating-ui/dom';
 import { msg } from '@lit/localize';
 import { css, html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
 
 export class CommentPagination extends LitElement {
@@ -19,15 +19,24 @@ export class CommentPagination extends LitElement {
   @property({ type: Number })
   size = 10;
 
+  @state()
+  private open = false;
+
+  private positionVersion = 0;
   private cleanupPosition?: () => void;
 
   private close(restoreFocus = false) {
+    this.positionVersion++;
     this.cleanupPosition?.();
     this.cleanupPosition = undefined;
-    const details = this.renderRoot.querySelector('details');
-    if (details?.open) {
-      details.open = false;
-      if (restoreFocus) details.querySelector('summary')?.focus();
+    this.open = false;
+    const pages =
+      this.renderRoot.querySelector<HTMLElement>('.pagination-pages');
+    if (pages) pages.style.visibility = 'hidden';
+    if (restoreFocus) {
+      this.renderRoot
+        .querySelector<HTMLButtonElement>('.pagination-trigger')
+        ?.focus();
     }
   }
 
@@ -41,18 +50,26 @@ export class CommentPagination extends LitElement {
   }
 
   override disconnectedCallback() {
-    this.cleanupPosition?.();
+    this.close();
     document.removeEventListener('click', this.onOutsideClick);
     super.disconnectedCallback();
   }
 
-  private onToggle(event: Event) {
-    this.cleanupPosition?.();
-    this.cleanupPosition = undefined;
-    const details = event.target as HTMLDetailsElement;
-    if (!details.open || !this.isConnected) return;
-    const trigger = details.querySelector('summary');
-    const pages = details.querySelector<HTMLElement>('.pagination-pages');
+  private async onToggle() {
+    if (this.open) {
+      this.close();
+      return;
+    }
+    this.open = true;
+    const version = this.positionVersion;
+    await this.updateComplete;
+    if (version !== this.positionVersion || !this.open || !this.isConnected)
+      return;
+    const trigger = this.renderRoot.querySelector<HTMLButtonElement>(
+      '.pagination-trigger'
+    );
+    const pages =
+      this.renderRoot.querySelector<HTMLElement>('.pagination-pages');
     if (!trigger || !pages) return;
     let focusCurrent = true;
     this.cleanupPosition = autoUpdate(trigger, pages, async () => {
@@ -71,8 +88,13 @@ export class CommentPagination extends LitElement {
           }),
         ],
       });
-      if (!details.open || !this.isConnected) return;
-      Object.assign(pages.style, { left: `${x}px`, top: `${y}px` });
+      if (version !== this.positionVersion || !this.open || !this.isConnected)
+        return;
+      Object.assign(pages.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+        visibility: 'visible',
+      });
       if (focusCurrent) {
         focusCurrent = false;
         const current = pages.querySelector<HTMLButtonElement>(
@@ -95,8 +117,7 @@ export class CommentPagination extends LitElement {
   }
 
   private onKeydown(event: KeyboardEvent) {
-    const details = event.currentTarget as HTMLDetailsElement;
-    if (!details.open) return;
+    if (!this.open) return;
     if (event.key === 'Escape') {
       event.preventDefault();
       event.stopPropagation();
@@ -104,7 +125,9 @@ export class CommentPagination extends LitElement {
       return;
     }
     const buttons = Array.from(
-      details.querySelectorAll<HTMLButtonElement>('.pagination-pages button')
+      this.renderRoot.querySelectorAll<HTMLButtonElement>(
+        '.pagination-pages button'
+      )
     );
     const index = buttons.indexOf(
       this.shadowRoot?.activeElement as HTMLButtonElement
@@ -162,7 +185,7 @@ export class CommentPagination extends LitElement {
           </button>
         </li>
         <li>
-          <details @toggle=${this.onToggle} @keydown=${this.onKeydown}
+          <div @keydown=${this.onKeydown}
             @focusout=${(event: FocusEvent) => {
               if (
                 !(event.currentTarget as HTMLElement).contains(
@@ -171,16 +194,17 @@ export class CommentPagination extends LitElement {
               )
                 this.close();
             }}>
-          <summary aria-label=${`${msg('Page')} ${this.page} / ${this.totalPages}`}
+          <button type="button" @click=${this.onToggle}
+            aria-expanded=${this.open} aria-controls="pagination-pages" aria-label=${`${msg('Page')} ${this.page} / ${this.totalPages}`}
             class="pagination-trigger inline-flex items-center gap-1 text-sm text-text-1 rounded-base cursor-pointer">
             ${this.page} / ${this.totalPages}
             <i class="i-tabler:chevron-down size-4 text-text-3" aria-hidden="true"></i>
-          </summary>
-          <div tabindex="-1"
+          </button>
+          <div id="pagination-pages" tabindex="-1" ?hidden=${!this.open}
             class="pagination-pages p-1 text-sm text-text-1 bg-muted-3 border border-solid border-muted-1 rounded-base shadow-lg">
             ${Array.from({ length: this.totalPages }, (_, i) => i + 1).map(
               (page) => html`
-              <button type="button" tabindex=${page === this.page ? 0 : -1} aria-current=${page === this.page ? 'page' : 'false'}
+              <button type="button" tabindex="-1" aria-current=${page === this.page ? 'page' : 'false'}
                 class="block w-full px-3 py-2 rounded-base hover:bg-muted-2 whitespace-nowrap ${page === this.page ? 'bg-muted-2 font-medium' : ''}"
                 @click=${() => {
                   this.close(true);
@@ -189,7 +213,7 @@ export class CommentPagination extends LitElement {
             `
             )}
           </div>
-          </details>
+          </div>
         </li>
         <li>
           <button
@@ -216,11 +240,9 @@ export class CommentPagination extends LitElement {
         justify-content: center;
       }
 
-      details { position: relative; }
-      summary { list-style: none; }
-      summary::-webkit-details-marker { display: none; }
-
       .pagination-pages {
+        visibility: hidden;
+        width: max-content;
         position: fixed;
         top: 0;
         left: 0;
