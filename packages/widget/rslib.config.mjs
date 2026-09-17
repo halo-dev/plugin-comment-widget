@@ -7,10 +7,10 @@ export default defineConfig({
   lib: [
     {
       format: 'esm',
-      autoExternal: false,
     },
   ],
   output: {
+    autoExternal: false,
     target: 'web',
     minify: true,
     cleanDistPath: true,
@@ -20,7 +20,8 @@ export default defineConfig({
         if (pathData.chunk.name === 'index') {
           return 'comment-widget.js';
         }
-        return '[name].[contenthash:8].js';
+        // modern-module can retain contenthash after imports change; invalidate together.
+        return '[name].[fullhash:8].js';
       },
     },
     publicPath: `/plugins/${PLUGIN_NAME}/assets/static/`,
