@@ -15,7 +15,10 @@ class CustomAvatar extends AvatarProvider {
       return source.replace(/\{hash\}/g, seed).replace(/\{seed\}/g, seed);
     }
 
-    return `${source}${source.includes('?') ? '&' : '?'}_avatar=${seed}`;
+    const fragmentIndex = source.indexOf('#');
+    const url = fragmentIndex < 0 ? source : source.slice(0, fragmentIndex);
+    const fragment = fragmentIndex < 0 ? '' : source.slice(fragmentIndex);
+    return `${url}${url.includes('?') ? '&' : '?'}_avatar=${seed}${fragment}`;
   }
 }
 
