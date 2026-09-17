@@ -11,7 +11,7 @@ import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
 import { msg } from '@lit/localize';
-import { FetchError, type FetchResponse, ofetch } from 'ofetch';
+import { FetchError, type FetchResponse } from 'ofetch';
 import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
@@ -23,9 +23,16 @@ import type { ToastManager } from './lit-toast';
 import type { ProblemDetail } from './types';
 import {
   type CaptchaRequiredResponse,
+  getAltchaHeader,
   getCaptchaCodeHeader,
+  getCaptchaMessage,
   isRequireCaptcha,
 } from './utils/captcha';
+import {
+  isPendingReview,
+  type SubmissionEvent,
+  submissionErrorMessage,
+} from './utils/submission';
 
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -65,7 +72,9 @@ export class ReplyForm extends LitElement {
       this.scrollIntoView({
         block: 'center',
         inline: 'start',
-        behavior: 'smooth',
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
       });
       this.baseFormRef.value?.setFocus();
     }, 0);
@@ -76,17 +85,21 @@ export class ReplyForm extends LitElement {
       .submitting=${this.submitting}
       .captcha=${this.captcha}
       .hidePrivateCheckbox=${true}
+      .commentName=${this.comment?.metadata.name || ''}
+      .quoteReplyName=${this.quoteReply?.metadata.name || ''}
       ${ref(this.baseFormRef)}
-      @submit="${this.onSubmit}"
+      @submit=${(e: SubmissionEvent) => e.detail.waitUntil(this.onSubmit(e))}
     ></base-form>`;
   }
 
-  async onSubmit(e: CustomEvent) {
+  async onSubmit(e: SubmissionEvent) {
     e.preventDefault();
 
     this.submitting = true;
 
     const data = e.detail;
+    const baseForm = this.baseFormRef.value;
+    const submittedDraft = baseForm?.getDraftSnapshot();
 
     const { displayName, email, website, content } = data || {};
 
@@ -124,20 +137,20 @@ export class ReplyForm extends LitElement {
     }
 
     try {
-      const newReply = await ofetch<Reply>(
+      const newReply = await data.uploadSession.submit<Reply>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
+        replyRequest,
+        data.uploadIds,
         {
-          method: 'POST',
-          headers: {
-            ...getCaptchaCodeHeader(data.captchaCode),
-          },
-          body: replyRequest,
-        }
+          ...getCaptchaCodeHeader(data.captchaCode ?? '', data.turnstileToken),
+          ...getAltchaHeader(data.altchaPayload),
+        },
+        this.baseUrl
       );
 
       this.baseFormRef.value?.handleFetchCaptcha();
 
-      if (newReply.spec.approved) {
+      if (!isPendingReview(newReply)) {
         this.toastManager?.success(msg('Comment submitted successfully'));
       } else {
         this.toastManager?.success(
@@ -145,36 +158,44 @@ export class ReplyForm extends LitElement {
         );
       }
 
-      this.dispatchEvent(new CustomEvent('reload'));
+      this.dispatchEvent(
+        new CustomEvent('reload', {
+          detail: {
+            resetForm: (form: BaseForm) => form.resetForm(submittedDraft),
+          },
+        })
+      );
+      baseForm?.resetForm(submittedDraft);
       window.dispatchEvent(new CustomEvent('halo:comment-reply:created'));
-
-      this.baseFormRef.value?.resetForm();
     } catch (error) {
-      if (error instanceof FetchError) {
-        if (
-          isRequireCaptcha(
-            error.response as FetchResponse<CaptchaRequiredResponse>
-          )
-        ) {
-          const { captcha, detail } =
-            error.data as unknown as CaptchaRequiredResponse;
-          this.captcha = captcha;
-          this.toastManager?.warn(detail);
-          return;
-        }
-
-        const problemDetail = error.data as unknown as ProblemDetail;
-        this.toastManager?.error(
-          [problemDetail?.title, problemDetail?.detail].join(' - ') ||
-            msg('Comment failed, please try again later')
-        );
+      this.reportSubmissionError(error);
+    } finally {
+      this.baseFormRef.value?.resetVerification();
+      this.submitting = false;
+    }
+  }
+  private reportSubmissionError(error: unknown) {
+    if (error instanceof FetchError) {
+      if (
+        isRequireCaptcha(
+          error.response as FetchResponse<CaptchaRequiredResponse>
+        )
+      ) {
+        const response = error.data as CaptchaRequiredResponse;
+        this.captcha = response.captcha ?? '';
+        this.toastManager?.warn(getCaptchaMessage(response));
         return;
       }
 
-      this.toastManager?.error(msg('Comment failed, please try again later'));
-    } finally {
-      this.submitting = false;
+      const problemDetail = error.data as unknown as ProblemDetail;
+      this.toastManager?.error(
+        [problemDetail?.title, problemDetail?.detail].join(' - ') ||
+          msg('Comment failed, please try again later')
+      );
+      return;
     }
+
+    this.toastManager?.error(submissionErrorMessage(error));
   }
 }
 

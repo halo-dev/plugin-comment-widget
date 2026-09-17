@@ -15,6 +15,7 @@ export default defineConfig({
     minify: true,
     cleanDistPath: true,
     filename: {
+      css: 'index.css',
       js: (pathData) => {
         if (pathData.chunk.name === 'index') {
           return 'comment-widget.js';

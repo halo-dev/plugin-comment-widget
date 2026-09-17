@@ -13,6 +13,7 @@ import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
+import { getNextReplyRequest } from './utils/reply-pagination';
 
 export class CommentReplies extends LitElement {
   @consume({ context: baseUrlContext })
@@ -35,6 +36,12 @@ export class CommentReplies extends LitElement {
   @state()
   page = 1;
 
+  private currentPageSize = 0;
+
+  private preloaded = false;
+
+  private requestId = 0;
+
   @state()
   hasNext = false;
 
@@ -49,7 +56,7 @@ export class CommentReplies extends LitElement {
   toastManager: ToastManager | undefined;
 
   override render() {
-    return html` <div class="replies-main">
+    return html` <div class="replies-main" @comment-managed=${this.refreshReplies}>
       ${when(
         this.replies.length,
         () => html`<div class="replies-list mt-3">
@@ -63,16 +70,16 @@ export class CommentReplies extends LitElement {
                     .replies=${this.replies}
                     .activeQuoteReply=${this.activeQuoteReply}
                     @set-active-quote-reply=${this.onSetActiveQuoteReply}
-                    @reload=${this.fetchReplies}
+                    @reload=${this.refreshReplies}
                   ></reply-item>`
               )}
             </div>`
       )}
       ${when(this.loading, () => html` <loading-block></loading-block>`)}
       ${when(
-        this.hasNext && !this.loading,
+        this.hasNext,
         () => html`<div class="replies-next flex justify-center my-2">
-            <button class="replies-next-button pagination-button" @click=${this.fetchNext}>${msg('Load more')}</button>
+            <button type="button" class="replies-next-button pagination-button" aria-disabled=${this.loading} aria-busy=${this.loading} @click=${this.fetchNext}>${msg('Load more')}</button>
           </div>`
       )}
     </div>`;
@@ -82,14 +89,24 @@ export class CommentReplies extends LitElement {
     this.activeQuoteReply = event.detail.quoteReply;
   }
 
-  async fetchReplies(options?: { append: boolean }) {
+  refreshReplies() {
+    const size = this.configMapData?.basic.replySize ?? 10;
+    return this.fetchReplies({
+      size: Math.max(1, Math.ceil(this.replies.length / size)) * size,
+    });
+  }
+
+  async fetchReplies(options?: {
+    page?: number;
+    size?: number;
+    append?: boolean;
+  }) {
+    const requestId = ++this.requestId;
     try {
       this.loading = true;
 
-      // Reload replies list
-      if (!options?.append) {
-        this.page = 1;
-      }
+      const page = options?.page ?? 1;
+      const size = options?.size ?? this.configMapData?.basic.replySize ?? 10;
 
       const data = await ofetch<ReplyVoList>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${
@@ -97,12 +114,20 @@ export class CommentReplies extends LitElement {
         }/reply`,
         {
           query: {
-            page: this.page || 1,
-            size: this.configMapData?.basic.replySize || 10,
+            page,
+            size,
           },
         }
       );
 
+      if (requestId !== this.requestId) return;
+
+      const restoreFocus =
+        !data.hasNext &&
+        this.renderRoot
+          .querySelector('.replies-next-button')
+          ?.matches(':focus');
+      const firstNewReply = options?.append ? this.replies.length : 0;
       if (options?.append) {
         this.replies = this.replies.concat(data.items);
       } else {
@@ -111,42 +136,79 @@ export class CommentReplies extends LitElement {
 
       this.hasNext = data.hasNext;
       this.page = data.page;
+      this.currentPageSize = data.size;
+      this.preloaded = false;
+      if (restoreFocus) {
+        await this.updateComplete;
+        if (requestId !== this.requestId) return;
+        const target =
+          this.renderRoot.querySelectorAll<HTMLElement>('reply-item')[
+            firstNewReply
+          ] || this;
+        const previousTabIndex = target.getAttribute('tabindex');
+        target.addEventListener(
+          'blur',
+          () => {
+            if (previousTabIndex === null) {
+              target.removeAttribute('tabindex');
+            } else {
+              target.setAttribute('tabindex', previousTabIndex);
+            }
+          },
+          { once: true }
+        );
+        target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+      }
     } catch (error) {
+      if (requestId !== this.requestId) return;
       console.error(error);
       this.toastManager?.error(
         msg('Failed to load reply list, please try again later')
       );
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) {
+        this.loading = false;
+      }
     }
   }
 
   async fetchNext() {
-    if (this.configMapData?.basic.withReplies) {
-      // if withReplies is true, we need to reload the replies list
-      await this.fetchReplies({ append: !(this.page === 1) });
-      this.page++;
-    } else {
-      this.page++;
-      await this.fetchReplies({ append: true });
+    if (this.loading || !this.hasNext) {
+      return;
     }
+
+    const request = getNextReplyRequest({
+      page: this.page,
+      currentPageSize: this.currentPageSize,
+      replySize: this.configMapData?.basic.replySize ?? 10,
+      preloaded: this.preloaded,
+    });
+
+    await this.fetchReplies(request);
   }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     if (this.configMapData?.basic.withReplies) {
-      // TODO: Fix ts error
-      // Needs @halo-dev/api-client@2.14.0
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      this.replies = this.comment?.replies.items;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      this.page = this.comment?.replies.page;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      this.hasNext = this.comment?.replies.hasNext;
+      const comment = this.comment as
+        | (CommentVo & { replies?: ReplyVoList })
+        | undefined;
+      const preloadedReplies = comment?.replies;
+
+      if (!comment || !preloadedReplies) {
+        this.fetchReplies();
+        return;
+      }
+
+      this.replies = preloadedReplies.items;
+      this.page = preloadedReplies.page;
+      this.currentPageSize = preloadedReplies.size;
+      this.hasNext = preloadedReplies.hasNext;
+      this.preloaded = true;
+      // Only use the initial snapshot once; reopening must fetch current replies.
+      delete comment.replies;
     } else {
       this.fetchReplies();
     }

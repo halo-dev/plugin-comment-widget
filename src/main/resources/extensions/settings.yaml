@@ -15,7 +15,11 @@ spec:
         - $formkit: number
           label: 回复分页条数
           name: replySize
-          validation: required
+          id: replySize
+          key: replySize
+          min: 1
+          step: 1
+          validation: required|min:1
           value: 10
         - $formkit: checkbox
           label: 同时加载评论的回复
@@ -29,7 +33,11 @@ spec:
           name: withReplySize
           id: withReplySize
           key: withReplySize
-          validation: required
+          min: 1
+          max: "$get(replySize).value"
+          step: 1
+          validation: required|min:1
+          help: 不能大于回复分页条数
           value: 5
         - $formkit: checkbox
           label: 显示评论者设备信息
@@ -61,24 +69,125 @@ spec:
             type: ALPHANUMERIC
           children:
             - $formkit: checkbox
-              label: 匿名评论需要验证码
-              name: anonymousCommentCaptcha
-              id: anonymousCommentCaptcha
-              key: anonymousCommentCaptcha
+              label: 启用验证码
+              name: enable
+              id: captchaEnable
+              key: captchaEnable
               value: false
             - $formkit: select
+              if: "$get(captchaEnable).value === true"
+              label: 需要验证码的用户
+              name: audience
+              id: captchaAudience
+              key: captchaAudience
+              value: ANONYMOUS
+              validation: required
+              options:
+                - label: 所有用户
+                  value: ALL
+                - label: 匿名用户
+                  value: ANONYMOUS
+                - label: 按照角色选择用户
+                  value: ROLES
+            - $formkit: roleSelect
+              if: "$get(captchaEnable).value === true && $get(captchaAudience).value === ROLES"
+              label: 用户角色
+              name: roles
+              key: captchaRoles
+              multiple: true
+              value: []
+              validation: required
+              help: 拥有任一所选角色的用户提交评论或回复时需要验证码
+            - $formkit: checkbox
+              if: "$get(captchaEnable).value === true && $get(captchaAudience).value === ROLES"
+              label: 同时包含匿名用户
+              name: includeAnonymous
+              key: captchaIncludeAnonymous
+              value: false
+              help: 勾选后，未登录用户提交评论或回复时也需要验证码
+            - $formkit: select
               label: 验证码类型
-              if: "$get(anonymousCommentCaptcha).value === true"
+              if: "$get(captchaEnable).value === true"
               name: type
               id: type
+              key: captchaType
               value: "ALPHANUMERIC"
+              help: Cloudflare Turnstile 官方文档
+              __raw__sectionsSchema:
+                help:
+                  if: "$value === TURNSTILE || $value === ALTCHA"
+                  children:
+                    - $el: span
+                      if: "$value === ALTCHA"
+                      children: ALTCHA 仅支持在 HTTPS 环境下使用。
+                    - $el: a
+                      if: "$value === ALTCHA"
+                      children: ALTCHA 官方文档
+                      attrs:
+                        href: https://altcha.org/docs/
+                        target: _blank
+                        rel: noopener noreferrer
+                        class: underline
+                    - $el: a
+                      if: "$value === TURNSTILE"
+                      children: Cloudflare Turnstile 官方文档
+                      attrs:
+                        href: https://developers.cloudflare.com/turnstile/get-started/
+                        target: _blank
+                        rel: noopener noreferrer
+                        class: underline
               options:
                 - label: 字母数字组合
                   value: "ALPHANUMERIC"
                 - label: 算术验证码
                   value: "ARITHMETIC"
+                - label: Cloudflare Turnstile
+                  value: "TURNSTILE"
+                - label: ALTCHA
+                  value: "ALTCHA"
+            - $formkit: radio
+              if: "$get(captchaEnable).value === true && $get(type).value === ALTCHA"
+              name: altchaDisplay
+              label: ALTCHA 显示模式
+              value: floating
+              key: altchaDisplay
+              help: 标准模式需要用户手动点击验证；自动模式在用户提交时自动验证，以浮层展示验证进度和结果。
+              options:
+                - label: 标准模式
+                  value: standard
+                - label: 自动模式
+                  value: floating
+            - $formkit: checkbox
+              if: "$get(captchaEnable).value === true && $get(type).value === ALTCHA"
+              name: altchaHideLogo
+              key: altchaHideLogo
+              label: 隐藏 ALTCHA 标志
+              value: false
+            - $formkit: checkbox
+              if: "$get(captchaEnable).value === true && $get(type).value === ALTCHA"
+              name: altchaHideFooter
+              key: altchaHideFooter
+              label: 隐藏 ALTCHA 页脚
+              value: false
+            - $formkit: text
+              if: "$get(captchaEnable).value === true && $get(type).value === TURNSTILE"
+              name: turnstileSiteKey
+              key: turnstileSiteKey
+              label: Turnstile Site Key
+              validation: required
+            - $formkit: secret
+              if: "$get(captchaEnable).value === true && $get(type).value === TURNSTILE"
+              name: turnstileSecretRef
+              label: Turnstile Secret Key
+              key: turnstileSecretRef
+              descriptionPreset: 评论组件 Cloudflare Turnstile 验证密钥
+              requiredKeys:
+                - key: secretKey
+                  help: 填入 Cloudflare Turnstile 提供的 Secret Key。
+              validation: required
+              help: 创建或选择包含 secretKey 的密钥，填入 Cloudflare 提供的 Secret Key。
             - $formkit: number
-              if: "$get(type).value === ALPHANUMERIC"
+              if: "$get(captchaEnable).value === true && $get(type).value === ALPHANUMERIC"
               name: captchaLength
               key: captchaLength
               label: 验证码长度
@@ -87,7 +196,7 @@ spec:
               value: 4
               validation: required
             - $formkit: radio
-              if: "$get(type).value === ALPHANUMERIC"
+              if: "$get(captchaEnable).value === true && $get(type).value === ALPHANUMERIC"
               name: ignoreCase
               key: ignoreCase
               label: 是否忽略验证码大小写验证
@@ -99,7 +208,7 @@ spec:
                 - label: 否
                   value: false
             - $formkit: number
-              if: "$get(type).value === ARITHMETIC"
+              if: "$get(captchaEnable).value === true && $get(type).value === ARITHMETIC"
               name: arithmeticRange
               key: arithmeticRange
               label: 计算范围
@@ -146,6 +255,46 @@ spec:
     - group: editor
       label: 编辑器
       formSchema:
+        - $formkit: checkbox
+          name: enableEmoji
+          label: 启用表情选择器
+          help: 控制评论和回复输入框中的表情按钮，不影响已有评论中的表情
+          value: true
         - $formkit: text
           name: placeholder
           label: 自定义评论框占位符
+        - $formkit: checkbox
+          name: enableUpload
+          id: enableUpload
+          key: enableUpload
+          label: 启用媒体上传
+          value: false
+        - $formkit: group
+          if: "$get(enableUpload).value === true"
+          name: upload
+          label: 媒体上传配置
+          children:
+            - $formkit: checkbox
+              name: allowAnonymous
+              label: 允许匿名用户上传
+              value: false
+            - $formkit: number
+              name: maxFileSize
+              label: 单张图片最大大小（MiB）
+              value: 10
+              min: 1
+              max: 2047
+              step: 1
+              validation: required|number|min:1|max:2047|matches:/^[0-9]+$/
+              help: 仅支持 JPEG、PNG、GIF、WebP、AVIF 图片，不支持 SVG。存储策略有更严格限制时仍然生效。
+            - $formkit: group
+              name: attachment
+              label: 附件配置
+              help: 上传图片同时受插件和所选存储策略的限制
+              children:
+                - $formkit: attachmentPolicySelect
+                  name: attachmentPolicy
+                  label: 存储策略
+                - $formkit: attachmentGroupSelect
+                  name: attachmentGroup
+                  label: 存储组

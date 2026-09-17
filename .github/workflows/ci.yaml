@@ -9,6 +9,19 @@ on:
       - main
 
 jobs:
+  comment-widget-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -C packages/comment-widget exec playwright install --with-deps chromium
+      - run: pnpm -C packages/comment-widget test
+
   ci:
     uses: halo-sigs/reusable-workflows/.github/workflows/plugin-ci.yaml@v4
     with:

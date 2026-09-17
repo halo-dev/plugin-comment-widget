@@ -22,6 +22,11 @@ import './loading-block';
 import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import baseStyles from './styles/base';
+import {
+  type CommentManagedDetail,
+  fetchVisibleReplyCount,
+} from './utils/comment-management';
+import { getInitialReplySize } from './utils/reply-pagination';
 
 export class CommentList extends LitElement {
   @consume({ context: baseUrlContext })
@@ -68,6 +73,35 @@ export class CommentList extends LitElement {
   @state()
   loading = false;
 
+  private requestId = 0;
+
+  private activeReplyItem?: { closeReplyForm(): void };
+
+  private onReplyFormOpen(event: CustomEvent<{ closeReplyForm(): void }>) {
+    event.stopPropagation();
+    if (this.activeReplyItem === event.detail) {
+      return;
+    }
+    this.activeReplyItem?.closeReplyForm();
+    this.activeReplyItem = event.detail;
+  }
+
+  private onCommentManaged(event: CustomEvent<CommentManagedDetail>) {
+    const { action, restoreFocus, commentName } = event.detail;
+    if (action === 'delete' && restoreFocus) {
+      this.tabIndex = -1;
+      this.focus({ preventScroll: true });
+    }
+    return this.fetchComments({ replyCountFor: commentName });
+  }
+
+  override disconnectedCallback(): void {
+    window.removeEventListener('halo:comment:created', this.onCommentCreated);
+    this.activeReplyItem?.closeReplyForm();
+    this.activeReplyItem = undefined;
+    super.disconnectedCallback();
+  }
+
   get shouldDisplayPagination() {
     if (this.loading) {
       return false;
@@ -87,16 +121,20 @@ export class CommentList extends LitElement {
     this.fetchComments();
 
     // Handle halo:comment:created event, then reload the comment list
-    window.addEventListener('halo:comment:created', () => {
-      this.fetchComments({
-        page: 1,
-        scrollIntoView: true,
-      });
-    });
+    window.addEventListener('halo:comment:created', this.onCommentCreated);
   }
 
-  async fetchComments(options?: { page?: number; scrollIntoView?: boolean }) {
-    const { page, scrollIntoView } = options || {};
+  private onCommentCreated = () => {
+    this.fetchComments({ page: 1, scrollIntoView: true });
+  };
+
+  async fetchComments(options?: {
+    page?: number;
+    scrollIntoView?: boolean;
+    replyCountFor?: string;
+  }) {
+    const { page, scrollIntoView, replyCountFor } = options || {};
+    const requestId = ++this.requestId;
     try {
       if (this.comments.items.length === 0) {
         this.loading = true;
@@ -105,6 +143,9 @@ export class CommentList extends LitElement {
       if (page) {
         this.comments.page = page;
       }
+
+      const replySize = this.configMapData?.basic.replySize ?? 10;
+      const withReplySize = this.configMapData?.basic.withReplySize ?? 5;
 
       const data = await ofetch<CommentVoList>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
@@ -117,26 +158,52 @@ export class CommentList extends LitElement {
             size: this.configMapData?.basic.size || 20,
             version: this.version,
             withReplies: this.configMapData?.basic.withReplies || false,
-            replySize: this.configMapData?.basic.replySize || 10,
+            replySize: getInitialReplySize(withReplySize, replySize),
           },
         }
       );
 
+      if (requestId !== this.requestId) return;
+
+      const lastPage = Math.max(1, data.totalPages);
+      if (data.page > lastPage) {
+        await this.fetchComments({ ...options, page: lastPage });
+        return;
+      }
+
+      if (replyCountFor) {
+        const comment = data.items.find(
+          (item) => item.metadata.name === replyCountFor
+        );
+        if (comment) {
+          const visibleReplyCount = await fetchVisibleReplyCount(
+            this.baseUrl,
+            replyCountFor
+          );
+          comment.status = { ...comment.status, visibleReplyCount };
+        }
+      }
+      if (requestId !== this.requestId) return;
       this.comments = data;
     } catch (_error) {
+      if (requestId !== this.requestId) return;
       console.error(_error);
       this.toastManager?.error(
         msg('Failed to load comment list, please try again later')
       );
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) {
+        this.loading = false;
 
-      if (scrollIntoView) {
-        this.scrollIntoView({
-          block: 'start',
-          inline: 'start',
-          behavior: 'smooth',
-        });
+        if (scrollIntoView) {
+          this.scrollIntoView({
+            block: 'start',
+            inline: 'start',
+            behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+              ? 'instant'
+              : 'smooth',
+          });
+        }
       }
     }
   }
@@ -151,7 +218,7 @@ export class CommentList extends LitElement {
               <span>${msg(html`${this.comments.total} Comments`)}</span>
             </div>
 
-            <div class="comment-list">
+            <div class="comment-list" @reply-form-open=${this.onReplyFormOpen} @comment-managed=${this.onCommentManaged}>
               ${repeat(
                 this.comments.items,
                 (item) => item.metadata.name,

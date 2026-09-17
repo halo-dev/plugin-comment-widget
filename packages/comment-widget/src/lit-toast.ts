@@ -32,7 +32,14 @@ export class LitToast extends LitElement {
   static override styles = [
     ...baseStyles,
     css`
+      :host {
+        display: block;
+        max-width: 100%;
+      }
+
       .toast {
+        max-width: 100%;
+        box-sizing: border-box;
         border-radius: var(--halo-cw-base-rounded, 0.5em);
         font-size: 0.875em;
         display: inline-flex;
@@ -50,6 +57,11 @@ export class LitToast extends LitElement {
           0 1px 2px -1px rgb(0 0 0 / 0.1);
 
         animation: slideInDown 0.3s ease-out forwards;
+      }
+
+      .toast span {
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
 
       .toast--exit {
@@ -96,6 +108,14 @@ export class LitToast extends LitElement {
 }
 
 export class LitToastContainer extends LitElement {
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.setAttribute('role', 'status');
+    this.setAttribute('aria-live', 'polite');
+    this.setAttribute('aria-atomic', 'false');
+    this.setAttribute('aria-relevant', 'additions text');
+  }
+
   override render() {
     return html`<slot></slot>`;
   }
@@ -106,9 +126,11 @@ export class LitToastContainer extends LitElement {
       :host {
         position: fixed;
         top: 1em;
+        inset-inline: 0;
+        padding-inline: 1em;
+        box-sizing: border-box;
         z-index: 1000;
         display: flex;
-        width: 100%;
         justify-content: center;
         align-items: center;
         flex-direction: column;

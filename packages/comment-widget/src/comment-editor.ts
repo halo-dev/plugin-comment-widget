@@ -1,16 +1,27 @@
 import { msg } from '@lit/localize';
 import type { Editor } from '@tiptap/core';
+import { EditorState } from '@tiptap/pm/state';
 import { css, html, LitElement, type PropertyValues, unsafeCSS } from 'lit';
 import { state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import './emoji-button';
 import contentStyles from './styles/content.css?inline';
 import './comment-editor-skeleton';
+import { consume } from '@lit/context';
 import { property } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { when } from 'lit/directives/when.js';
+import { baseUrlContext } from './context';
+import {
+  restoreUploadDraft,
+  saveUploadDraft,
+  uploadSession,
+} from './extension/uploaded-images';
+import { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import { cleanHtml } from './utils/html';
+import { randomHex } from './utils/random-hex';
+import { readUploadDraft } from './utils/upload-draft';
 
 interface ActionItem {
   name?: string;
@@ -75,12 +86,79 @@ const actionItems: ActionItem[] = [
   },
 ];
 
+const uploadActionItem: ActionItem = {
+  name: 'upload',
+  displayName: () => msg('Upload'),
+  type: 'action',
+  icon: 'i-mingcute-pic-line',
+  run: (editor?: Editor) => editor?.chain().focus().uploadFile().run(),
+};
+
 export class CommentEditor extends LitElement {
+  @consume({ context: baseUrlContext })
+  @state()
+  baseUrl = '';
+
   @property({ type: String })
   placeholder: string | undefined;
 
+  @property({ type: String, attribute: 'initial-content' })
+  initialContent = '';
+
+  @property({ attribute: false })
+  draftKey = '';
+
+  @property({ attribute: false })
+  draftRevision = '';
+
+  get hasPendingUpload() {
+    return !!this.editor && !!uploadSession(this.editor).snapshot().pending;
+  }
+
+  private draftSaveWarned = false;
+
+  private reportDraftError = () => {
+    if (this.draftSaveWarned) return;
+    this.draftSaveWarned = true;
+    new ToastManager().warn(
+      msg('Unable to save image draft. Keep this page open.')
+    );
+  };
+
+  private saveUploadDraft = async (sessionChange?: {
+    previousPendingId?: string;
+  }) => {
+    if (this.editor) {
+      return saveUploadDraft(
+        this.editor,
+        this.draftKey,
+        this.draftRevision,
+        sessionChange
+      );
+    }
+    return false;
+  };
+
   @property({ type: Boolean, attribute: 'keep-alive' })
   keepAlive = false;
+
+  @property({ type: Boolean })
+  enableEmoji = true;
+
+  @property({ type: Boolean })
+  enableUpload = false;
+
+  @property({ type: Number })
+  maxFileSize = 10;
+
+  @property({ type: Boolean })
+  disabled = false;
+
+  protected override updated(changes: PropertyValues) {
+    if (changes.has('disabled')) {
+      this.editor?.setEditable(!this.disabled, false);
+    }
+  }
 
   @state()
   editor: Editor | undefined;
@@ -100,11 +178,30 @@ export class CommentEditor extends LitElement {
     const { CodeBlockShiki } = await import(
       'tiptap-extension-code-block-shiki'
     );
+    const { EditorUpload } = await import('./extension/editor-upload');
+    const { EditorImage } = await import('./extension/editor-image');
 
+    let allowUnavailableStorage = !this.initialContent && !this.draftRevision;
+    const readDraft = async () => {
+      const draft = await readUploadDraft(this.draftKey, this.draftRevision);
+      allowUnavailableStorage = false;
+      return draft;
+    };
+    const draft = await readDraft().catch(this.reportDraftError);
+    if (!this.isConnected) return;
     this.loading = false;
 
     this.editor = new Editor({
+      editable: !this.disabled,
       element: this.shadowRoot?.getElementById('editor-container'),
+      content: this.initialContent,
+      editorProps: {
+        attributes: {
+          role: 'textbox',
+          'aria-label': msg('Write a comment'),
+          'aria-multiline': 'true',
+        },
+      },
       extensions: [
         StarterKit.configure({
           heading: false,
@@ -128,6 +225,23 @@ export class CommentEditor extends LitElement {
         }),
 
         CharacterCount,
+
+        EditorImage.configure({
+          inline: true,
+          resize: {
+            enabled: true,
+            alwaysPreserveAspectRatio: true,
+            minWidth: 50,
+            minHeight: 50,
+            directions: ['right'],
+          },
+        }),
+
+        EditorUpload.configure({
+          enabled: () => this.enableUpload,
+          maxFileSize: () => this.maxFileSize,
+          baseUrl: this.baseUrl,
+        }),
       ],
       onUpdate: () => {
         this.requestUpdate();
@@ -140,15 +254,38 @@ export class CommentEditor extends LitElement {
       },
     });
 
+    restoreUploadDraft(
+      this.editor,
+      draft || undefined,
+      async (previousPendingId) => {
+        if (!(await this.saveUploadDraft({ previousPendingId }))) {
+          throw new Error(
+            msg('Your draft has changed. Reopen it before retrying.')
+          );
+        }
+      },
+      async () =>
+        (
+          await readDraft().catch((error) => {
+            // Fresh text forms can work without storage; existing tickets must stay recoverable.
+            // Image submission still requires a successful ticket checkpoint above.
+            if (!allowUnavailableStorage) throw error;
+          })
+        )?.session
+    );
+
     this.editor.on('update', () => {
+      this.draftRevision = randomHex(16);
       this.dispatchEvent(
         new CustomEvent('update', {
           detail: {
+            revision: this.draftRevision,
             content: cleanHtml(this.editor?.getHTML()),
             characterCount: this.editor?.storage.characterCount.characters(),
           },
         })
       );
+      void this.saveUploadDraft().catch(this.reportDraftError);
     });
   }
 
@@ -167,18 +304,33 @@ export class CommentEditor extends LitElement {
   }
 
   reset() {
-    this.editor?.commands.setContent('');
+    if (!this.editor) {
+      return;
+    }
+    this.editor.commands.setContent('', { emitUpdate: false });
+    // A new EditorState clears undo history after a successful submission.
+    const { doc, schema, plugins } = this.editor.state;
+    this.editor.view.updateState(EditorState.create({ doc, schema, plugins }));
   }
 
   onEmojiSelect(e: CustomEvent) {
-    this.editor?.chain().focus().insertContent(e.detail.native).run();
+    if (!this.disabled) {
+      this.editor?.chain().focus().insertContent(e.detail.native).run();
+    }
+  }
+
+  private runAction(item: ActionItem, editor?: Editor) {
+    if (!editor?.isEditable) {
+      return;
+    }
+    item.run?.(editor);
   }
 
   protected override render() {
     return html`
       ${when(this.loading, () => html`<comment-editor-skeleton></comment-editor-skeleton>`)}
       <div
-        class="border rounded-base border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-all"
+        class="border rounded-base border-solid border-muted-1 focus-within:border-primary-1 focus-within:shadow-input transition-[border-color,box-shadow]"
         ?hidden=${this.loading}
         @click=${this.setFocus}
       >
@@ -190,10 +342,18 @@ export class CommentEditor extends LitElement {
           ${repeat(actionItems, (item) =>
             this.renderActionItem(item, this.editor)
           )}
-          ${this.renderActionItem({ type: 'separator' })}
-          <li class="flex items-center">
-            <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
-          </li>
+          ${when(this.enableUpload || this.enableEmoji, () =>
+            this.renderActionItem({ type: 'separator' })
+          )}
+          ${when(this.enableUpload, () => this.renderActionItem(uploadActionItem, this.editor))}
+          ${when(
+            this.enableEmoji,
+            () => html`
+            <li class="flex items-center">
+              <emoji-button @emoji-select=${this.onEmojiSelect}></emoji-button>
+            </li>
+          `
+          )}
         </ul>
       </div>`;
   }
@@ -209,15 +369,16 @@ export class CommentEditor extends LitElement {
       const isActive = item.name ? editor?.isActive(item.name) : false;
       return html`
         <li>
-          <div
+          <button
+            type="button"
             aria-label=${ifDefined(item.displayName?.())}
+            aria-pressed=${isActive}
             title=${ifDefined(item.displayName?.())}
-            @click=${() => item.run?.(editor)}
-            role="button"
-            class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-all"
+            @click=${() => this.runAction(item, editor)}
+            class="size-7 hover:bg-muted-3 active:bg-muted-2 ${isActive ? 'bg-muted-3 text-text-1' : 'text-text-3 hover:text-text-1'} rounded-base flex items-center justify-center cursor-pointer transition-colors"
           >
             <i class="size-5 ${item.icon}" aria-hidden="true"></i>
-          </div>
+          </button>
         </li>
       `;
     }
@@ -238,6 +399,32 @@ export class CommentEditor extends LitElement {
       .tiptap {
         outline: none;
         border: none;
+      }
+
+      .tiptap.image-caret-active {
+        caret-color: transparent;
+      }
+
+      .tiptap .image-caret {
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        width: 0;
+        height: 1em;
+        vertical-align: text-bottom;
+        pointer-events: none;
+      }
+
+      .tiptap .image-caret::after {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        border-left: 1px solid currentColor;
+        animation: image-caret-blink 1.1s step-end infinite;
+      }
+
+      @keyframes image-caret-blink {
+        50% { opacity: 0; }
       }
 
       .tiptap p {

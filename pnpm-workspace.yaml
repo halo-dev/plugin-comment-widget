@@ -1,5 +1,7 @@
 packages:
   - packages/**
-onlyBuiltDependencies:
-  - core-js
-  - esbuild
+allowBuilds:
+  core-js: true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - vite@8.2.2

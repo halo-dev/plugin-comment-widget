@@ -1,4 +1,5 @@
 export interface ConfigMapData {
+  captchaRequired: boolean;
   basic: BasicConfig;
   security: SecurityConfig;
   avatar: AvatarConfig;
@@ -17,8 +18,15 @@ interface BasicConfig {
 
 interface SecurityConfig {
   captcha: {
-    anonymousCommentCaptcha: boolean;
-    type: 'ALPHANUMERIC' | 'ARITHMETIC';
+    enable: boolean;
+    audience: 'ALL' | 'ANONYMOUS' | 'ROLES';
+    roles?: string[];
+    includeAnonymous?: boolean;
+    type: 'ALPHANUMERIC' | 'ARITHMETIC' | 'TURNSTILE' | 'ALTCHA';
+    altchaDisplay?: 'standard' | 'floating';
+    altchaHideLogo?: boolean;
+    altchaHideFooter?: boolean;
+    turnstileSiteKey?: string;
     ignoreCase: boolean;
     captchaLength: number;
   };
@@ -32,6 +40,9 @@ interface AvatarConfig {
 }
 
 interface EditorConfig {
+  enableUpload?: boolean;
+  upload?: { allowAnonymous?: boolean; maxFileSize?: number };
+  enableEmoji?: boolean;
   placeholder?: string;
 }
 

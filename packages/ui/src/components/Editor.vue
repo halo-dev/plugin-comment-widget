@@ -5,6 +5,7 @@ import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
   autoFocus?: boolean;
+  initialContent?: string;
 }>();
 
 const emit =
@@ -29,5 +30,9 @@ onMounted(() => {
 });
 </script>
 <template>
-  <comment-editor ref="editorRef" keep-alive></comment-editor>
+  <comment-editor
+    ref="editorRef"
+    :initialContent.prop="initialContent"
+    keep-alive
+  ></comment-editor>
 </template>

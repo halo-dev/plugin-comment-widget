@@ -1,2 +1,2 @@
-/// <reference types="@rsbuild/core/types" />
+/// <reference types="vite/client" />
 /// <reference types="unplugin-icons/types/vue" />

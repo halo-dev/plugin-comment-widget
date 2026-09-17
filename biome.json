@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!**/generated"]
+    "includes": ["**", "!**/generated", "!src/main/resources"]
   },
   "formatter": {
     "enabled": true,
@@ -17,9 +17,12 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "complexity": {
         "noImportantStyles": "off"
+      },
+      "style": {
+        "useVueMultiWordComponentNames": "off"
       }
     }
   },
