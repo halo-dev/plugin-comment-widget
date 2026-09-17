@@ -1,4 +1,4 @@
-import type { CommentVo } from '@halo-dev/api-client';
+import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { BaseForm } from './base-form';
@@ -26,6 +26,12 @@ export class CommentItem extends LitElement {
   @property({ type: Object })
   comment: CommentVo | undefined;
 
+  @property({ type: Boolean })
+  detail = false;
+
+  @property({ attribute: false })
+  targetReply: ReplyVo | undefined;
+
   @consume({ context: configMapDataContext })
   @state()
   configMapData: ConfigMapData | undefined;
@@ -48,7 +54,7 @@ export class CommentItem extends LitElement {
     super.connectedCallback();
     this.checkUpvotedStatus();
 
-    if (this.configMapData?.basic.withReplies) {
+    if (this.detail || this.configMapData?.basic.withReplies) {
       this.showReplies = true;
       this.showReplyForm = false;
     }
@@ -113,7 +119,7 @@ export class CommentItem extends LitElement {
   }
 
   handleShowReplies() {
-    if (!this.configMapData?.basic.withReplies) {
+    if (!this.detail && !this.configMapData?.basic.withReplies) {
       this.handleToggleReplyForm();
       this.showReplies = this.showReplyForm;
       return;
@@ -129,7 +135,7 @@ export class CommentItem extends LitElement {
       this.closeReplyForm();
       this.renderRoot
         .querySelector<HTMLButtonElement>(
-          this.configMapData?.basic.withReplies
+          this.detail || this.configMapData?.basic.withReplies
             ? '.reply-button'
             : '.show-replies-button'
         )
@@ -164,6 +170,7 @@ export class CommentItem extends LitElement {
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
+      .permalink=${this.comment?.permalink}
       .approved=${this.comment?.spec.approved}
       .pinned=${this.comment?.spec.top}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
@@ -197,7 +204,7 @@ export class CommentItem extends LitElement {
       }
 
       ${when(
-        this.configMapData?.basic.withReplies,
+        this.detail || this.configMapData?.basic.withReplies,
         () => html`
           <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
             <div class="icon-button-icon ">
@@ -222,11 +229,14 @@ export class CommentItem extends LitElement {
           `
         )}
         ${when(
-          this.showReplies,
+          this.detail || this.showReplies,
           () => html`<comment-replies
+              ?hidden=${!this.showReplies}
               ${ref(this.commentRepliesRef)}
               .comment="${this.comment}"
               .showReplyForm=${this.showReplyForm}
+              .targetReply=${this.targetReply}
+              .managedByParent=${this.detail}
             ></comment-replies>`
         )}
       </div>
