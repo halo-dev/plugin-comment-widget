@@ -1,5 +1,7 @@
 # 开发环境
 
+环境要求：Java 21、Node.js 24、pnpm 12.4.2（与根目录 `packageManager` 一致）。Gradle 使用项目自带的 Wrapper，无需单独安装。
+
 ```bash
 git clone git@github.com:halo-dev/plugin-comment-widget.git
 
