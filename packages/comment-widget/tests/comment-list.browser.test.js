@@ -62,12 +62,15 @@ test.each(['success', 'out-of-range', 'error'])(
     element.toastManager = { error };
     const pagination = element.shadowRoot.querySelector('comment-pagination');
     await pagination.updateComplete;
-    const select = pagination.shadowRoot.querySelector('select');
-    select.value = '2';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    const trigger = pagination.shadowRoot.querySelector('.pagination-trigger');
+    const pages = pagination.shadowRoot.querySelectorAll(
+      '.pagination-pages button'
+    );
+    trigger.click();
+    pages[1].click();
     await until(() => pending.has(2));
-    select.value = '3';
-    select.dispatchEvent(new Event('change', { bubbles: true }));
+    trigger.click();
+    pages[2].click();
     await until(() => pending.has(3));
     pending.get(3)();
     await until(() => element.comments.items[0].metadata.name === 'page-3');

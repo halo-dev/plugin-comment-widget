@@ -224,7 +224,7 @@ test('Comment widget accessibility checks', async () => {
   pagination.total = 60;
   fixtures.append(pagination);
   await pagination.updateComplete;
-  const select = pagination.shadowRoot.querySelector('select');
+  const select = pagination.shadowRoot.querySelector('.pagination-trigger');
   assert(select.getAttribute('aria-label'), 'Page selector needs a name');
   select.focus();
   assert(
