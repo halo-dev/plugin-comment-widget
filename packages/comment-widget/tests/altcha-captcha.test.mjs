@@ -81,10 +81,10 @@ function createCaptcha(
         return { msg: (value) => value };
       }
       if (name === 'altcha/altcha.css?inline') {
-        return { default: ':root {}' };
+        return { __esModule: true, default: ':root {}' };
       }
       if (name === './styles/base') {
-        return { default: [] };
+        return { __esModule: true, default: [] };
       }
       return {};
     },
