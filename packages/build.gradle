@@ -1,0 +1,32 @@
+plugins {
+    id 'base'
+    id 'com.github.node-gradle.node'
+}
+
+node {
+    pnpmVersion = '12.4.2'
+    nodeProjectDir = projectDir
+}
+
+tasks.register('pnpmBuild', PnpmTask) {
+    group = 'build'
+    args = ['run', 'build']
+    dependsOn tasks.named('pnpmInstall')
+    inputs.files(fileTree(projectDir) {
+        include 'comment-widget/**', 'ui/**', 'widget/**'
+        include 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'tsconfig.json'
+        exclude '**/node_modules/**', '**/dist/**', '**/build/**', '**/coverage/**'
+    })
+    inputs.file(rootProject.layout.projectDirectory.file('src/main/resources/plugin.yaml'))
+    outputs.dir('comment-widget/dist')
+    outputs.dir('ui/build/dist')
+    outputs.dir('widget/build/dist')
+}
+
+tasks.named('assemble') {
+    dependsOn tasks.named('pnpmBuild')
+}
+
+tasks.named('clean') {
+    delete 'comment-widget/dist', 'ui/build', 'widget/build'
+}

@@ -15,6 +15,6 @@ jobs:
     with:
       node-version: "24"
       java-version: "21"
-      pnpm-version: ""
+      pnpm-version: "12.4.2"
       app-id: app-YXyaD
-      ui-path: "."
+      ui-path: "packages"

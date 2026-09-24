@@ -1,5 +1,8 @@
 packages:
-  - packages/**
+  - comment-widget
+  - example
+  - ui
+  - widget
 allowBuilds:
   core-js: true
   esbuild: true

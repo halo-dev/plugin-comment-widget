@@ -26,9 +26,7 @@ export default defineConfig({
     },
     publicPath: `/plugins/${PLUGIN_NAME}/assets/static/`,
     distPath: {
-      root: fileURLToPath(
-        new URL('../../src/main/resources/static', import.meta.url)
-      ),
+      root: fileURLToPath(new URL('./build/dist', import.meta.url)),
     },
   },
 });
