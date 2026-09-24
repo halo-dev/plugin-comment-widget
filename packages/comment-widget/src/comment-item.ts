@@ -7,6 +7,7 @@ import './comment-replies';
 import './user-avatar';
 import './base-comment-item';
 import './comment-management';
+import './comment-edit-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -41,6 +42,9 @@ export class CommentItem extends LitElement {
 
   @state()
   showReplyForm = false;
+
+  @state()
+  showEditForm = false;
 
   @state()
   upvoted = false;
@@ -149,6 +153,15 @@ export class CommentItem extends LitElement {
     this.showReplyForm = false;
   }
 
+  private async handleCloseEditForm() {
+    this.showEditForm = false;
+    await this.updateComplete;
+    this.renderRoot
+      .querySelector('comment-management')
+      ?.shadowRoot?.querySelector('summary')
+      ?.focus({ preventScroll: true });
+  }
+
   handleToggleReplyForm() {
     if (this.showReplyForm) {
       this.closeReplyForm();
@@ -176,6 +189,7 @@ export class CommentItem extends LitElement {
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
       .ua=${this.comment?.spec.userAgent}
       .private=${this.comment?.spec.hidden}
+      .editing=${this.showEditForm}
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
         <div class="icon-button-icon">
@@ -215,7 +229,16 @@ export class CommentItem extends LitElement {
           `
       )}
 
-      <comment-management slot="action" .target=${this.comment} resource="comments"></comment-management>
+      <comment-management slot="action" .target=${this.comment} resource="comments" @comment-edit=${() => (this.showEditForm = true)}></comment-management>
+      ${when(
+        this.showEditForm,
+        () => html`<comment-edit-form
+          slot="content-edit"
+          .target=${this.comment}
+          resource="comments"
+          @edit-close=${this.handleCloseEditForm}
+        ></comment-edit-form>`
+      )}
       <div slot="footer">
         ${when(
           this.showReplyForm,

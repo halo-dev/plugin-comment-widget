@@ -1,4 +1,9 @@
-import type { ListedReplyList, UserPermission } from '@halo-dev/api-client';
+import type {
+  Comment,
+  ListedReplyList,
+  Reply,
+  UserPermission,
+} from '@halo-dev/api-client';
 import { ofetch } from 'ofetch';
 
 export type ManagementAction =
@@ -62,8 +67,37 @@ export async function manageComment(
   });
 }
 
+export interface CommentContentUpdate {
+  raw: string;
+  content: string;
+  version: number;
+}
+
+export async function fetchCommentContent(
+  baseUrl: string,
+  resource: 'comments' | 'replies',
+  name: string
+) {
+  return ofetch<Comment | Reply>(
+    `${baseUrl}/apis/content.halo.run/v1alpha1/${resource}/${encodeURIComponent(name)}`,
+    { retry: 0 }
+  );
+}
+
+export async function updateCommentContent(
+  baseUrl: string,
+  resource: 'comments' | 'replies',
+  name: string,
+  body: CommentContentUpdate
+) {
+  await ofetch(
+    `${baseUrl}/apis/api.console.halo.run/v1alpha1/${resource}/${encodeURIComponent(name)}/content`,
+    { method: 'PUT', body, retry: 0 }
+  );
+}
+
 export interface CommentManagedDetail {
-  action: ManagementAction;
+  action: ManagementAction | 'edit';
   restoreFocus: boolean;
   commentName?: string;
 }

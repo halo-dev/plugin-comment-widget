@@ -302,6 +302,42 @@
   <source>Zoom image</source>
   <target>放大图片</target>
 </trans-unit>
+<trans-unit id="sa862e76e95967816">
+  <source>Comment updated successfully</source>
+  <target>评论更新成功</target>
+</trans-unit>
+<trans-unit id="s176fe95698857ad9">
+  <source>This comment or reply has changed. Copy your draft, then reopen the editor to load the latest version.</source>
+  <target>评论或回复已发生变化。请先复制草稿，再重新打开编辑框获取最新版本。</target>
+</trans-unit>
+<trans-unit id="s63efea23113001ee">
+  <source>Could not save. Your draft has been kept.</source>
+  <target>保存失败，草稿已保留。</target>
+</trans-unit>
+<trans-unit id="s2254107bb49631da">
+  <source>This comment or reply has been deleted.</source>
+  <target>该评论或回复已被删除。</target>
+</trans-unit>
+<trans-unit id="s22ae36191f9a1a8d">
+  <source>Failed to load the latest content. Please try again later.</source>
+  <target>加载最新内容失败，请稍后重试。</target>
+</trans-unit>
+<trans-unit id="s33f85f24c0f5f008">
+  <source>Save</source>
+  <target>保存</target>
+</trans-unit>
+<trans-unit id="s2ceb11be2290bb1b">
+  <source>Cancel</source>
+  <target>取消</target>
+</trans-unit>
+<trans-unit id="s64ef2a6c2dd1d3d1">
+  <source>Edit</source>
+  <target>编辑</target>
+</trans-unit>
+<trans-unit id="s2df0abe59a97747a">
+  <source>Discard your changes?</source>
+  <target>确定要丢弃所做的修改吗？</target>
+</trans-unit>
 <trans-unit id="s78f95c3c2b1b0512">
   <source>Comment link</source>
   <target>评论链接</target>
@@ -337,6 +373,10 @@
 <trans-unit id="s2c8189544e3ea679">
   <source>Retry</source>
   <target>重试</target>
+</trans-unit>
+<trans-unit id="s4d76c6944ffb0540">
+  <source>Could not save. The comment may have been deleted, or the current Halo version does not support editing. Your draft has been kept.</source>
+  <target>保存失败。该评论可能已被删除，或当前 Halo 版本不支持编辑。你的草稿已保留。</target>
 </trans-unit>
 </body>
 </file>
