@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { playwright } from '@vitest/browser-playwright';
 import UnoCSS from 'unocss/vite';
 import { defineConfig } from 'vitest/config';
@@ -14,7 +15,17 @@ export default defineConfig({
         },
       },
       {
-        resolve: widgetConfig.resolve,
+        resolve: {
+          alias: [
+            ...(widgetConfig.resolve?.alias ?? []),
+            {
+              find: /^@halo-dev\/comment-widget$/,
+              replacement: fileURLToPath(
+                new URL('./src/index.ts', import.meta.url)
+              ),
+            },
+          ],
+        },
         plugins: [
           UnoCSS({ mode: 'shadow-dom', configFile: './uno.config.ts' }),
         ],

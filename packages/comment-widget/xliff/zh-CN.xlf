@@ -338,6 +338,38 @@
   <source>Discard your changes?</source>
   <target>确定要丢弃所做的修改吗？</target>
 </trans-unit>
+<trans-unit id="s78f95c3c2b1b0512">
+  <source>Comment link</source>
+  <target>评论链接</target>
+</trans-unit>
+<trans-unit id="s19172ed3838854fc">
+  <source>Copy link</source>
+  <target>复制链接</target>
+</trans-unit>
+<trans-unit id="s1f224cf8b88cb893">
+  <source>Link copied</source>
+  <target>链接已复制</target>
+</trans-unit>
+<trans-unit id="sef8291267fe91bbb">
+  <source>Select and copy the link manually</source>
+  <target>请选中并手动复制链接</target>
+</trans-unit>
+<trans-unit id="sb490fb4653620603">
+  <source>Back to comments</source>
+  <target>返回评论列表</target>
+</trans-unit>
+<trans-unit id="sd68dcf08044cb636">
+  <source>Comment not found or unavailable</source>
+  <target>评论不存在或暂不可查看</target>
+</trans-unit>
+<trans-unit id="s879ba21b93adbbbd">
+  <source>Failed to load comment, please try again</source>
+  <target>评论加载失败，请重试</target>
+</trans-unit>
+<trans-unit id="sc29d248fb3e5c59b">
+  <source>View all replies</source>
+  <target>查看全部回复</target>
+</trans-unit>
 <trans-unit id="s2c8189544e3ea679">
   <source>Retry</source>
   <target>重试</target>

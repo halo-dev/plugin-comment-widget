@@ -338,6 +338,38 @@
   <source>Discard your changes?</source>
   <target>¿Descartar los cambios?</target>
 </trans-unit>
+<trans-unit id="s78f95c3c2b1b0512">
+  <source>Comment link</source>
+  <target>Enlace al comentario</target>
+</trans-unit>
+<trans-unit id="s19172ed3838854fc">
+  <source>Copy link</source>
+  <target>Copiar enlace</target>
+</trans-unit>
+<trans-unit id="s1f224cf8b88cb893">
+  <source>Link copied</source>
+  <target>Enlace copiado</target>
+</trans-unit>
+<trans-unit id="sef8291267fe91bbb">
+  <source>Select and copy the link manually</source>
+  <target>Selecciona y copia el enlace manualmente</target>
+</trans-unit>
+<trans-unit id="sb490fb4653620603">
+  <source>Back to comments</source>
+  <target>Volver a los comentarios</target>
+</trans-unit>
+<trans-unit id="sd68dcf08044cb636">
+  <source>Comment not found or unavailable</source>
+  <target>El comentario no existe o no está disponible</target>
+</trans-unit>
+<trans-unit id="s879ba21b93adbbbd">
+  <source>Failed to load comment, please try again</source>
+  <target>No se pudo cargar el comentario. Inténtalo de nuevo</target>
+</trans-unit>
+<trans-unit id="sc29d248fb3e5c59b">
+  <source>View all replies</source>
+  <target>Ver todas las respuestas</target>
+</trans-unit>
 <trans-unit id="s2c8189544e3ea679">
   <source>Retry</source>
   <target>Reintentar</target>

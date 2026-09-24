@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id "io.freefair.lombok" version "8.14"
+    id "io.freefair.lombok" version "9.2.0"
     id "com.github.node-gradle.node" version "7.1.0"
     id "run.halo.plugin.devtools" version "0.8.0"
 }
 
-group 'run.halo.comment.widget'
+group = 'run.halo.comment.widget'
 
 java {
     toolchain {
@@ -38,6 +38,7 @@ test {
 }
 
 node {
+    pnpmVersion = '12.4.2'
     nodeProjectDir = file("${project.projectDir}")
 }
 

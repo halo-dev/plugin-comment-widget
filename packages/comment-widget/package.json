@@ -1,6 +1,6 @@
 {
   "name": "@halo-dev/comment-widget",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/halo-dev/plugin-comment-widget.git",
@@ -42,7 +42,7 @@
   "dependencies": {
     "@emoji-mart/data": "^1.2.1",
     "@floating-ui/dom": "^1.8.0",
-    "@halo-dev/api-client": "https://pkg.pr.new/@halo-dev/api-client@7679",
+    "@halo-dev/api-client": "https://pkg.pr.new/@halo-dev/api-client@5e35f2b",
     "@lit/context": "^1.1.6",
     "@lit/localize": "^0.12.2",
     "@tiptap/core": "3.31.3",

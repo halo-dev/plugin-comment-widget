@@ -287,8 +287,10 @@ test('Comment widget accessibility checks', async () => {
       .contentVisibility === 'auto',
     'Offscreen comment content should skip rendering'
   );
+  const timeLink = base.shadowRoot.querySelector('comment-link');
+  await timeLink.updateComplete;
   assert(
-    base.shadowRoot.querySelector('time').title ===
+    timeLink.shadowRoot.querySelector('time').title ===
       new Intl.DateTimeFormat(locale, {
         dateStyle: 'medium',
         timeStyle: 'short',
@@ -297,8 +299,9 @@ test('Comment widget accessibility checks', async () => {
   );
   base.creationTime = 'invalid';
   await base.updateComplete;
+  await timeLink.updateComplete;
   assert(
-    base.shadowRoot.querySelector('time').title === '',
+    timeLink.shadowRoot.querySelector('time').title === '',
     'Invalid dates must not crash rendering'
   );
   base.creationTime = comment.spec.creationTime;
