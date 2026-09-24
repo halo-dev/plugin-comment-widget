@@ -3,7 +3,7 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import { formatDate, timeAgo } from './utils/date';
+import './comment-link';
 import './commenter-ua-bar';
 import { consume } from '@lit/context';
 import { canManageCommentsContext, configMapDataContext } from './context';
@@ -24,6 +24,9 @@ export class BaseCommentItem extends LitElement {
 
   @property({ type: String })
   creationTime: string | undefined;
+
+  @property()
+  permalink?: string;
 
   @property({ type: Boolean })
   approved: boolean | undefined;
@@ -99,9 +102,7 @@ export class BaseCommentItem extends LitElement {
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
-          <time class="item-meta-info text-xs text-text-3" title=${formatDate(this.creationTime)}>
-            ${timeAgo(this.creationTime)}
-          </time>
+          <comment-link .permalink=${this.permalink} .creationTime=${this.creationTime}></comment-link>
 
           ${when(!this.approved, () => html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`)}
         </div>
