@@ -21,8 +21,12 @@ jobs:
           node-version: "24"
           registry-url: https://registry.npmjs.org/
       - uses: pnpm/action-setup@v5
+        with:
+          package_json_file: packages/package.json
       - run: pnpm install --frozen-lockfile
+        working-directory: packages
       - name: Upgrade npm
         run: npm i -g npm@latest
       - name: Publish to NPM
         run: pnpm run publish
+        working-directory: packages

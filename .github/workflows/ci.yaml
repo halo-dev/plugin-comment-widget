@@ -14,18 +14,24 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v5
+        with:
+          package_json_file: packages/package.json
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: pnpm
+          cache-dependency-path: packages/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -C packages/comment-widget exec playwright install --with-deps chromium
-      - run: pnpm -C packages/comment-widget test
+        working-directory: packages
+      - run: pnpm -C comment-widget exec playwright install --with-deps chromium
+        working-directory: packages
+      - run: pnpm -C comment-widget test
+        working-directory: packages
 
   ci:
     uses: halo-sigs/reusable-workflows/.github/workflows/plugin-ci.yaml@v4
     with:
       node-version: "24"
       java-version: "21"
-      pnpm-version: ""
-      ui-path: "."
+      pnpm-version: "12.4.2"
+      ui-path: "packages"

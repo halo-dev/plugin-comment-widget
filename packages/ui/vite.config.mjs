@@ -2,7 +2,7 @@ import path from 'node:path';
 import { viteConfig } from '@halo-dev/ui-plugin-bundler-kit/vite';
 
 const MANIFEST_PATH = '../../src/main/resources/plugin.yaml';
-const OUT_DIR_PROD = '../../src/main/resources/ui';
+const OUT_DIR_PROD = 'build/dist';
 const OUT_DIR_DEV = '../../build/resources/main/ui';
 
 export default viteConfig({

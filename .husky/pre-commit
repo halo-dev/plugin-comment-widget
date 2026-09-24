@@ -1,1 +1,1 @@
-lint-staged
+pnpm -C packages exec lint-staged

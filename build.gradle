@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id "io.freefair.lombok" version "9.2.0"
-    id "com.github.node-gradle.node" version "7.1.0"
+    id "com.github.node-gradle.node" version "7.1.0" apply false
     id "run.halo.plugin.devtools" version "0.8.0"
 }
 
@@ -37,25 +37,24 @@ test {
     useJUnitPlatform()
 }
 
-node {
-    pnpmVersion = '12.4.2'
-    nodeProjectDir = file("${project.projectDir}")
-}
+sourceSets.main.resources.exclude 'ui/**', 'static/**'
 
-tasks.register('buildFrontend', PnpmTask) {
-    args = ['build']
-    dependsOn('installDepsForUI')
-}
-
-tasks.register('installDepsForUI', PnpmTask) {
-    args = ['install']
-}
-
-build {
-    // build frontend before build
-    tasks.named('compileJava').configure {
-        dependsOn('buildFrontend')
+tasks.named('processResources', Copy) {
+    dependsOn project(':packages').tasks.named('pnpmBuild')
+    from(project(':packages').layout.projectDirectory.dir('ui/build/dist')) {
+        into 'ui'
     }
+    from(project(':packages').layout.projectDirectory.dir('widget/build/dist')) {
+        into 'static'
+    }
+    doFirst {
+        delete layout.buildDirectory.dir('resources/main/ui'),
+            layout.buildDirectory.dir('resources/main/static')
+    }
+}
+
+tasks.named('clean') {
+    dependsOn project(':packages').tasks.named('clean')
 }
 
 halo {
