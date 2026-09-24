@@ -3,7 +3,7 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import { formatDate, timeAgo } from './utils/date';
+import './comment-link';
 import './commenter-ua-bar';
 import { consume } from '@lit/context';
 import { canManageCommentsContext, configMapDataContext } from './context';
@@ -25,6 +25,9 @@ export class BaseCommentItem extends LitElement {
   @property({ type: String })
   creationTime: string | undefined;
 
+  @property()
+  permalink?: string;
+
   @property({ type: Boolean })
   approved: boolean | undefined;
 
@@ -42,6 +45,9 @@ export class BaseCommentItem extends LitElement {
 
   @property({ type: Boolean })
   private: boolean | undefined;
+
+  @property({ type: Boolean })
+  editing = false;
 
   @consume({ context: configMapDataContext })
   @state()
@@ -99,14 +105,17 @@ export class BaseCommentItem extends LitElement {
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
-          <time class="item-meta-info text-xs text-text-3" title=${formatDate(this.creationTime)}>
-            ${timeAgo(this.creationTime)}
-          </time>
+          <comment-link .permalink=${this.permalink} .creationTime=${this.creationTime}></comment-link>
 
           ${when(!this.approved, () => html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`)}
         </div>
 
-        <div class="item-content mt-2.5 space-y-2.5"><slot name="pre-content"></slot><comment-content .content=${this.content}></comment-content></div>
+        <div class="item-content mt-2.5 space-y-2.5 ${this.editing ? 'item-content-editing' : ''}"><slot name="pre-content"></slot>${when(
+          this.editing,
+          () => html`<slot name="content-edit"></slot>`,
+          () =>
+            html`<comment-content .content=${this.content}></comment-content>`
+        )}</div>
 
         <div class="item-actions mt-2 flex items-center gap-3">
           <slot name="action"></slot>
@@ -123,6 +132,11 @@ export class BaseCommentItem extends LitElement {
       .item-content {
         content-visibility: auto;
         contain-intrinsic-size: auto 4em;
+      }
+
+      /* Paint containment would clip the focus ring of the slotted editor. */
+      .item-content-editing {
+        content-visibility: visible;
       }
 
       .animate-breath {

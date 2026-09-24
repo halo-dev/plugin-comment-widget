@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import './icons/icon-loading';
-import type { CommentVoList } from '@halo-dev/api-client';
+import type { CommentWithReplyVoList } from '@halo-dev/api-client';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { state } from 'lit/decorators.js';
@@ -58,7 +58,7 @@ export class CommentList extends LitElement {
   toastManager: ToastManager | undefined;
 
   @state()
-  comments: CommentVoList = {
+  comments: CommentWithReplyVoList = {
     page: 1,
     size: 20,
     total: 0,
@@ -147,7 +147,7 @@ export class CommentList extends LitElement {
       const replySize = this.configMapData?.basic.replySize ?? 10;
       const withReplySize = this.configMapData?.basic.withReplySize ?? 5;
 
-      const data = await ofetch<CommentVoList>(
+      const data = await ofetch<CommentWithReplyVoList>(
         `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
         {
           query: {

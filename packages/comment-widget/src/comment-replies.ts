@@ -13,6 +13,7 @@ import { ofetch } from 'ofetch';
 import type { ToastManager } from './lit-toast';
 import baseStyles from './styles/base';
 import type { ConfigMapData } from './types';
+import { scrollWhenVisible } from './utils/comment-link';
 import { getNextReplyRequest } from './utils/reply-pagination';
 
 export class CommentReplies extends LitElement {
@@ -26,6 +27,15 @@ export class CommentReplies extends LitElement {
 
   @property({ type: Object })
   comment: CommentVo | undefined;
+
+  @property({ attribute: false })
+  targetReply: ReplyVo | undefined;
+
+  @property({ type: Boolean })
+  managedByParent = false;
+
+  @state()
+  private targetOnly = false;
 
   @property({ type: Boolean })
   showReplyForm = false;
@@ -41,6 +51,7 @@ export class CommentReplies extends LitElement {
   private preloaded = false;
 
   private requestId = 0;
+  private cancelScroll?: () => void;
 
   @state()
   hasNext = false;
@@ -56,7 +67,9 @@ export class CommentReplies extends LitElement {
   toastManager: ToastManager | undefined;
 
   override render() {
-    return html` <div class="replies-main" @comment-managed=${this.refreshReplies}>
+    return html` <div class="replies-main" @comment-managed=${() => {
+      if (!this.managedByParent) this.refreshReplies();
+    }}>
       ${when(
         this.replies.length,
         () => html`<div class="replies-list mt-3">
@@ -65,6 +78,7 @@ export class CommentReplies extends LitElement {
                 (item) => item.metadata.name,
                 (item) =>
                   html`<reply-item
+                    class=${this.targetOnly ? 'target-reply' : ''}
                     .comment=${this.comment}
                     .reply="${item}"
                     .replies=${this.replies}
@@ -75,6 +89,7 @@ export class CommentReplies extends LitElement {
               )}
             </div>`
       )}
+      ${when(this.targetOnly, () => html`<button type="button" class="replies-next-button pagination-button text-sm" aria-disabled=${this.loading} aria-busy=${this.loading} @click=${this.showAllReplies}>${msg('View all replies')}</button>`)}
       ${when(this.loading, () => html` <loading-block></loading-block>`)}
       ${when(
         this.hasNext,
@@ -89,7 +104,13 @@ export class CommentReplies extends LitElement {
     this.activeQuoteReply = event.detail.quoteReply;
   }
 
+  private showAllReplies() {
+    if (this.loading) return;
+    return this.fetchReplies();
+  }
+
   refreshReplies() {
+    if (this.targetOnly) return this.fetchReplies();
     const size = this.configMapData?.basic.replySize ?? 10;
     return this.fetchReplies({
       size: Math.max(1, Math.ceil(this.replies.length / size)) * size,
@@ -123,7 +144,7 @@ export class CommentReplies extends LitElement {
       if (requestId !== this.requestId) return;
 
       const restoreFocus =
-        !data.hasNext &&
+        (this.targetOnly || !data.hasNext) &&
         this.renderRoot
           .querySelector('.replies-next-button')
           ?.matches(':focus');
@@ -134,6 +155,8 @@ export class CommentReplies extends LitElement {
         this.replies = data.items;
       }
 
+      this.cancelScroll?.();
+      this.targetOnly = false;
       this.hasNext = data.hasNext;
       this.page = data.page;
       this.currentPageSize = data.size;
@@ -191,6 +214,17 @@ export class CommentReplies extends LitElement {
   override connectedCallback(): void {
     super.connectedCallback();
 
+    if (this.targetReply) {
+      this.targetOnly = true;
+      this.replies = [this.targetReply];
+      void this.updateComplete.then(() => {
+        if (this.isConnected && this.targetOnly) {
+          const target = this.renderRoot.querySelector('reply-item');
+          if (target) this.cancelScroll = scrollWhenVisible(target, 'center');
+        }
+      });
+      return;
+    }
     if (this.configMapData?.basic.withReplies) {
       const comment = this.comment as
         | (CommentVo & { replies?: ReplyVoList })
@@ -214,9 +248,17 @@ export class CommentReplies extends LitElement {
     }
   }
 
+  override disconnectedCallback() {
+    this.cancelScroll?.();
+    super.disconnectedCallback();
+  }
+
   static override styles = [
     ...baseStyles,
     css`
+      .target-reply { display: block; scroll-margin-top: 5rem; animation: highlight 2s ease-out; }
+      @keyframes highlight { from { background: var(--halo-cw-muted-2-color); } to { background: transparent; } }
+      @media (prefers-reduced-motion: reduce) { .target-reply { animation: none; } }
       @unocss-placeholder;
     `,
   ];

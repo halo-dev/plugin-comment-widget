@@ -1,4 +1,4 @@
-import type { CommentVo } from '@halo-dev/api-client';
+import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { BaseForm } from './base-form';
@@ -7,6 +7,7 @@ import './comment-replies';
 import './user-avatar';
 import './base-comment-item';
 import './comment-management';
+import './comment-edit-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
@@ -26,6 +27,12 @@ export class CommentItem extends LitElement {
   @property({ type: Object })
   comment: CommentVo | undefined;
 
+  @property({ type: Boolean })
+  detail = false;
+
+  @property({ attribute: false })
+  targetReply: ReplyVo | undefined;
+
   @consume({ context: configMapDataContext })
   @state()
   configMapData: ConfigMapData | undefined;
@@ -35,6 +42,9 @@ export class CommentItem extends LitElement {
 
   @state()
   showReplyForm = false;
+
+  @state()
+  showEditForm = false;
 
   @state()
   upvoted = false;
@@ -48,7 +58,7 @@ export class CommentItem extends LitElement {
     super.connectedCallback();
     this.checkUpvotedStatus();
 
-    if (this.configMapData?.basic.withReplies) {
+    if (this.detail || this.configMapData?.basic.withReplies) {
       this.showReplies = true;
       this.showReplyForm = false;
     }
@@ -113,7 +123,7 @@ export class CommentItem extends LitElement {
   }
 
   handleShowReplies() {
-    if (!this.configMapData?.basic.withReplies) {
+    if (!this.detail && !this.configMapData?.basic.withReplies) {
       this.handleToggleReplyForm();
       this.showReplies = this.showReplyForm;
       return;
@@ -129,7 +139,7 @@ export class CommentItem extends LitElement {
       this.closeReplyForm();
       this.renderRoot
         .querySelector<HTMLButtonElement>(
-          this.configMapData?.basic.withReplies
+          this.detail || this.configMapData?.basic.withReplies
             ? '.reply-button'
             : '.show-replies-button'
         )
@@ -141,6 +151,15 @@ export class CommentItem extends LitElement {
 
   closeReplyForm() {
     this.showReplyForm = false;
+  }
+
+  private async handleCloseEditForm() {
+    this.showEditForm = false;
+    await this.updateComplete;
+    this.renderRoot
+      .querySelector('comment-management')
+      ?.shadowRoot?.querySelector('summary')
+      ?.focus({ preventScroll: true });
   }
 
   handleToggleReplyForm() {
@@ -164,11 +183,13 @@ export class CommentItem extends LitElement {
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
+      .permalink=${this.comment?.permalink}
       .approved=${this.comment?.spec.approved}
       .pinned=${this.comment?.spec.top}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
       .ua=${this.comment?.spec.userAgent}
       .private=${this.comment?.spec.hidden}
+      .editing=${this.showEditForm}
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
         <div class="icon-button-icon">
@@ -197,7 +218,7 @@ export class CommentItem extends LitElement {
       }
 
       ${when(
-        this.configMapData?.basic.withReplies,
+        this.detail || this.configMapData?.basic.withReplies,
         () => html`
           <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
             <div class="icon-button-icon ">
@@ -208,7 +229,16 @@ export class CommentItem extends LitElement {
           `
       )}
 
-      <comment-management slot="action" .target=${this.comment} resource="comments"></comment-management>
+      <comment-management slot="action" .target=${this.comment} resource="comments" @comment-edit=${() => (this.showEditForm = true)}></comment-management>
+      ${when(
+        this.showEditForm,
+        () => html`<comment-edit-form
+          slot="content-edit"
+          .target=${this.comment}
+          resource="comments"
+          @edit-close=${this.handleCloseEditForm}
+        ></comment-edit-form>`
+      )}
       <div slot="footer">
         ${when(
           this.showReplyForm,
@@ -222,11 +252,14 @@ export class CommentItem extends LitElement {
           `
         )}
         ${when(
-          this.showReplies,
+          this.detail || this.showReplies,
           () => html`<comment-replies
+              ?hidden=${!this.showReplies}
               ${ref(this.commentRepliesRef)}
               .comment="${this.comment}"
               .showReplyForm=${this.showReplyForm}
+              .targetReply=${this.targetReply}
+              .managedByParent=${this.detail}
             ></comment-replies>`
         )}
       </div>
