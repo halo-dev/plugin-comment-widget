@@ -1,11 +1,9 @@
-import type { Comment, CommentRequest, User } from '@halo-dev/api-client';
+import type { CommentRequest, User } from '@halo-dev/api-client';
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
-import { msg } from '@lit/localize';
-import { FetchError, type FetchResponse } from 'ofetch';
 import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
@@ -18,19 +16,7 @@ import {
   versionContext,
 } from './context';
 import type { ToastManager } from './lit-toast';
-import type { ProblemDetail } from './types';
-import {
-  type CaptchaRequiredResponse,
-  getAltchaHeader,
-  getCaptchaCodeHeader,
-  getCaptchaMessage,
-  isRequireCaptcha,
-} from './utils/captcha';
-import {
-  isPendingReview,
-  type SubmissionEvent,
-  submissionErrorMessage,
-} from './utils/submission';
+import { type SubmissionEvent, submitCommentOrReply } from './utils/submission';
 
 export class CommentForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -82,16 +68,9 @@ export class CommentForm extends LitElement {
     ></base-form>`;
   }
 
-  async onSubmit(e: SubmissionEvent) {
-    e.preventDefault();
-
-    this.submitting = true;
-
+  onSubmit(e: SubmissionEvent) {
     const data = e.detail;
-    const baseForm = this.baseFormRef.value;
-    const submittedDraft = baseForm?.getDraftSnapshot();
-
-    const { displayName, email, website, content, hidden } = data || {};
+    const { content, hidden } = data || {};
 
     const commentRequest: CommentRequest = {
       raw: content,
@@ -107,80 +86,14 @@ export class CommentForm extends LitElement {
       },
     };
 
-    if (!this.currentUser && !this.allowAnonymousComments) {
-      this.toastManager?.warn(msg('Please login first'));
-      this.submitting = false;
-      return;
-    }
-
-    if (!this.currentUser && this.allowAnonymousComments) {
-      if (!displayName || !email) {
-        this.toastManager?.warn(
-          msg('Please log in or complete the information first')
-        );
-        this.submitting = false;
-        return;
-      } else {
-        commentRequest.owner = {
-          displayName: displayName,
-          email: email,
-          website: website,
-        };
-      }
-    }
-
-    try {
-      const newComment = await data.uploadSession.submit<Comment>(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
-        commentRequest,
-        data.uploadIds,
-        {
-          ...getCaptchaCodeHeader(data.captchaCode ?? '', data.turnstileToken),
-          ...getAltchaHeader(data.altchaPayload),
-        },
-        this.baseUrl
-      );
-
-      this.baseFormRef.value?.handleFetchCaptcha();
-
-      if (!isPendingReview(newComment)) {
-        this.toastManager?.success(msg('Comment submitted successfully'));
-      } else {
-        this.toastManager?.success(
-          msg('Comment submitted successfully, pending review')
-        );
-      }
-
-      baseForm?.resetForm(submittedDraft);
-      window.dispatchEvent(new CustomEvent('halo:comment:created'));
-    } catch (error) {
-      this.reportSubmissionError(error);
-    } finally {
-      this.baseFormRef.value?.resetVerification();
-      this.submitting = false;
-    }
-  }
-  private reportSubmissionError(error: unknown) {
-    if (error instanceof FetchError) {
-      if (
-        isRequireCaptcha(
-          error.response as FetchResponse<CaptchaRequiredResponse>
-        )
-      ) {
-        const response = error.data as CaptchaRequiredResponse;
-        this.captcha = response.captcha ?? '';
-        this.toastManager?.warn(getCaptchaMessage(response));
-        return;
-      }
-
-      const problemDetail = error.data as unknown as ProblemDetail;
-      this.toastManager?.error(
-        [problemDetail?.title, problemDetail?.detail].join(' - ') ||
-          msg('Comment failed, please try again later')
-      );
-      return;
-    }
-    this.toastManager?.error(submissionErrorMessage(error));
+    return submitCommentOrReply(e, this, {
+      url: `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
+      request: commentRequest,
+      onSuccess: (baseForm, submittedDraft) => {
+        baseForm?.resetForm(submittedDraft);
+        window.dispatchEvent(new CustomEvent('halo:comment:created'));
+      },
+    });
   }
 }
 
