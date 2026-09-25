@@ -40,6 +40,7 @@ export default defineConfig({
         1: 'var(--halo-cw-text-1-color, #0f172a)',
         2: 'var(--halo-cw-text-2-color, #1e293b)',
         3: 'var(--halo-cw-text-3-color, #475569)',
+        submit: 'var(--halo-cw-text-submit-color, #ffffff)',
       },
       muted: {
         1: 'var(--halo-cw-muted-1-color, #cbd5e1)',

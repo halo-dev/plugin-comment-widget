@@ -546,7 +546,7 @@ export class BaseForm extends LitElement {
             <button
               .disabled=${this.busy}
               type="submit"
-              class="form-submit outline-none focus-visible:shadow-input h-12 text-sm inline-flex border border-primary-1 border-solid items-center justify-center gap-2 bg-primary-1 text-white px-3 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
+              class="form-submit outline-none focus-visible:shadow-input h-12 text-sm inline-flex border border-primary-1 border-solid items-center justify-center gap-2 bg-primary-1 text-text-submit px-3 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
             >
               ${when(
                 this.showLoading,
