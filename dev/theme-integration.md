@@ -15,6 +15,7 @@
 | `--halo-cw-primary-1-color`  | 主要的主题色，用于按钮背景，输入框边框等 |
 | `--halo-cw-primary-2-color`  | 较浅的主题色                             |
 | `--halo-cw-primary-3-color`  | 最浅的主题色                             |
+| `--halo-cw-primary-contrast-color` | 主要主题色上的文字颜色（提交按钮等） |
 | `--halo-cw-text-1-color`     | 主要文本颜色，用于标题、正文等           |
 | `--halo-cw-text-2-color`     | 次要文本颜色                             |
 | `--halo-cw-text-3-color`     | 辅助文本颜色                             |
@@ -35,6 +36,7 @@
   --halo-cw-primary-1-color: ;
   --halo-cw-primary-2-color: ;
   --halo-cw-primary-3-color: ;
+  --halo-cw-primary-contrast-color: ;
 
   --halo-cw-text-1-color: ;
   --halo-cw-text-2-color: ;
@@ -76,7 +78,7 @@
 | `--halo-comment-widget-component-form-button-login-bg-color-hover`      | 登录按钮悬停背景颜色     | 已废弃                                             |
 | `--halo-comment-widget-component-form-button-login-border-color`        | 登录按钮边框颜色         | 已废弃                                             |
 | `--halo-comment-widget-component-form-button-submit-bg-color`           | 提交按钮背景颜色         | 已废弃，后续使用 `--halo-cw-primary-1-color` 代替  |
-| `--halo-comment-widget-component-form-button-submit-color`              | 提交按钮文字颜色         | 已废弃                                             |
+| `--halo-comment-widget-component-form-button-submit-color`              | 提交按钮文字颜色         | 已废弃，后续使用 `--halo-cw-primary-contrast-color` 代替 |
 | `--halo-comment-widget-component-form-button-submit-border-color`       | 提交按钮边框颜色         | 已废弃                                             |
 | `--halo-comment-widget-component-form-button-submit-border-color-hover` | 提交按钮悬停边框颜色     | 已废弃，后续使用 `--halo-cw-primary-3-color` 代替  |
 | `--halo-comment-widget-component-form-button-emoji-color`               | 表情按钮颜色             | 已废弃                                             |
