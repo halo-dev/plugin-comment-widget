@@ -257,7 +257,7 @@ export class CommentEditForm extends LitElement {
           <button
             type="button"
             @click=${() => void this.loadLatest()}
-            class="edit-form-retry outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-white px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
+            class="edit-form-retry outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-text-submit px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
           >
             ${msg('Retry')}
           </button>
@@ -282,7 +282,7 @@ export class CommentEditForm extends LitElement {
           type="button"
           ?disabled=${!this.canSave}
           @click=${this.handleSave}
-          class="edit-form-submit outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-white px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed"
+          class="edit-form-submit outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-text-submit px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ${when(this.saving, () => html`<icon-loading></icon-loading>`)}
           ${msg('Save')}
