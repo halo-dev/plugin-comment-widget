@@ -62,6 +62,7 @@
 's75206bde78be40fc': `No se pudo guardar el borrador con imágenes. Mantén esta página abierta.`,
 's7584ded3d749c75e': `Cargar más`,
 's78f95c3c2b1b0512': `Enlace al comentario`,
+'s79b7935eff98042c': `Las respuestas privadas no son visibles públicamente. Los destinatarios que hayan iniciado sesión pueden verlas; los destinatarios anónimos reciben una notificación por correo electrónico si las notificaciones están habilitadas.`,
 's82665b2ffabc9c0a': `Sitio web`,
 's838e512973be01d4': `Actualmente conectado. Después de seleccionar la opción privada, los comentarios solo serán visibles para usted y el administrador del sitio.`,
 's84b033b2f7360187': `Por favor, inicie sesión o complete la información primero`,
