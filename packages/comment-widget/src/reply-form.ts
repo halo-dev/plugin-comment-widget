@@ -69,7 +69,6 @@ export class ReplyForm extends LitElement {
     return html` <base-form
       .submitting=${this.submitting}
       .captcha=${this.captcha}
-      .hidePrivateCheckbox=${true}
       .commentName=${this.comment?.metadata.name || ''}
       .quoteReplyName=${this.quoteReply?.metadata.name || ''}
       ${ref(this.baseFormRef)}
@@ -79,13 +78,14 @@ export class ReplyForm extends LitElement {
 
   onSubmit(e: SubmissionEvent) {
     const data = e.detail;
-    const { content } = data || {};
+    const { content, hidden } = data || {};
 
     const replyRequest: ReplyRequest = {
       raw: content,
       content: content,
       // TODO: support user input
       allowNotification: true,
+      hidden: hidden || false,
     };
 
     if (this.quoteReply) {
