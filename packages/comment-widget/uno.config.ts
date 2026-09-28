@@ -35,6 +35,7 @@ export default defineConfig({
         1: 'var(--halo-cw-primary-1-color, #4CCBA0)',
         2: 'var(--halo-cw-primary-2-color, #6EE7B7)',
         3: 'var(--halo-cw-primary-3-color, #99F6E4)',
+        contrast: 'var(--halo-cw-primary-contrast-color, #ffffff)',
       },
       text: {
         1: 'var(--halo-cw-text-1-color, #0f172a)',
