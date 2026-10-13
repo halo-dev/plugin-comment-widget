@@ -6,5 +6,8 @@ defineProps<{
 }>();
 </script>
 <template>
-  <comment-content :content="content"></comment-content>
+  <comment-content
+    :content="content"
+    style="--halo-cw-content-img-max-width: 50%"
+  ></comment-content>
 </template>
