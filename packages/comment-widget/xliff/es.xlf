@@ -202,14 +202,6 @@
   <source>Approve</source>
   <target>Aprobar</target>
 </trans-unit>
-<trans-unit id="sa3443b99ecf186ea">
-  <source>Unhide</source>
-  <target>Mostrar</target>
-</trans-unit>
-<trans-unit id="s9df212d89cab196d">
-  <source>Hide</source>
-  <target>Ocultar</target>
-</trans-unit>
 <trans-unit id="sdc673e73b5c13aea">
   <source>Delete</source>
   <target>Eliminar</target>
@@ -381,6 +373,14 @@
 <trans-unit id="s79b7935eff98042c">
   <source>Private replies are not publicly visible. Signed-in recipients can view them; anonymous recipients are notified by email when notifications are enabled.</source>
   <target>Las respuestas privadas no son visibles públicamente. Los destinatarios que hayan iniciado sesión pueden verlas; los destinatarios anónimos reciben una notificación por correo electrónico si las notificaciones están habilitadas.</target>
+</trans-unit>
+<trans-unit id="s6df8f2a4e5b0fe18">
+  <source>Make public</source>
+  <target>Hacer público</target>
+</trans-unit>
+<trans-unit id="s424590dc43eddb44">
+  <source>Make private</source>
+  <target>Hacer privado</target>
 </trans-unit>
 </body>
 </file>

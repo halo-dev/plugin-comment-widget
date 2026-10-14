@@ -202,14 +202,6 @@
   <source>Approve</source>
   <target>审核通过</target>
 </trans-unit>
-<trans-unit id="sa3443b99ecf186ea">
-  <source>Unhide</source>
-  <target>取消隐藏</target>
-</trans-unit>
-<trans-unit id="s9df212d89cab196d">
-  <source>Hide</source>
-  <target>隐藏</target>
-</trans-unit>
 <trans-unit id="sdc673e73b5c13aea">
   <source>Delete</source>
   <target>删除</target>
@@ -381,6 +373,14 @@
 <trans-unit id="s79b7935eff98042c">
   <source>Private replies are not publicly visible. Signed-in recipients can view them; anonymous recipients are notified by email when notifications are enabled.</source>
   <target>私密回复不会公开显示。已登录的被回复者可以查看；若启用了邮件通知，匿名被回复者会收到邮件通知。</target>
+</trans-unit>
+<trans-unit id="s6df8f2a4e5b0fe18">
+  <source>Make public</source>
+  <target>设为公开</target>
+</trans-unit>
+<trans-unit id="s424590dc43eddb44">
+  <source>Make private</source>
+  <target>设为私密</target>
 </trans-unit>
 </body>
 </file>
