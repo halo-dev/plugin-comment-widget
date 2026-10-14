@@ -139,7 +139,7 @@ test('Comment management regression checks', async () => {
     .shadowRoot.querySelector('comment-management');
   await management.updateComplete;
   management.shadowRoot.querySelector('summary').click();
-  actionButton(management, 'Hide').click();
+  actionButton(management, 'Make private').click();
   await until(() => item.comment.status.visibleReplyCount === 0);
   assert(
     comment.status.visibleReplyCount === 1,
