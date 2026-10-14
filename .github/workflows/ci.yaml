@@ -29,7 +29,7 @@ jobs:
         working-directory: packages
 
   ci:
-    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-ci.yaml@v4
+    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-ci.yaml@v5
     with:
       node-version: "24"
       java-version: "21"

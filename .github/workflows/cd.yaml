@@ -7,7 +7,7 @@ on:
 
 jobs:
   cd:
-    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-cd.yaml@v4
+    uses: halo-sigs/reusable-workflows/.github/workflows/plugin-cd.yaml@v5
     secrets:
       halo-pat: ${{ secrets.HALO_PAT }}
     permissions:
@@ -18,3 +18,4 @@ jobs:
       pnpm-version: "12.4.2"
       app-id: app-YXyaD
       ui-path: "packages"
+      sync-github-readme: true
