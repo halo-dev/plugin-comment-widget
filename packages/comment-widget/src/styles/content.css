@@ -49,7 +49,8 @@
 .content img {
   display: inline;
   border-style: none;
-  max-width: 100%;
+  max-width: var(--halo-cw-content-img-max-width, 100%);
+  height: auto;
   box-sizing: content-box;
 }
 
