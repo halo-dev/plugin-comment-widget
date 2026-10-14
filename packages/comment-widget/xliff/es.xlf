@@ -378,6 +378,10 @@
   <source>Could not save. The comment may have been deleted, or the current Halo version does not support editing. Your draft has been kept.</source>
   <target>No se pudo guardar. Es posible que el comentario se haya eliminado o que la versión actual de Halo no admita la edición. Tu borrador se ha conservado.</target>
 </trans-unit>
+<trans-unit id="s79b7935eff98042c">
+  <source>Private replies are not publicly visible. Signed-in recipients can view them; anonymous recipients are notified by email when notifications are enabled.</source>
+  <target>Las respuestas privadas no son visibles públicamente. Los destinatarios que hayan iniciado sesión pueden verlas; los destinatarios anónimos reciben una notificación por correo electrónico si las notificaciones están habilitadas.</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

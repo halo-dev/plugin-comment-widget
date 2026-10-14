@@ -169,3 +169,58 @@ test('Reply form regression checks', async () => {
     list.remove();
   }
 });
+
+test('Reply form submits the selected private state', async () => {
+  const requests = [];
+  mockApi(async (_input, options = {}) => {
+    requests.push(JSON.parse(options.body));
+    return new Response(JSON.stringify({ spec: { approved: true } }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+  await import('../src/index.ts');
+
+  const form = document.createElement('reply-form');
+  form.comment = { metadata: { name: 'comment-1' } };
+  form.currentUser = { metadata: { name: 'replier' }, spec: {} };
+  document.body.append(form);
+  await form.updateComplete;
+  const base = form.baseFormRef.value;
+  base.currentUser = form.currentUser;
+  base.configMapData = { basic: { enablePrivateComment: true } };
+  await base.updateComplete;
+  await until(() => base.editorRef.value?.editor);
+
+  const privateOption = base.shadowRoot.querySelector('#hidden');
+  assert(privateOption, 'Private replies must be selectable when enabled');
+  assert(
+    base.shadowRoot.querySelector('base-tooltip').content.includes('replies'),
+    'Reply help must describe private replies'
+  );
+  privateOption.click();
+  base.editorRef.value.editor.commands.setContent('<p>Private reply</p>');
+  base.shadowRoot.querySelector('form').requestSubmit();
+  await until(() => requests.length === 1 && !form.submitting);
+  assert(requests[0].hidden === true, 'Private reply must send hidden=true');
+
+  form.quoteReply = { metadata: { name: 'reply-1' } };
+  await form.updateComplete;
+  await base.updateComplete;
+  await until(() => base.editorRef.value?.editor);
+  base.editorRef.value.editor.commands.setContent('<p>Public reply</p>');
+  base.shadowRoot.querySelector('form').requestSubmit();
+  await until(() => requests.length === 2 && !form.submitting);
+  assert(requests[1].hidden === false, 'Public reply must send hidden=false');
+  assert(
+    requests[1].quoteReply === 'reply-1',
+    'Quoted reply must keep its target'
+  );
+
+  base.configMapData = { basic: { enablePrivateComment: false } };
+  await base.updateComplete;
+  assert(
+    !base.shadowRoot.querySelector('#hidden'),
+    'Private replies must respect the existing setting'
+  );
+  form.remove();
+});

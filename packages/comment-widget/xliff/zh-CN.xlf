@@ -378,6 +378,10 @@
   <source>Could not save. The comment may have been deleted, or the current Halo version does not support editing. Your draft has been kept.</source>
   <target>保存失败。该评论可能已被删除，或当前 Halo 版本不支持编辑。你的草稿已保留。</target>
 </trans-unit>
+<trans-unit id="s79b7935eff98042c">
+  <source>Private replies are not publicly visible. Signed-in recipients can view them; anonymous recipients are notified by email when notifications are enabled.</source>
+  <target>私密回复不会公开显示。已登录的被回复者可以查看；若启用了邮件通知，匿名被回复者会收到邮件通知。</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

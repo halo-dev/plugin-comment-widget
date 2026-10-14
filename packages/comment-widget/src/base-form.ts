@@ -350,6 +350,11 @@ export class BaseForm extends LitElement {
   }
 
   private get privateCommentDescription() {
+    if (this.commentName) {
+      return msg(
+        'Private replies are not publicly visible. Signed-in recipients can view them; anonymous recipients are notified by email when notifications are enabled.'
+      );
+    }
     return this.currentUser
       ? msg(
           'Currently logged in. After selecting the private option, comments will only be visible to yourself and the site administrator.'

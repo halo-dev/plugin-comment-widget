@@ -44,20 +44,20 @@ spec:
           name: showCommenterDevice
           value: false
         - $formkit: checkbox
-          label: 支持私密评论
+          label: 支持私密评论和回复
           id: enablePrivateComment
           key: enablePrivateComment
           name: enablePrivateComment
-          help: 开启之后，评论者可选是否私密评论，私密评论仅评论者（已登录）和网站管理员（包含评论查看权限）可见，
+          help: 开启后可选择私密评论或回复。私密评论仅已登录的评论者和有评论查看权限的管理员可见；私密回复不会公开显示，回复者本人、已登录的被回复者和有评论查看权限的管理员可见，匿名被回复者需启用邮件通知才能收到回复。
           value: false
         - $formkit: checkbox
           if: "$get(enablePrivateComment).value === true"
-          label: 显示私密评论状态
+          label: 显示私密评论和回复状态
           name: showPrivateCommentBadge
           id: showPrivateCommentBadge
           key: showPrivateCommentBadge
           value: true
-          help: 开启后，私密评论会显示一个私密状态标识
+          help: 开启后，私密评论和回复会显示私密状态标识
     - group: security
       label: 安全设置
       formSchema:
