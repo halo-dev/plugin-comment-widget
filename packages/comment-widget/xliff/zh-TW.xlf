@@ -382,6 +382,10 @@
   <source>Make private</source>
   <target>設為私密</target>
 </trans-unit>
+<trans-unit id="s17c8f8524e36987d">
+  <source>Allow notification</source>
+  <target>允許通知</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

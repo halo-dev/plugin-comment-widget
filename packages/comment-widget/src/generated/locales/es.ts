@@ -21,6 +21,7 @@
 's107ccef507b51f2c': `Completa la verificación`,
 's15e33945d13c5176': `Se está confirmando tu envío anterior. Inténtalo más tarde; se conservarán tus imágenes.`,
 's176fe95698857ad9': `El comentario o la respuesta ha cambiado. Copia tu borrador y vuelve a abrir el editor para cargar la última versión.`,
+'s17c8f8524e36987d': `Permitir notificación`,
 's19172ed3838854fc': `Copiar enlace`,
 's1c6fefb092506753': `Error al cargar la lista de comentarios, por favor intente más tarde`,
 's1d468f888124a55e': `Tu borrador ha cambiado. Vuelve a abrirlo antes de reintentar.`,

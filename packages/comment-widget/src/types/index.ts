@@ -11,6 +11,7 @@ interface BasicConfig {
   size: number;
   withReplySize: number;
   replySize: number;
+  allowNotificationConfigurable?: boolean;
   showCommenterDevice?: boolean;
   enablePrivateComment?: boolean;
   showPrivateCommentBadge?: boolean;

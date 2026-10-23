@@ -29,6 +29,7 @@ export interface SubmissionDetail {
   turnstileToken?: string;
   altchaPayload?: string;
   content: string;
+  allowNotification: boolean;
   hidden: boolean;
   uploadIds: string[];
   uploadSession: UploadSession;

@@ -382,6 +382,10 @@
   <source>Make private</source>
   <target>Hacer privado</target>
 </trans-unit>
+<trans-unit id="s17c8f8524e36987d">
+  <source>Allow notification</source>
+  <target>Permitir notificación</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

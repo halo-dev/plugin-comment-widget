@@ -497,6 +497,14 @@ export class BaseForm extends LitElement {
             )}
 
             ${when(
+              this.allowNotificationConfigurable,
+              () => html`<div class="flex items-center gap-2">
+                <input id="allowNotification" name="allowNotification" type="checkbox" checked />
+                <label for="allowNotification" class="text-xs select-none text-text-3 hover:text-text-1 transition-colors">${msg('Allow notification')}</label>
+              </div>`
+            )}
+
+            ${when(
               this.showCaptcha &&
                 !this.useTurnstile &&
                 !this.useAltcha &&
@@ -567,6 +575,10 @@ export class BaseForm extends LitElement {
     `;
   }
 
+  private get allowNotificationConfigurable() {
+    return this.configMapData?.basic.allowNotificationConfigurable === true;
+  }
+
   private get canUploadImages() {
     if (!this.configMapData?.editor?.enableUpload) {
       return false;
@@ -589,6 +601,9 @@ export class BaseForm extends LitElement {
         waitUntil: (submission: Promise<unknown>) =>
           submissions.push(submission),
         content,
+        allowNotification: this.allowNotificationConfigurable
+          ? data.allowNotification === 'on'
+          : true,
         uploadIds: uploadedIds(editor),
         uploadSession: uploadSession(editor),
         hidden: data.hidden === 'on',
