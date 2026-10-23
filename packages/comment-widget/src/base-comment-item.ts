@@ -3,12 +3,14 @@ import { msg } from '@lit/localize';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import baseStyles from './styles/base';
-import { formatDate, timeAgo } from './utils/date';
+import './comment-link';
 import './commenter-ua-bar';
 import { consume } from '@lit/context';
-import { configMapDataContext } from './context';
+import { canManageCommentsContext, configMapDataContext } from './context';
 import type { ConfigMapData } from './types';
 import './comment-content';
+import { ifDefined } from 'lit/directives/if-defined.js';
+import { when } from 'lit/directives/when.js';
 
 export class BaseCommentItem extends LitElement {
   @property({ type: String })
@@ -23,8 +25,14 @@ export class BaseCommentItem extends LitElement {
   @property({ type: String })
   creationTime: string | undefined;
 
+  @property()
+  permalink?: string;
+
   @property({ type: Boolean })
   approved: boolean | undefined;
+
+  @property({ type: Boolean })
+  pinned: boolean | undefined;
 
   @property({ type: Boolean })
   breath: boolean | undefined;
@@ -33,11 +41,21 @@ export class BaseCommentItem extends LitElement {
   content = '';
 
   @property({ type: String })
-  ua: string = '';
+  ua: string | undefined;
+
+  @property({ type: Boolean })
+  private: boolean | undefined;
+
+  @property({ type: Boolean })
+  editing = false;
 
   @consume({ context: configMapDataContext })
   @state()
   configMapData: ConfigMapData | undefined;
+
+  @consume({ context: canManageCommentsContext, subscribe: true })
+  @state()
+  canManageComments = false;
 
   override render() {
     return html`<div class="item flex gap-3 py-4 ${this.breath ? 'animate-breath' : ''}">
@@ -45,38 +63,59 @@ export class BaseCommentItem extends LitElement {
         <user-avatar
           src="${this.userAvatar || ''}"
           alt="${this.userDisplayName || ''}"
-          href=${this.userWebsite}
+          href=${ifDefined(this.userWebsite)}
         ></user-avatar>
       </div>
       <div class="item-main flex-[1_1_auto] min-w-0 w-full">
-        <div class="item-meta flex items-center gap-3 flex-wrap">
-          ${
-            this.userWebsite
-              ? html`<a
-                class="item-author font-medium text-sm text-text-1 hover:underline"
+        <div class="item-meta flex items-center gap-2 flex-wrap">
+          ${when(
+            this.userWebsite,
+            () => html`
+              <a
+                class="item-author min-w-0 break-all font-medium text-sm text-text-1 hover:underline"
                 target="_blank"
-                href=${this.userWebsite}
-                rel="noopener noreferrer"
+                href=${ifDefined(this.userWebsite)}
+                rel="noopener noreferrer nofollow ugc"
               >
                 ${this.userDisplayName}
-              </a>`
-              : html`<span class="item-author font-medium text-sm text-text-1">${this.userDisplayName}</span>`
-          }
+              </a>
+              `,
+            () => html`
+              <span class="item-author min-w-0 break-all font-medium text-sm text-text-1">${this.userDisplayName}</span>
+              `
+          )}
+
+          ${when(
+            this.private &&
+              (this.canManageComments ||
+                this.configMapData?.basic.showPrivateCommentBadge),
+            () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+                <i class="i-ri-git-repository-private-line opacity-90 size-3" aria-hidden="true"></i>
+                <span class="text-xs text-text-2">${msg('Private')}</span>
+              </div>`
+          )}
+
+          ${when(
+            this.pinned,
+            () => html`<div class="item-pinned inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+                <i class="i-ri-pushpin-line opacity-90 size-3" aria-hidden="true"></i>
+                <span class="text-xs text-text-2">${msg('Pinned')}</span>
+              </div>`
+          )}
+
+          ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
-          ${this.ua && this.configMapData?.basic.showCommenterDevice ? html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>` : ''}
+          <comment-link .permalink=${this.permalink} .creationTime=${this.creationTime}></comment-link>
 
-          <time class="item-meta-info text-xs text-text-3" title=${formatDate(this.creationTime)}>
-            ${timeAgo(this.creationTime)}
-          </time>
-
-          ${
-            !this.approved
-              ? html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`
-              : ''
-          }
+          ${when(!this.approved, () => html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`)}
         </div>
 
-        <div class="item-content mt-2.5 space-y-2.5"><slot name="pre-content"></slot><comment-content .content=${this.content}></comment-content></div>
+        <div class="item-content mt-2.5 space-y-2.5 ${this.editing ? 'item-content-editing' : ''}"><slot name="pre-content"></slot>${when(
+          this.editing,
+          () => html`<slot name="content-edit"></slot>`,
+          () =>
+            html`<comment-content .content=${this.content}></comment-content>`
+        )}</div>
 
         <div class="item-actions mt-2 flex items-center gap-3">
           <slot name="action"></slot>
@@ -90,6 +129,16 @@ export class BaseCommentItem extends LitElement {
   static override styles = [
     ...baseStyles,
     css`
+      .item-content {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 4em;
+      }
+
+      /* Paint containment would clip the focus ring of the slotted editor. */
+      .item-content-editing {
+        content-visibility: visible;
+      }
+
       .animate-breath {
         animation: breath 1s ease-in-out infinite;
       }
@@ -106,7 +155,7 @@ export class BaseCommentItem extends LitElement {
         }
       }
 
-        @unocss-placeholder;
+      @unocss-placeholder;
     `,
   ];
 }

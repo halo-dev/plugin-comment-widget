@@ -1,6 +1,5 @@
 import type {
   CommentVo,
-  Reply,
   ReplyRequest,
   ReplyVo,
   User,
@@ -10,8 +9,6 @@ import { html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
-import { msg } from '@lit/localize';
-import { FetchError, type FetchResponse, ofetch } from 'ofetch';
 import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
@@ -20,11 +17,7 @@ import {
   toastContext,
 } from './context';
 import type { ToastManager } from './lit-toast';
-import {
-  type CaptchaRequiredResponse,
-  getCaptchaCodeHeader,
-  isRequireCaptcha,
-} from './utils/captcha';
+import { type SubmissionEvent, submitCommentOrReply } from './utils/submission';
 
 export class ReplyForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -64,7 +57,9 @@ export class ReplyForm extends LitElement {
       this.scrollIntoView({
         block: 'center',
         inline: 'start',
-        behavior: 'smooth',
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+          ? 'instant'
+          : 'smooth',
       });
       this.baseFormRef.value?.setFocus();
     }, 0);
@@ -74,98 +69,43 @@ export class ReplyForm extends LitElement {
     return html` <base-form
       .submitting=${this.submitting}
       .captcha=${this.captcha}
+      .commentName=${this.comment?.metadata.name || ''}
+      .quoteReplyName=${this.quoteReply?.metadata.name || ''}
       ${ref(this.baseFormRef)}
-      @submit="${this.onSubmit}"
+      @submit=${(e: SubmissionEvent) => e.detail.waitUntil(this.onSubmit(e))}
     ></base-form>`;
   }
 
-  async onSubmit(e: CustomEvent) {
-    e.preventDefault();
-
-    this.submitting = true;
-
+  onSubmit(e: SubmissionEvent) {
     const data = e.detail;
-
-    const { displayName, email, website, content, allowNotification } =
-      data || {};
+    const { content, hidden, allowNotification } = data || {};
 
     const replyRequest: ReplyRequest = {
       raw: content,
       content: content,
       allowNotification: allowNotification,
+      hidden: hidden || false,
     };
 
     if (this.quoteReply) {
       replyRequest.quoteReply = this.quoteReply.metadata.name;
     }
 
-    if (!this.currentUser && !this.allowAnonymousComments) {
-      this.toastManager?.warn(msg('Please login first'));
-      this.submitting = false;
-      return;
-    }
-
-    if (!this.currentUser && this.allowAnonymousComments) {
-      if (!displayName || !email) {
-        this.toastManager?.warn(
-          msg('Please log in or complete the information first')
+    return submitCommentOrReply(e, this, {
+      url: `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
+      request: replyRequest,
+      onSuccess: (baseForm, submittedDraft) => {
+        this.dispatchEvent(
+          new CustomEvent('reload', {
+            detail: {
+              resetForm: (form: BaseForm) => form.resetForm(submittedDraft),
+            },
+          })
         );
-        this.submitting = false;
-        return;
-      } else {
-        replyRequest.owner = {
-          displayName: displayName,
-          email: email,
-          website: website,
-        };
-      }
-    }
-
-    try {
-      const newReply = await ofetch<Reply>(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments/${this.comment?.metadata.name}/reply`,
-        {
-          method: 'POST',
-          headers: {
-            ...getCaptchaCodeHeader(data.captchaCode),
-          },
-          body: replyRequest,
-        }
-      );
-
-      this.baseFormRef.value?.handleFetchCaptcha();
-
-      if (newReply.spec.approved) {
-        this.toastManager?.success(msg('Comment submitted successfully'));
-      } else {
-        this.toastManager?.success(
-          msg('Comment submitted successfully, pending review')
-        );
-      }
-
-      this.dispatchEvent(new CustomEvent('reload'));
-      window.dispatchEvent(new CustomEvent('halo:comment-reply:created'));
-
-      this.baseFormRef.value?.resetForm();
-    } catch (error) {
-      if (error instanceof FetchError) {
-        if (
-          isRequireCaptcha(
-            error.response as FetchResponse<CaptchaRequiredResponse>
-          )
-        ) {
-          const { captcha, detail } =
-            error.data as unknown as CaptchaRequiredResponse;
-          this.captcha = captcha;
-          this.toastManager?.warn(detail);
-          return;
-        }
-      }
-
-      this.toastManager?.error(msg('Comment failed, please try again later'));
-    } finally {
-      this.submitting = false;
-    }
+        baseForm?.resetForm(submittedDraft);
+        window.dispatchEvent(new CustomEvent('halo:comment-reply:created'));
+      },
+    });
   }
 }
 

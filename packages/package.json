@@ -1,0 +1,40 @@
+{
+  "license": "GPL-3.0",
+  "author": {
+    "name": "Halo",
+    "url": "https://github.com/halo-dev"
+  },
+  "contributors": [
+    {
+      "name": "Ryan Wang",
+      "email": "i@ryanc.cc",
+      "url": "https://github.com/ruibaby"
+    }
+  ],
+  "scripts": {
+    "build": "pnpm -r run build",
+    "check": "biome check --write",
+    "example:dev": "pnpm -C example dev",
+    "prepare": "cd .. && packages/node_modules/.bin/husky",
+    "publish": "pnpm -r publish --access public --no-git-checks"
+  },
+  "lint-staged": {
+    "*": [
+      "biome check --no-errors-on-unmatched --files-ignore-unknown=true"
+    ]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.9",
+    "@types/node": "^24.13.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "typescript": "~6.0.0",
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^5.0.3"
+  },
+  "packageManager": "pnpm@12.4.2",
+  "dependencies": {
+    "@shikijs/themes": "^4.4.3",
+    "shiki": "^4.4.3"
+  }
+}

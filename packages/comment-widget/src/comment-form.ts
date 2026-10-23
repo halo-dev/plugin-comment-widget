@@ -1,11 +1,9 @@
-import type { Comment, CommentRequest, User } from '@halo-dev/api-client';
+import type { CommentRequest, User } from '@halo-dev/api-client';
 import { consume } from '@lit/context';
 import { html, LitElement } from 'lit';
 import { state } from 'lit/decorators.js';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import './base-form';
-import { msg } from '@lit/localize';
-import { FetchError, type FetchResponse, ofetch } from 'ofetch';
 import type { BaseForm } from './base-form';
 import {
   allowAnonymousCommentsContext,
@@ -18,11 +16,7 @@ import {
   versionContext,
 } from './context';
 import type { ToastManager } from './lit-toast';
-import {
-  type CaptchaRequiredResponse,
-  getCaptchaCodeHeader,
-  isRequireCaptcha,
-} from './utils/captcha';
+import { type SubmissionEvent, submitCommentOrReply } from './utils/submission';
 
 export class CommentForm extends LitElement {
   @consume({ context: baseUrlContext })
@@ -70,24 +64,19 @@ export class CommentForm extends LitElement {
       .submitting=${this.submitting}
       .captcha=${this.captcha}
       ${ref(this.baseFormRef)}
-      @submit="${this.onSubmit}"
+      @submit=${(e: SubmissionEvent) => e.detail.waitUntil(this.onSubmit(e))}
     ></base-form>`;
   }
 
-  async onSubmit(e: CustomEvent) {
-    e.preventDefault();
-
-    this.submitting = true;
-
+  onSubmit(e: SubmissionEvent) {
     const data = e.detail;
-
-    const { displayName, email, website, content, allowNotification } =
-      data || {};
+    const { content, hidden, allowNotification } = data || {};
 
     const commentRequest: CommentRequest = {
       raw: content,
       content: content,
       allowNotification: allowNotification,
+      hidden: hidden || false,
       subjectRef: {
         group: this.group,
         kind: this.kind,
@@ -96,72 +85,14 @@ export class CommentForm extends LitElement {
       },
     };
 
-    if (!this.currentUser && !this.allowAnonymousComments) {
-      this.toastManager?.warn(msg('Please login first'));
-      this.submitting = false;
-      return;
-    }
-
-    if (!this.currentUser && this.allowAnonymousComments) {
-      if (!displayName || !email) {
-        this.toastManager?.warn(
-          msg('Please log in or complete the information first')
-        );
-        this.submitting = false;
-        return;
-      } else {
-        commentRequest.owner = {
-          displayName: displayName,
-          email: email,
-          website: website,
-        };
-      }
-    }
-
-    try {
-      const newComment = await ofetch<Comment>(
-        `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
-        {
-          method: 'POST',
-          headers: {
-            ...getCaptchaCodeHeader(data.captchaCode),
-          },
-          body: commentRequest,
-        }
-      );
-
-      this.baseFormRef.value?.handleFetchCaptcha();
-
-      if (newComment.spec.approved) {
-        this.toastManager?.success(msg('Comment submitted successfully'));
-      } else {
-        this.toastManager?.success(
-          msg('Comment submitted successfully, pending review')
-        );
-      }
-
-      window.dispatchEvent(new CustomEvent('halo:comment:created'));
-
-      this.baseFormRef.value?.resetForm();
-    } catch (error) {
-      if (error instanceof FetchError) {
-        if (
-          isRequireCaptcha(
-            error.response as FetchResponse<CaptchaRequiredResponse>
-          )
-        ) {
-          const { captcha, detail } =
-            error.data as unknown as CaptchaRequiredResponse;
-          this.captcha = captcha;
-          this.toastManager?.warn(detail);
-          return;
-        }
-      }
-
-      this.toastManager?.error(msg('Comment failed, please try again later'));
-    } finally {
-      this.submitting = false;
-    }
+    return submitCommentOrReply(e, this, {
+      url: `${this.baseUrl}/apis/api.halo.run/v1alpha1/comments`,
+      request: commentRequest,
+      onSuccess: (baseForm, submittedDraft) => {
+        baseForm?.resetForm(submittedDraft);
+        window.dispatchEvent(new CustomEvent('halo:comment:created'));
+      },
+    });
   }
 }
 

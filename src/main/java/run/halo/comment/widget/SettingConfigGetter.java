@@ -1,14 +1,14 @@
 package run.halo.comment.widget;
 
+import java.math.BigDecimal;
+import java.util.Set;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.springframework.lang.NonNull;
 import reactor.core.publisher.Mono;
 import run.halo.comment.widget.captcha.CaptchaType;
-
 public interface SettingConfigGetter {
-
     /**
      * Never {@link Mono#empty()}.
      */
@@ -24,6 +24,33 @@ public interface SettingConfigGetter {
      */
     Mono<SecurityConfig> getSecurityConfig();
 
+    Mono<EditorConfig> getEditorConfig();
+
+    @Data
+    class EditorConfig {
+
+        public static final String GROUP = "editor";
+        private boolean enableUpload = false;
+        private UploadConfig upload = new UploadConfig();
+    }
+
+    @Data
+    class UploadConfig {
+
+        private boolean allowAnonymous = false;
+
+        private BigDecimal maxFileSize = BigDecimal.TEN;
+
+        private UploadAttachment attachment = new UploadAttachment();
+
+        @Data
+        static class UploadAttachment {
+
+            private String attachmentPolicy;
+            private String attachmentGroup;
+        }
+    }
+
     @Data
     @Accessors(chain = true)
     class SecurityConfig {
@@ -33,7 +60,11 @@ public interface SettingConfigGetter {
         private CaptchaConfig captcha = CaptchaConfig.empty();
 
         public SecurityConfig setCaptcha(CaptchaConfig captcha) {
-            this.captcha = (captcha == null ? CaptchaConfig.empty() : captcha);
+            if (captcha == null) {
+                this.captcha = CaptchaConfig.empty();
+                return this;
+            }
+            this.captcha = captcha;
             return this;
         }
 
@@ -47,7 +78,17 @@ public interface SettingConfigGetter {
     @Accessors(chain = true)
     class CaptchaConfig {
 
-        private boolean anonymousCommentCaptcha;
+        private boolean enable;
+
+        private CaptchaAudience audience = CaptchaAudience.ANONYMOUS;
+
+        private Set<String> roles = Set.of();
+
+        private boolean includeAnonymous;
+
+        public enum CaptchaAudience {
+            ALL, ANONYMOUS, ROLES
+        }
 
         @Getter(onMethod_ = @NonNull)
         private CaptchaType type = CaptchaType.ALPHANUMERIC;
@@ -58,8 +99,22 @@ public interface SettingConfigGetter {
 
         private int arithmeticRange = 90;
 
+        private String altchaDisplay = "floating";
+
+        private boolean altchaHideLogo;
+
+        private boolean altchaHideFooter;
+
+        private String turnstileSiteKey;
+
+        private String turnstileSecretRef;
+
         public CaptchaConfig setType(CaptchaType type) {
-            this.type = (type == null ? CaptchaType.ALPHANUMERIC : type);
+            if (type == null) {
+                this.type = CaptchaType.ALPHANUMERIC;
+                return this;
+            }
+            this.type = type;
             return this;
         }
 

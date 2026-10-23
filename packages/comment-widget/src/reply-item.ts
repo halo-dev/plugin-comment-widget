@@ -1,12 +1,16 @@
 import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import type { BaseForm } from './base-form';
 import baseStyles from './styles/base';
 import './user-avatar';
 import './base-comment-item';
+import './comment-management';
+import './comment-edit-form';
 import './reply-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import { LS_UPVOTED_REPLIES_KEY } from './constant';
@@ -31,6 +35,9 @@ export class ReplyItem extends LitElement {
 
   @state()
   showReplyForm = false;
+
+  @state()
+  showEditForm = false;
 
   @state()
   upvoted = false;
@@ -77,11 +84,52 @@ export class ReplyItem extends LitElement {
     }
   }
 
-  handleToggleReplyForm() {
-    this.showReplyForm = !this.showReplyForm;
+  closeReplyForm() {
+    this.showReplyForm = false;
   }
 
+  private async handleCloseEditForm() {
+    this.showEditForm = false;
+    await this.updateComplete;
+    this.renderRoot
+      .querySelector('comment-management')
+      ?.shadowRoot?.querySelector('summary')
+      ?.focus({ preventScroll: true });
+  }
+
+  onReplyCreated(
+    event: CustomEvent<{ resetForm: (form: BaseForm) => boolean }>
+  ) {
+    const form = this.renderRoot.querySelector('reply-form')?.baseFormRef.value;
+    if (form && event.detail.resetForm(form)) {
+      this.closeReplyForm();
+      this.renderRoot
+        .querySelector<HTMLButtonElement>('.reply-button')
+        ?.focus({ preventScroll: true });
+    }
+    this.dispatchEvent(new CustomEvent('reload'));
+  }
+
+  handleToggleReplyForm() {
+    if (this.showReplyForm) {
+      this.closeReplyForm();
+      return;
+    }
+    this.showReplyForm = true;
+    this.dispatchEvent(
+      new CustomEvent('reply-form-open', {
+        detail: this,
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
+  private upvoting = false;
+
   async handleUpvote() {
+    if (this.upvoting) return;
+
     const upvotedReplies = JSON.parse(
       localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
     );
@@ -96,20 +144,31 @@ export class ReplyItem extends LitElement {
       group: 'content.halo.run',
     };
 
-    await ofetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`, {
-      method: 'POST',
-      body: voteRequest,
-    });
+    this.upvoting = true;
+    try {
+      await ofetch(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`,
+        {
+          method: 'POST',
+          body: voteRequest,
+        }
+      );
 
-    upvotedReplies.push(this.reply?.metadata.name);
-    localStorage.setItem(
-      LS_UPVOTED_REPLIES_KEY,
-      JSON.stringify(upvotedReplies)
-    );
+      const latestUpvotedReplies = JSON.parse(
+        localStorage.getItem(LS_UPVOTED_REPLIES_KEY) || '[]'
+      );
+      latestUpvotedReplies.push(voteRequest.name);
+      localStorage.setItem(
+        LS_UPVOTED_REPLIES_KEY,
+        JSON.stringify(latestUpvotedReplies)
+      );
 
-    this.upvoteCount += 1;
-    this.upvoted = true;
-    this.checkUpvotedStatus();
+      this.upvoteCount += 1;
+      this.upvoted = true;
+      this.checkUpvotedStatus();
+    } finally {
+      this.upvoting = false;
+    }
   }
 
   override render() {
@@ -118,53 +177,64 @@ export class ReplyItem extends LitElement {
         .userAvatar="${handleReplyAvatar(this.reply)}"
         .userDisplayName="${this.reply?.owner.displayName}"
         .content="${this.reply?.spec.content || ''}"
-        .creationTime="${this.reply?.metadata.creationTimestamp ?? undefined}"
+        .creationTime="${this.reply?.spec.creationTime}"
+        .permalink=${this.reply?.permalink}
         .approved=${this.reply?.spec.approved}
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
         .ua=${this.reply?.spec.userAgent}
+        .private=${this.comment?.spec.hidden || this.reply?.spec.hidden}
+        .editing=${this.showEditForm}
       >
         <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
           <div class="icon-button-icon ">
-          ${
-            this.upvoted
-              ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`
-              : html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
-          }
+          ${when(
+            this.upvoted,
+            () =>
+              html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`,
+            () =>
+              html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
+          )}
           </div>
           <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
         </button>
-        <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
+        <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
           <div class="icon-button-icon ">
             <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
           </div>
           <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}</span>
         </button>
-        ${
-          this.showReplyForm
-            ? html`
-              <div class="reply-form mt-2" slot="footer">
+      <comment-management slot="action" .target=${this.reply} resource="replies" @comment-edit=${() => (this.showEditForm = true)}></comment-management>
+        ${when(
+          this.showEditForm,
+          () => html`<comment-edit-form
+            slot="content-edit"
+            .target=${this.reply}
+            resource="replies"
+            @edit-close=${this.handleCloseEditForm}
+          ></comment-edit-form>`
+        )}
+        ${when(
+          this.showReplyForm,
+          () => html`<div class="reply-form mt-2" slot="footer">
                 <reply-form
                   .comment=${this.comment}
                   .quoteReply=${this.reply}
-                  @reload=${() => this.dispatchEvent(new CustomEvent('reload'))}
+                  @reload=${this.onReplyCreated}
                 ></reply-form>
-              </div>
-            `
-            : ``
-        }
-        ${
-          this.quoteReply
-            ? html`<span
+              </div>`
+        )}
+        ${when(
+          this.quoteReply,
+          () => html`<span
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
-                class="quote-badge cursor-pointer inline-flex items-center gap-1 px-2 py-1.5 rounded-base bg-muted-3 text-text-2 hover:-translate-y-0.5 hover:text-text-1 hover:bg-muted-2 transition-all text-sm font-medium"
+                class="quote-badge cursor-pointer inline-flex items-center gap-1 px-2 py-1.5 rounded-base bg-muted-3 text-text-2 hover:-translate-y-0.5 hover:text-text-1 hover:bg-muted-2 transition-[transform,color,background-color] text-sm font-medium"
                 ><i class="i-ic:round-reply" aria-hidden="true"></i><span>${this.quoteReply?.owner.displayName}</span>
               </span>
               <br slot="pre-content" />`
-            : ''
-        }
+        )}
       </base-comment-item>
     `;
   }

@@ -3,7 +3,7 @@ import baseStyles from '../styles/base';
 
 export class IconLoading extends LitElement {
   override render() {
-    return html`<svg class="size-5 animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    return html`<svg class="size-5 animate-spin" aria-hidden="true" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <circle
         style="opacity: 0.25;"
         cx="12"

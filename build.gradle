@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id "io.freefair.lombok" version "8.14"
-    id "com.github.node-gradle.node" version "7.1.0"
-    id "run.halo.plugin.devtools" version "0.6.2"
+    id "io.freefair.lombok" version "9.2.0"
+    id "com.github.node-gradle.node" version "7.1.0" apply false
+    id "run.halo.plugin.devtools" version "0.8.0"
 }
 
-group 'run.halo.comment.widget'
+group = 'run.halo.comment.widget'
 
 java {
     toolchain {
@@ -23,38 +23,41 @@ repositories {
 }
 
 dependencies {
-    implementation platform('run.halo.tools.platform:plugin:2.21.0')
+    implementation platform('run.halo.tools.platform:plugin:2.26.0')
     compileOnly 'run.halo.app:api'
+    implementation 'org.altcha:altcha:2.0.3'
+    implementation 'org.json:json:20240303'
 
     testImplementation 'run.halo.app:api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
     useJUnitPlatform()
 }
 
-node {
-    nodeProjectDir = file("${project.projectDir}")
-}
+sourceSets.main.resources.exclude 'ui/**', 'static/**'
 
-tasks.register('buildFrontend', PnpmTask) {
-    args = ['build']
-    dependsOn('installDepsForUI')
-}
-
-tasks.register('installDepsForUI', PnpmTask) {
-    args = ['install']
-}
-
-build {
-    // build frontend before build
-    tasks.named('compileJava').configure {
-        dependsOn('buildFrontend')
+tasks.named('processResources', Copy) {
+    dependsOn project(':packages').tasks.named('pnpmBuild')
+    from(project(':packages').layout.projectDirectory.dir('ui/build/dist')) {
+        into 'ui'
+    }
+    from(project(':packages').layout.projectDirectory.dir('widget/build/dist')) {
+        into 'static'
+    }
+    doFirst {
+        delete layout.buildDirectory.dir('resources/main/ui'),
+            layout.buildDirectory.dir('resources/main/static')
     }
 }
 
+tasks.named('clean') {
+    dependsOn project(':packages').tasks.named('clean')
+}
+
 halo {
-    version = "2.21"
+    version = "2.26.0"
     debug = true
 }

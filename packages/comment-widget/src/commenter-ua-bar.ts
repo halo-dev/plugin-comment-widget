@@ -1,6 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { when } from 'lit/directives/when.js';
 import type { UAParser } from 'ua-parser-js';
+import haloLogo from './assets/halo.png';
 import baseStyles from './styles/base';
 
 const OS_ICON_MAP = {
@@ -15,6 +17,7 @@ const OS_ICON_MAP = {
   Ubuntu: 'i-logos:ubuntu',
   Fedora: 'i-logos:fedora',
   HarmonyOS: 'i-simple-icons:harmonyos',
+  OpenHarmony: 'i-simple-icons:harmonyos',
 };
 
 const BROWSER_ICON_MAP = {
@@ -71,9 +74,12 @@ export class CommenterUABar extends LitElement {
     const browser = this.parser.getBrowser();
 
     if (!os.name && !browser.name) {
+      const isHaloApp = this.ua.startsWith('Halo App/');
+
       return html`
-      <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-        <span class="text-xs text-text-3">${this.ua}</span>
+      <div class="max-w-full inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+        ${when(isHaloApp, () => html`<img src=${haloLogo} alt="" class="size-3 shrink-0 rounded-sm" />`)}
+        <span class="min-w-0 break-all text-xs text-text-3">${this.ua}</span>
       </div>
       `;
     }
@@ -83,26 +89,20 @@ export class CommenterUABar extends LitElement {
 
     return html`
     <div class="inline-flex gap-2 items-center">
-      ${
-        os
-          ? html`
-            <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-              ${osIcon ? html`<i class="${osIcon} opacity-90 size-3" aria-hidden="true"></i>` : ''}
+      ${when(
+        os,
+        () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+              ${when(osIcon, () => html`<i class="${osIcon} opacity-90 size-3" aria-hidden="true"></i>`)}
               <span class="text-xs text-text-2">${os.name}</span>
-            </div>
-            `
-          : ''
-      }
-      ${
-        browser
-          ? html`
-            <div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
-              ${browserIcon ? html`<i class="${browserIcon} opacity-90 size-3" aria-hidden="true"></i>` : ''}
+            </div>`
+      )}
+      ${when(
+        browser,
+        () => html`<div class="inline-flex items-center gap-1 bg-muted-3 rounded-base px-1.5 py-1">
+              ${when(browserIcon, () => html`<i class="${browserIcon} opacity-90 size-3" aria-hidden="true"></i>`)}
               <span class="text-xs text-text-2">${[browser.name, browser.major].filter(Boolean).join(' ')}</span>
-            </div>
-            `
-          : ''
-      }
+            </div>`
+      )}
     </div>`;
   }
 
@@ -124,6 +124,7 @@ export class CommenterUABar extends LitElement {
   static override styles = [
     ...baseStyles,
     css`
+      :host { min-width: 0; max-width: 100%; }
       @unocss-placeholder;
     `,
   ];

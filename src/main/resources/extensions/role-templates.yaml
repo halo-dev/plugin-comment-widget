@@ -11,8 +11,17 @@ metadata:
     rbac.authorization.halo.run/display-name: "Comment Widget Public APIs"
 rules:
   - apiGroups: [ "api.commentwidget.halo.run" ]
-    resources: [ "captcha/generate" ]
+    resources: [ "captcha/generate", "captcha/altcha" ]
     verbs: [ "get" ]
   - apiGroups: [ "api.commentwidget.halo.run" ]
     resources: [ "config" ]
     verbs: [ "list" ]
+  - apiGroups: [ "api.commentwidget.halo.run" ]
+    resources: [ "upload" ]
+    verbs: [ "create" ]
+  - apiGroups: [ "api.commentwidget.halo.run" ]
+    resources: [ "submissions" ]
+    verbs: [ "get", "delete" ]
+  - apiGroups: [ "api.commentwidget.halo.run" ]
+    resources: [ "submissions" ]
+    verbs: [ "create" ]

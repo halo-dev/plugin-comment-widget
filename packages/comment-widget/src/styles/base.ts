@@ -1,9 +1,7 @@
 import resetStyles from '@unocss/reset/tailwind.css?inline';
 import { css, unsafeCSS } from 'lit';
-import varStyles from './var';
 
 const baseStyles = [
-  varStyles,
   unsafeCSS(resetStyles),
   css`
     :host {
@@ -25,6 +23,18 @@ const baseStyles = [
         Segoe UI Symbol,
         'Noto Color Emoji'
       );
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--halo-cw-primary-1-color, #4ccba0);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
     }
   `,
 ];

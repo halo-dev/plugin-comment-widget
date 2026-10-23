@@ -1,23 +1,26 @@
 {
   "type": "module",
+  "private": true,
   "scripts": {
-    "build": "rsbuild build",
-    "dev": "rsbuild build --watch --env-mode=development",
-    "type-check": "vue-tsc --build"
+    "build": "vite build",
+    "dev": "vite build --watch --mode=development",
+    "type-check": "vue-tsc --build",
+    "test": "node --experimental-vm-modules --test tests/*.test.mjs"
   },
   "dependencies": {
     "@halo-dev/comment-widget": "workspace:*",
-    "@halo-dev/components": "^2.21.0",
-    "@halo-dev/console-shared": "link:/Users/ryanwang/Workspace/github/ruibaby/halo-next/ui/packages/shared",
-    "vue": "^3.5.18"
+    "@halo-dev/components": "^2.26.0",
+    "@halo-dev/ui-shared": "^2.26.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.40"
   },
   "devDependencies": {
-    "@halo-dev/ui-plugin-bundler-kit": "^2.21.2",
-    "@rsbuild/core": "^1.4.15",
-    "@rsbuild/plugin-vue": "^1.1.1",
-    "@types/node": "^20.19.10",
-    "@vue/tsconfig": "^0.7.0",
-    "typescript": "~5.8.3",
-    "vue-tsc": "^2.2.12"
+    "@halo-dev/ui-plugin-bundler-kit": "^2.26.0",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/tsconfig": "^0.9.1",
+    "typescript": "~6.0.0",
+    "vite": "^8.2.2",
+    "vue-tsc": "^3.3.7"
   }
 }

@@ -46,6 +46,12 @@ const sharedEmojiPanel = {
         display: block;
         animation: fadeInUp 0.3s both;
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        .form__emoji-panel.visible {
+          animation: none;
+        }
+      }
       
       @keyframes fadeInUp {
         from {
@@ -89,6 +95,12 @@ const sharedEmojiPanel = {
       this.wrapper.classList.remove('visible');
     }
   },
+
+  focus() {
+    this.wrapper?.firstElementChild?.shadowRoot
+      ?.querySelector('input')
+      ?.focus();
+  },
 };
 
 export class EmojiButton extends LitElement {
@@ -98,7 +110,7 @@ export class EmojiButton extends LitElement {
   @state()
   emojiLoading = false;
 
-  buttonRef: Ref<HTMLDivElement> = createRef<HTMLDivElement>();
+  buttonRef: Ref<HTMLButtonElement> = createRef<HTMLButtonElement>();
 
   cleanupAutoUpdate: (() => void) | null = null;
 
@@ -113,11 +125,13 @@ export class EmojiButton extends LitElement {
   override connectedCallback() {
     super.connectedCallback();
     document.addEventListener('click', this.handleClickOutside, true);
+    document.addEventListener('keydown', this.handleEscape, true);
     sharedEmojiPanel.init();
   }
 
   override disconnectedCallback() {
     document.removeEventListener('click', this.handleClickOutside, true);
+    document.removeEventListener('keydown', this.handleEscape, true);
     this.cleanupFloating();
     if (sharedEmojiPanel.activeButton === this) {
       sharedEmojiPanel.activeButton = null;
@@ -144,6 +158,15 @@ export class EmojiButton extends LitElement {
     }
   }
 
+  private handleEscape = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && this.emojiPickerVisible) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.closeEmojiPicker();
+      this.buttonRef.value?.focus();
+    }
+  };
+
   closeEmojiPicker() {
     this.emojiPickerVisible = false;
     this.cleanupFloating();
@@ -153,9 +176,10 @@ export class EmojiButton extends LitElement {
     }
   }
 
-  async handleOpenEmojiPicker(e: Event) {
+  async handleOpenEmojiPicker(e: MouseEvent) {
     e.stopPropagation();
     e.preventDefault();
+    const focusSearch = e.detail === 0;
 
     if (this.emojiPickerVisible) {
       this.closeEmojiPicker();
@@ -174,6 +198,7 @@ export class EmojiButton extends LitElement {
     if (sharedEmojiPanel.wrapper?.children.length) {
       this.emojiPickerVisible = true;
       sharedEmojiPanel.show();
+      if (focusSearch) sharedEmojiPanel.focus();
       this.setupFloating();
       return;
     }
@@ -185,6 +210,7 @@ export class EmojiButton extends LitElement {
 
     sharedEmojiPanel.picker = new Picker({
       data,
+      autoFocus: focusSearch,
       onEmojiSelect: ({ native }: { native: string }) => {
         const activeButton = sharedEmojiPanel.activeButton;
         if (activeButton) {
@@ -249,21 +275,24 @@ export class EmojiButton extends LitElement {
   }
 
   override render() {
-    return html`<div
-      role="button"
-      class="relative size-7 flex items-center justify-center cursor-pointer"
+    return html`<button
+      type="button"
+      class="relative size-7 rounded-base flex items-center justify-center cursor-pointer hover:bg-muted-3"
       aria-label=${msg('Select emoticon')}
+      aria-expanded=${this.emojiPickerVisible}
+      ?disabled=${this.emojiLoading}
+      @click=${this.handleOpenEmojiPicker}
       ${ref(this.buttonRef)}
     >
       ${
         this.emojiLoading
           ? html`<icon-loading></icon-loading>`
-          : html`<div
+          : html`<i
             class="i-mdi-sticker-emoji size-5 text-text-3 hover:text-text-1"
-            @click=${this.handleOpenEmojiPicker}
-          ></div>`
+            aria-hidden="true"
+          ></i>`
       }
-    </div>`;
+    </button>`;
   }
 
   static override styles = [

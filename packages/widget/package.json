@@ -1,4 +1,5 @@
 {
+  "private": true,
   "scripts": {
     "build": "tsc && rslib build",
     "dev": "rslib build --watch"
@@ -7,6 +8,6 @@
     "@halo-dev/comment-widget": "workspace:*"
   },
   "devDependencies": {
-    "@rslib/core": "^0.11.2"
+    "@rslib/core": "^1.0.1"
   }
 }

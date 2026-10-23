@@ -1,10 +1,18 @@
+import { fileURLToPath, URL } from 'node:url';
 import UnoCSS from 'unocss/vite';
 import { defineConfig, type Plugin } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
-  experimental: {
-    enableNativePlugin: true,
+  resolve: {
+    alias: [
+      {
+        find: /^shiki$/,
+        replacement: fileURLToPath(
+          new URL('./src/shiki-bundle.ts', import.meta.url)
+        ),
+      },
+    ],
   },
   plugins: [
     dts() as Plugin,

@@ -1,6 +1,7 @@
 import { BaseCommentItem } from './base-comment-item';
 import { BaseForm } from './base-form';
 import { CommentContent } from './comment-content';
+import { CommentEditForm } from './comment-edit-form';
 import { CommentEditor } from './comment-editor';
 import { CommentItem } from './comment-item';
 import { CommentList } from './comment-list';
@@ -14,19 +15,21 @@ import { ReplyItem } from './reply-item';
 import { UserAvatar } from './user-avatar';
 
 import './locale';
+
 export {
-  CommentWidget,
-  BaseForm,
   BaseCommentItem,
+  BaseForm,
+  CommentContent,
+  CommentEditForm,
+  CommentEditor,
   CommentItem,
+  CommentList,
   CommentPagination,
   CommentReplies,
+  CommentWidget,
+  LitToast,
   LoadingBlock,
   ReplyForm,
   ReplyItem,
   UserAvatar,
-  CommentList,
-  LitToast,
-  CommentEditor,
-  CommentContent,
 };

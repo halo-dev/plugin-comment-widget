@@ -1,0 +1,10 @@
+packages:
+  - comment-widget
+  - example
+  - ui
+  - widget
+allowBuilds:
+  core-js: true
+  esbuild: true
+minimumReleaseAgeExclude:
+  - vite@8.2.2

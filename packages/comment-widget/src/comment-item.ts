@@ -1,13 +1,17 @@
-import type { CommentVo } from '@halo-dev/api-client';
+import type { CommentVo, ReplyVo } from '@halo-dev/api-client';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import type { BaseForm } from './base-form';
 import baseStyles from './styles/base';
 import './comment-replies';
 import './user-avatar';
 import './base-comment-item';
+import './comment-management';
+import './comment-edit-form';
 import { consume } from '@lit/context';
 import { msg } from '@lit/localize';
 import { createRef, type Ref, ref } from 'lit/directives/ref.js';
+import { when } from 'lit/directives/when.js';
 import { ofetch } from 'ofetch';
 import { getPolicyInstance } from './avatar/avatar-policy';
 import type { CommentReplies } from './comment-replies';
@@ -23,6 +27,12 @@ export class CommentItem extends LitElement {
   @property({ type: Object })
   comment: CommentVo | undefined;
 
+  @property({ type: Boolean })
+  detail = false;
+
+  @property({ attribute: false })
+  targetReply: ReplyVo | undefined;
+
   @consume({ context: configMapDataContext })
   @state()
   configMapData: ConfigMapData | undefined;
@@ -32,6 +42,9 @@ export class CommentItem extends LitElement {
 
   @state()
   showReplyForm = false;
+
+  @state()
+  showEditForm = false;
 
   @state()
   upvoted = false;
@@ -45,7 +58,7 @@ export class CommentItem extends LitElement {
     super.connectedCallback();
     this.checkUpvotedStatus();
 
-    if (this.configMapData?.basic.withReplies) {
+    if (this.detail || this.configMapData?.basic.withReplies) {
       this.showReplies = true;
       this.showReplyForm = false;
     }
@@ -63,7 +76,11 @@ export class CommentItem extends LitElement {
     }
   }
 
+  private upvoting = false;
+
   async handleUpvote() {
+    if (this.upvoting) return;
+
     const upvotedComments = JSON.parse(
       localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
     );
@@ -78,37 +95,86 @@ export class CommentItem extends LitElement {
       group: 'content.halo.run',
     };
 
-    await ofetch(`${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`, {
-      method: 'POST',
-      body: voteRequest,
-    });
+    this.upvoting = true;
+    try {
+      await ofetch(
+        `${this.baseUrl}/apis/api.halo.run/v1alpha1/trackers/upvote`,
+        {
+          method: 'POST',
+          body: voteRequest,
+        }
+      );
 
-    upvotedComments.push(this.comment?.metadata.name);
-    localStorage.setItem(
-      LS_UPVOTED_COMMENTS_KEY,
-      JSON.stringify(upvotedComments)
-    );
+      const latestUpvotedComments = JSON.parse(
+        localStorage.getItem(LS_UPVOTED_COMMENTS_KEY) || '[]'
+      );
+      latestUpvotedComments.push(voteRequest.name);
+      localStorage.setItem(
+        LS_UPVOTED_COMMENTS_KEY,
+        JSON.stringify(latestUpvotedComments)
+      );
 
-    this.upvoteCount += 1;
-    this.upvoted = true;
-    this.checkUpvotedStatus();
-  }
-
-  handleShowReplies() {
-    this.showReplies = !this.showReplies;
-
-    if (!this.configMapData?.basic.withReplies) {
-      this.showReplyForm = !this.showReplyForm;
+      this.upvoteCount += 1;
+      this.upvoted = true;
+      this.checkUpvotedStatus();
+    } finally {
+      this.upvoting = false;
     }
   }
 
-  onReplyCreated() {
-    this.commentRepliesRef.value?.fetchReplies();
+  handleShowReplies() {
+    if (!this.detail && !this.configMapData?.basic.withReplies) {
+      this.handleToggleReplyForm();
+      this.showReplies = this.showReplyForm;
+      return;
+    }
+    this.showReplies = !this.showReplies;
+  }
+
+  onReplyCreated(
+    event: CustomEvent<{ resetForm: (form: BaseForm) => boolean }>
+  ) {
+    const form = this.renderRoot.querySelector('reply-form')?.baseFormRef.value;
+    if (form && event.detail.resetForm(form)) {
+      this.closeReplyForm();
+      this.renderRoot
+        .querySelector<HTMLButtonElement>(
+          this.detail || this.configMapData?.basic.withReplies
+            ? '.reply-button'
+            : '.show-replies-button'
+        )
+        ?.focus({ preventScroll: true });
+    }
+    this.commentRepliesRef.value?.refreshReplies();
     this.showReplies = true;
   }
 
+  closeReplyForm() {
+    this.showReplyForm = false;
+  }
+
+  private async handleCloseEditForm() {
+    this.showEditForm = false;
+    await this.updateComplete;
+    this.renderRoot
+      .querySelector('comment-management')
+      ?.shadowRoot?.querySelector('summary')
+      ?.focus({ preventScroll: true });
+  }
+
   handleToggleReplyForm() {
-    this.showReplyForm = !this.showReplyForm;
+    if (this.showReplyForm) {
+      this.closeReplyForm();
+      return;
+    }
+    this.showReplyForm = true;
+    this.dispatchEvent(
+      new CustomEvent('reply-form-open', {
+        detail: this,
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   override render() {
@@ -117,17 +183,23 @@ export class CommentItem extends LitElement {
       .userDisplayName="${this.comment?.owner.displayName}"
       .content="${this.comment?.spec.content || ''}"
       .creationTime="${this.comment?.spec.creationTime}"
+      .permalink=${this.comment?.permalink}
       .approved=${this.comment?.spec.approved}
+      .pinned=${this.comment?.spec.top}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
       .ua=${this.comment?.spec.userAgent}
+      .private=${this.comment?.spec.hidden}
+      .editing=${this.showEditForm}
     >
       <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
         <div class="icon-button-icon">
-        ${
-          this.upvoted
-            ? html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`
-            : html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
-        }
+        ${when(
+          this.upvoted,
+          () =>
+            html`<i slot="icon" class="i-mingcute-heart-fill size-4 text-red-500" aria-hidden="true"></i>`,
+          () =>
+            html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
+        )}
         </div>
         <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
       </button>
@@ -137,45 +209,59 @@ export class CommentItem extends LitElement {
         this.comment?.status?.visibleReplyCount === 0
           ? ''
           : html`
-          <button slot="action" class="icon-button group" type="button" @click="${this.handleShowReplies}" aria-label=${msg('Show replies')}>
+          <button slot="action" class="show-replies-button icon-button group" type="button" @click="${this.handleShowReplies}" aria-label=${msg('Show replies')}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle size-4" aria-hidden="true"></i>
             </div>
             <span class="icon-button-text">${this.comment?.status?.visibleReplyCount || 0}</span>
           </button>`
       }
-      ${
-        this.configMapData?.basic.withReplies
-          ? html`
-          <button slot="action" class="icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
+
+      ${when(
+        this.detail || this.configMapData?.basic.withReplies,
+        () => html`
+          <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
             </div>
             <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}</span>
-          </button>`
-          : ''
-      }
+          </button>
+          `
+      )}
 
+      <comment-management slot="action" .target=${this.comment} resource="comments" @comment-edit=${() => (this.showEditForm = true)}></comment-management>
+      ${when(
+        this.showEditForm,
+        () => html`<comment-edit-form
+          slot="content-edit"
+          .target=${this.comment}
+          resource="comments"
+          @edit-close=${this.handleCloseEditForm}
+        ></comment-edit-form>`
+      )}
       <div slot="footer">
-        ${
-          this.showReplyForm
-            ? html`<div class="mt-2">
+        ${when(
+          this.showReplyForm,
+          () => html`
+            <div class="mt-2">
               <reply-form
                 @reload=${this.onReplyCreated}
                 .comment=${this.comment}
               ></reply-form>
-            </div>`
-            : ''
-        }
-        ${
-          this.showReplies
-            ? html`<comment-replies
+            </div>
+          `
+        )}
+        ${when(
+          this.detail || this.showReplies,
+          () => html`<comment-replies
+              ?hidden=${!this.showReplies}
               ${ref(this.commentRepliesRef)}
               .comment="${this.comment}"
               .showReplyForm=${this.showReplyForm}
+              .targetReply=${this.targetReply}
+              .managedByParent=${this.detail}
             ></comment-replies>`
-            : ``
-        }
+        )}
       </div>
     </base-comment-item>`;
   }

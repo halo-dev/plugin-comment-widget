@@ -1,9 +1,11 @@
 import { css, html, LitElement } from 'lit';
 import { repeat } from 'lit/directives/repeat.js';
+import baseStyles from './styles/base';
 
 export class CommentEditorSkeleton extends LitElement {
   protected override render() {
     return html`<div
+      aria-hidden="true"
       class="border rounded-base border-solid border-muted-1"
     >
       <div class="animate-pulse p-4">
@@ -14,8 +16,7 @@ export class CommentEditorSkeleton extends LitElement {
           Array(8),
           () => html`
             <div
-              role="button"
-              class="size-7 flex items-center justify-center cursor-pointer"
+              class="size-7 flex items-center justify-center"
             >
               <div class="size-5 animate-pulse bg-muted-1 rounded-base"></div>
             </div>
@@ -26,6 +27,7 @@ export class CommentEditorSkeleton extends LitElement {
   }
 
   static override styles = [
+    ...baseStyles,
     css`
       :host {
         display: block;
