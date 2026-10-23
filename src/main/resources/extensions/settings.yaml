@@ -44,6 +44,13 @@ spec:
           name: showCommenterDevice
           value: false
         - $formkit: checkbox
+          label: 允许用户选择是否接收通知
+          name: allowNotificationConfigurable
+          id: allowNotificationConfigurable
+          key: allowNotificationConfigurable
+          value: false
+          help: 开启后，评论和回复表单中会显示「允许通知」选项；关闭时始终接收后续回复通知。
+        - $formkit: checkbox
           label: 支持私密评论和回复
           id: enablePrivateComment
           key: enablePrivateComment

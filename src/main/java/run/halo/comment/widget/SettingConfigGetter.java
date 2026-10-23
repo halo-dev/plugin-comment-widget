@@ -130,6 +130,7 @@ public interface SettingConfigGetter {
         private int replySize;
         private boolean withReplies;
         private int withReplySize;
+        private boolean allowNotificationConfigurable;
     }
 
     @Data
