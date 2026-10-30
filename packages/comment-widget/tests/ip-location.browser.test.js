@@ -44,13 +44,13 @@ async function mount(tag, showIpLocation, ipLocation) {
 }
 
 for (const tag of ['comment-item', 'reply-item']) {
-  test(`${tag} displays location only when enabled and available`, async () => {
+  test(`${tag} displays location or unknown only when enabled`, async () => {
     for (const enabled of [true, false, undefined]) {
-      for (const location of ['浙江省', undefined]) {
+      for (const location of ['浙江省', '', undefined]) {
         const { host, base } = await mount(tag, enabled, location);
         const badge = base.shadowRoot.querySelector('.item-ip-location');
-        expect(!!badge).toBe(!!enabled && !!location);
-        if (badge) expect(badge.textContent).toContain('浙江省');
+        expect(!!badge).toBe(!!enabled);
+        if (badge) expect(badge.textContent).toContain(location || 'Unknown');
         expect(base.shadowRoot.textContent).not.toContain('1.0.1.1');
         host.remove();
       }
@@ -71,6 +71,8 @@ for (const tag of ['comment-item', 'reply-item']) {
     item[property] = target(property, undefined);
     await item.updateComplete;
     await base.updateComplete;
-    expect(base.shadowRoot.querySelector('.item-ip-location')).toBeNull();
+    expect(
+      base.shadowRoot.querySelector('.item-ip-location').textContent
+    ).toContain('Unknown');
   });
 }

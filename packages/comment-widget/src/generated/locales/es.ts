@@ -88,6 +88,7 @@
 'sbc0cd0b4dfb7dde1': `Desfijar`,
 'sc0ffeb5d53b60209': `Error al subir`,
 'sc29d248fb3e5c59b': `Ver todas las respuestas`,
+'sc592307ea80f16b9': `Desconocido`,
 'sc59a34be5493a0af': `Error al subir. Inténtalo de nuevo.`,
 'sc8da3cc71de63832': `Iniciar sesión`,
 'sd1f44f1a8bc20e67': `Correo electrónico`,

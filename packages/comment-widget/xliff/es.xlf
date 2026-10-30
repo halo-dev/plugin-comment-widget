@@ -390,6 +390,10 @@
   <source>IP location</source>
   <target>Ubicación de IP</target>
 </trans-unit>
+<trans-unit id="sc592307ea80f16b9">
+  <source>Unknown</source>
+  <target>Desconocido</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

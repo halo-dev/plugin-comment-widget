@@ -108,7 +108,7 @@ export class BaseCommentItem extends LitElement {
 
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
-          ${when(this.ipLocation && this.configMapData?.basic.showIpLocation, () => html`<span class="item-ip-location text-xs text-text-3">${msg('IP location')}: ${this.ipLocation}</span>`)}
+          ${when(this.configMapData?.basic.showIpLocation, () => html`<span class="item-ip-location text-xs text-text-3">${msg('IP location')}: ${this.ipLocation || msg('Unknown')}</span>`)}
 
           <comment-link .permalink=${this.permalink} .creationTime=${this.creationTime}></comment-link>
 

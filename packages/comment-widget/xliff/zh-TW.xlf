@@ -390,6 +390,10 @@
   <source>IP location</source>
   <target>IP 屬地</target>
 </trans-unit>
+<trans-unit id="sc592307ea80f16b9">
+  <source>Unknown</source>
+  <target>未知</target>
+</trans-unit>
 </body>
 </file>
 </xliff>
