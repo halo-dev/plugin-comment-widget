@@ -12,12 +12,12 @@ class IpLocationResolverTest {
 
     @ParameterizedTest
     @CsvSource(delimiter = ';', value = {
-        "中国|浙江省|杭州市|中国电信|CN;浙江省",
-        "中国|0|0|0|CN;中国",
-        "中国|香港特别行政区|0|0|CN;香港特别行政区",
-        "United States|California|Los Angeles|0|US;United States",
-        "Reserved|Reserved|Reserved|0|0;''",
-        "0|0|0|0|US;''",
+        "中国|浙江省|CN;浙江省",
+        "中国|0|CN;中国",
+        "中国|香港特别行政区|CN;香港特别行政区",
+        "United States|California|US;United States",
+        "Reserved|Reserved|0;''",
+        "0|0|US;''",
         "unexpected format;''"
     })
     void limitsTheDisplayToProvinceOrCountry(String region, String expected) {

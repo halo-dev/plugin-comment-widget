@@ -40,53 +40,89 @@ test {
 
 sourceSets.main.resources.exclude 'ui/**', 'static/**'
 
-// Pin the data separately from the Java client; updates must refresh these checksums.
+// Pin the source data and official maker together; updates must refresh the checksum.
 def ipLocationRevision = '6a276cc7c4f9f2d7ff1d8ace14b91af59752f943'
-def ipLocationFiles = [
-    'ip2region_v4.xdb': '46249ad1b33bcaa4cc37475b93746cec2b00acffc3316cc4f56167ac821ea2ad',
-    'ip2region_v6.xdb': '939f6b46bd2b8bec3cf7c5ceb8ba782266ae9b1f35b5ba7916700dec0b7506ed',
-    'LICENSE.txt': 'fe01f2f8fcaafac539154e6aa80b0b7f8af54e01dc4d52322f72971991c6280e'
-]
+def ipLocationChecksum = '06db87f5525f9db4ae7881f8799462cce76c0c264123153525506bce5d577ac2'
+def ipLocationArchive = layout.buildDirectory.file('ip-location-maker/source.zip')
+def ipLocationSource = layout.buildDirectory.dir('ip-location-maker/upstream')
 def ipLocationResources = layout.buildDirectory.dir('generated/ip-location')
-tasks.register('prepareIpLocationDatabase') {
+def downloadIpLocationSource = tasks.register('downloadIpLocationSource') {
     inputs.property('revision', ipLocationRevision)
-    inputs.property('checksums', ipLocationFiles)
-    outputs.dir(ipLocationResources)
+    inputs.property('checksum', ipLocationChecksum)
+    outputs.file(ipLocationArchive)
     doLast {
-        def directory = ipLocationResources.get().dir('ip-location').asFile
-        directory.mkdirs()
-        ipLocationFiles.each { name, checksum ->
-            def target = new File(directory, name)
-            def digest = { File file ->
-                def sha = java.security.MessageDigest.getInstance('SHA-256')
-                file.withInputStream { stream ->
-                    byte[] buffer = new byte[8192]
-                    int count
-                    while ((count = stream.read(buffer)) != -1) {
-                        sha.update(buffer, 0, count)
-                    }
+        def target = ipLocationArchive.get().asFile
+        target.parentFile.mkdirs()
+        def digest = { File file ->
+            def sha = java.security.MessageDigest.getInstance('SHA-256')
+            file.withInputStream { stream ->
+                byte[] buffer = new byte[8192]
+                int count
+                while ((count = stream.read(buffer)) != -1) {
+                    sha.update(buffer, 0, count)
                 }
-                sha.digest().encodeHex().toString()
             }
-            if (!target.exists() || digest(target) != checksum) {
-                def path = name == 'LICENSE.txt' ? 'LICENSE.md' : "data/${name}"
-                def connection = URI.create("https://raw.githubusercontent.com/lionsoul2014/ip2region/${ipLocationRevision}/${path}").toURL().openConnection()
-                connection.connectTimeout = 30000
-                connection.readTimeout = 60000
-                connection.inputStream.withCloseable { input ->
-                    target.withOutputStream { output -> output << input }
-                }
-                if (digest(target) != checksum) {
-                    throw new GradleException("IP location database checksum mismatch: ${name}")
-                }
+            sha.digest().encodeHex().toString()
+        }
+        if (!target.exists() || digest(target) != ipLocationChecksum) {
+            def connection = URI.create("https://codeload.github.com/lionsoul2014/ip2region/zip/${ipLocationRevision}").toURL().openConnection()
+            connection.connectTimeout = 30000
+            connection.readTimeout = 60000
+            connection.inputStream.withCloseable { input ->
+                target.withOutputStream { output -> output << input }
+            }
+            if (digest(target) != ipLocationChecksum) {
+                throw new GradleException('IP location source checksum mismatch')
             }
         }
     }
 }
+def extractIpLocationSource = tasks.register('extractIpLocationSource', Sync) {
+    dependsOn downloadIpLocationSource
+    from({ zipTree(ipLocationArchive.get().asFile) }) {
+        include '*/maker/java/src/main/java/**', '*/data/ipv4_source.txt',
+            '*/data/ipv6_source.txt', '*/LICENSE.md'
+        eachFile { path = path.substring(path.indexOf('/') + 1) }
+        includeEmptyDirs = false
+    }
+    into ipLocationSource
+}
+def compileIpLocationMaker = tasks.register('compileIpLocationMaker', JavaCompile) {
+    dependsOn extractIpLocationSource
+    source ipLocationSource.map { it.dir('maker/java/src/main/java') }
+    classpath = files()
+    destinationDirectory = layout.buildDirectory.dir('ip-location-maker/classes')
+}
+def prepareIpLocationDatabase = tasks.register('prepareIpLocationDatabase')
+[4, 6].each { version ->
+    def database = ipLocationResources.map { it.file("ip-location/ip2region_v${version}.xdb") }
+    def sourceData = ipLocationSource.map { it.file("data/ipv${version}_source.txt") }
+    def generateDatabase = tasks.register("generateIpLocationV${version}", JavaExec) {
+        dependsOn compileIpLocationMaker
+        classpath = files(compileIpLocationMaker.flatMap { it.destinationDirectory })
+        mainClass = 'org.lionsoul.ip2region.MakerApp'
+        maxHeapSize = '512m'
+        inputs.file(sourceData)
+        inputs.property('fields', '0,1,4')
+        outputs.file(database)
+        doFirst {
+            database.get().asFile.parentFile.mkdirs()
+            args = ["--src=${sourceData.get().asFile}", "--dst=${database.get().asFile}",
+                "--version=ipv${version}", '--field-list=0,1,4']
+        }
+    }
+    prepareIpLocationDatabase.configure { dependsOn generateDatabase }
+}
 
 tasks.named('processResources', Copy) {
     dependsOn tasks.named('prepareIpLocationDatabase')
-    from(ipLocationResources)
+    from(ipLocationResources) {
+        include 'ip-location/*.xdb'
+    }
+    from(ipLocationSource.map { it.file('LICENSE.md') }) {
+        into 'ip-location'
+        rename { 'LICENSE.txt' }
+    }
     dependsOn project(':packages').tasks.named('pnpmBuild')
     from(project(':packages').layout.projectDirectory.dir('ui/build/dist')) {
         into 'ui'

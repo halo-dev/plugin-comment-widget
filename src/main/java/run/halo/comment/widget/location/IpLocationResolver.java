@@ -83,12 +83,12 @@ public class IpLocationResolver {
         if (region == null) {
             return "";
         }
-        // The pinned database contains country|province|city|ISP|countryCode.
+        // The pinned database contains country|province|countryCode.
         var fields = region.split("\\|", -1);
-        if (fields.length != 5 || !fields[4].matches("[A-Z]{2}")) {
+        if (fields.length != 3 || !fields[2].matches("[A-Z]{2}")) {
             return "";
         }
-        if ("CN".equals(fields[4])) {
+        if ("CN".equals(fields[2])) {
             return usable(fields[1]) ? fields[1] : "中国";
         }
         return usable(fields[0]) ? fields[0] : "";
