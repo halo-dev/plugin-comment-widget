@@ -27,6 +27,7 @@ dependencies {
     compileOnly 'run.halo.app:api'
     implementation 'org.altcha:altcha:2.0.3'
     implementation 'org.json:json:20240303'
+    implementation 'org.lionsoul:ip2region:3.3.7'
 
     testImplementation 'run.halo.app:api'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -39,7 +40,53 @@ test {
 
 sourceSets.main.resources.exclude 'ui/**', 'static/**'
 
+// Pin the data separately from the Java client; updates must refresh these checksums.
+def ipLocationRevision = '6a276cc7c4f9f2d7ff1d8ace14b91af59752f943'
+def ipLocationFiles = [
+    'ip2region_v4.xdb': '46249ad1b33bcaa4cc37475b93746cec2b00acffc3316cc4f56167ac821ea2ad',
+    'ip2region_v6.xdb': '939f6b46bd2b8bec3cf7c5ceb8ba782266ae9b1f35b5ba7916700dec0b7506ed',
+    'LICENSE.txt': 'fe01f2f8fcaafac539154e6aa80b0b7f8af54e01dc4d52322f72971991c6280e'
+]
+def ipLocationResources = layout.buildDirectory.dir('generated/ip-location')
+tasks.register('prepareIpLocationDatabase') {
+    inputs.property('revision', ipLocationRevision)
+    inputs.property('checksums', ipLocationFiles)
+    outputs.dir(ipLocationResources)
+    doLast {
+        def directory = ipLocationResources.get().dir('ip-location').asFile
+        directory.mkdirs()
+        ipLocationFiles.each { name, checksum ->
+            def target = new File(directory, name)
+            def digest = { File file ->
+                def sha = java.security.MessageDigest.getInstance('SHA-256')
+                file.withInputStream { stream ->
+                    byte[] buffer = new byte[8192]
+                    int count
+                    while ((count = stream.read(buffer)) != -1) {
+                        sha.update(buffer, 0, count)
+                    }
+                }
+                sha.digest().encodeHex().toString()
+            }
+            if (!target.exists() || digest(target) != checksum) {
+                def path = name == 'LICENSE.txt' ? 'LICENSE.md' : "data/${name}"
+                def connection = URI.create("https://raw.githubusercontent.com/lionsoul2014/ip2region/${ipLocationRevision}/${path}").toURL().openConnection()
+                connection.connectTimeout = 30000
+                connection.readTimeout = 60000
+                connection.inputStream.withCloseable { input ->
+                    target.withOutputStream { output -> output << input }
+                }
+                if (digest(target) != checksum) {
+                    throw new GradleException("IP location database checksum mismatch: ${name}")
+                }
+            }
+        }
+    }
+}
+
 tasks.named('processResources', Copy) {
+    dependsOn tasks.named('prepareIpLocationDatabase')
+    from(ipLocationResources)
     dependsOn project(':packages').tasks.named('pnpmBuild')
     from(project(':packages').layout.projectDirectory.dir('ui/build/dist')) {
         into 'ui'

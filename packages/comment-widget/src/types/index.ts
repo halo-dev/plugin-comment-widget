@@ -13,6 +13,7 @@ interface BasicConfig {
   replySize: number;
   allowNotificationConfigurable?: boolean;
   showCommenterDevice?: boolean;
+  showIpLocation?: boolean;
   enablePrivateComment?: boolean;
   showPrivateCommentBadge?: boolean;
 }

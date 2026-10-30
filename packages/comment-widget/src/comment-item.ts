@@ -188,6 +188,7 @@ export class CommentItem extends LitElement {
       .pinned=${this.comment?.spec.top}
       .userWebsite=${this.comment?.spec.owner.annotations?.website}
       .ua=${this.comment?.spec.userAgent}
+      .ipLocation=${this.comment?.metadata.annotations?.['commentwidget.halo.run/ip-location']}
       .private=${this.comment?.spec.hidden}
       .editing=${this.showEditForm}
     >

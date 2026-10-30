@@ -183,6 +183,7 @@ export class ReplyItem extends LitElement {
         .breath=${this.isQuoteReplyHovered}
         .userWebsite=${this.reply?.spec.owner.annotations?.website}
         .ua=${this.reply?.spec.userAgent}
+        .ipLocation=${this.reply?.metadata.annotations?.['commentwidget.halo.run/ip-location']}
         .private=${this.comment?.spec.hidden || this.reply?.spec.hidden}
         .editing=${this.showEditForm}
       >

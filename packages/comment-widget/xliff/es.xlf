@@ -386,6 +386,10 @@
   <source>Allow notification</source>
   <target>Permitir notificación</target>
 </trans-unit>
+<trans-unit id="s28dcec8c25fe4ec3">
+  <source>IP location</source>
+  <target>Ubicación de IP</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

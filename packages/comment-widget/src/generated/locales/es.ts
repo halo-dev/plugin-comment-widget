@@ -31,6 +31,7 @@
 's22ae36191f9a1a8d': `No se pudo cargar el contenido más reciente. Inténtalo de nuevo más tarde.`,
 's2406b89e991a4524': `Actualizar código de verificación`,
 's26e4d65f2801ac9c': `Por favor, ingrese el contenido`,
+'s28dcec8c25fe4ec3': `Ubicación de IP`,
 's299b10f3a58a09fd': `Haga clic en OK para ir a la página de cierre de sesión, Por favor, asegúrese de que el contenido editado haya sido guardado.`,
 's2c8189544e3ea679': `Reintentar`,
 's2ca7699f7c5a4996': `Administrar`,

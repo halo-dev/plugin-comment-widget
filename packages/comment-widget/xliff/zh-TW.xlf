@@ -386,6 +386,10 @@
   <source>Allow notification</source>
   <target>允許通知</target>
 </trans-unit>
+<trans-unit id="s28dcec8c25fe4ec3">
+  <source>IP location</source>
+  <target>IP 屬地</target>
+</trans-unit>
 </body>
 </file>
 </xliff>

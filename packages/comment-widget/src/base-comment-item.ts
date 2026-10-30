@@ -43,6 +43,9 @@ export class BaseCommentItem extends LitElement {
   @property({ type: String })
   ua: string | undefined;
 
+  @property({ type: String })
+  ipLocation: string | undefined;
+
   @property({ type: Boolean })
   private: boolean | undefined;
 
@@ -106,6 +109,8 @@ export class BaseCommentItem extends LitElement {
           ${when(this.ua && this.configMapData?.basic.showCommenterDevice, () => html`<commenter-ua-bar .ua=${this.ua}></commenter-ua-bar>`)}
           
           <comment-link .permalink=${this.permalink} .creationTime=${this.creationTime}></comment-link>
+
+          ${when(this.ipLocation && this.configMapData?.basic.showIpLocation, () => html`<span class="item-ip-location text-xs text-text-3">${msg('IP location')}: ${this.ipLocation}</span>`)}
 
           ${when(!this.approved, () => html`<div class="item-meta-info text-xs text-text-3">${msg('Reviewing')}</div>`)}
         </div>
