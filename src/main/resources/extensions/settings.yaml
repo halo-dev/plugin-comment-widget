@@ -44,6 +44,11 @@ spec:
           name: showCommenterDevice
           value: false
         - $formkit: checkbox
+          label: 显示 IP 属地
+          name: showIpLocation
+          value: false
+          help: 根据评论发表时的 IP 离线解析，中国大陆显示省份，其他显示国家或地区。开启后会逐步补齐历史评论；关闭仅隐藏展示，已保存的地区仍可能通过公开接口读取。
+        - $formkit: checkbox
           label: 允许用户选择是否接收通知
           name: allowNotificationConfigurable
           id: allowNotificationConfigurable

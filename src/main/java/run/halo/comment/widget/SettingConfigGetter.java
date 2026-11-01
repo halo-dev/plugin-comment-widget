@@ -131,6 +131,7 @@ public interface SettingConfigGetter {
         private boolean withReplies;
         private int withReplySize;
         private boolean allowNotificationConfigurable;
+        private boolean showIpLocation;
     }
 
     @Data
