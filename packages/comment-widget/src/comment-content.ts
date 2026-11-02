@@ -137,6 +137,9 @@ export class CommentContent extends LitElement {
       if (this.zoomedImage) void imageZoom?.close();
       this.applyLinkAttributes();
       this.renderRoot.querySelectorAll('.content img').forEach((image) => {
+        if (!image.hasAttribute('loading')) {
+          image.setAttribute('loading', 'lazy');
+        }
         const anchor = image.closest('a');
         if (anchor) {
           // Split the link around the image, preserving linked text on both sides.

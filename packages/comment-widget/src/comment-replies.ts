@@ -89,7 +89,7 @@ export class CommentReplies extends LitElement {
               )}
             </div>`
       )}
-      ${when(this.targetOnly, () => html`<button type="button" class="replies-next-button pagination-button text-sm" aria-disabled=${this.loading} aria-busy=${this.loading} @click=${this.showAllReplies}>${msg('View all replies')}</button>`)}
+      ${when(this.targetOnly, () => html`<button type="button" class="replies-next-button pagination-button text-sm" aria-disabled=${this.loading} aria-busy=${this.loading} @click=${this.showAllReplies}>${msg('View All Replies')}</button>`)}
       ${when(this.loading, () => html` <loading-block></loading-block>`)}
       ${when(
         this.hasNext,

@@ -32,7 +32,7 @@ for (const tag of ['comment-item', 'reply-item']) {
         )
     );
     const el = await mountItem();
-    const button = el.shadowRoot.querySelector('button[aria-label="Upvote"]');
+    const button = el.shadowRoot.querySelector('button[aria-pressed]');
     button.click();
     button.click();
     await until(() => releases.length > 0);
@@ -43,7 +43,10 @@ for (const tag of ['comment-item', 'reply-item']) {
     await el.updateComplete;
     assert.equal(releases.length, 1);
     assert.equal(el.upvoteCount, 1);
-    assert.equal(button.textContent.trim(), '1');
+    assert.equal(
+      button.querySelector('.icon-button-text').textContent.trim(),
+      '1'
+    );
     button.click();
     await el.handleUpvote();
     assert.equal(releases.length, 1);

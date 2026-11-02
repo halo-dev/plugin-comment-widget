@@ -122,6 +122,23 @@ export class CommentItem extends LitElement {
     }
   }
 
+  private get repliesToggleUsesReplyForm() {
+    return !this.detail && !this.configMapData?.basic.withReplies;
+  }
+
+  private get repliesToggleExpanded() {
+    return this.repliesToggleUsesReplyForm
+      ? this.showReplyForm
+      : this.showReplies;
+  }
+
+  private get repliesToggleLabel() {
+    if (this.repliesToggleUsesReplyForm) {
+      return this.showReplyForm ? msg('Cancel reply') : msg('Add Reply');
+    }
+    return this.showReplies ? msg('Hide Replies') : msg('Show Replies');
+  }
+
   handleShowReplies() {
     if (!this.detail && !this.configMapData?.basic.withReplies) {
       this.handleToggleReplyForm();
@@ -192,7 +209,7 @@ export class CommentItem extends LitElement {
       .private=${this.comment?.spec.hidden}
       .editing=${this.showEditForm}
     >
-      <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
+      <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-pressed=${this.upvoted}>
         <div class="icon-button-icon">
         ${when(
           this.upvoted,
@@ -202,6 +219,7 @@ export class CommentItem extends LitElement {
             html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
         )}
         </div>
+        <span class="sr-only">${msg('Upvote')}</span>
         <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
       </button>
 
@@ -210,10 +228,11 @@ export class CommentItem extends LitElement {
         this.comment?.status?.visibleReplyCount === 0
           ? ''
           : html`
-          <button slot="action" class="show-replies-button icon-button group" type="button" @click="${this.handleShowReplies}" aria-label=${msg('Show replies')}>
+          <button slot="action" class="show-replies-button icon-button group" type="button" @click="${this.handleShowReplies}" aria-expanded=${this.repliesToggleExpanded}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle size-4" aria-hidden="true"></i>
             </div>
+            <span class="sr-only">${this.repliesToggleLabel}</span>
             <span class="icon-button-text">${this.comment?.status?.visibleReplyCount || 0}</span>
           </button>`
       }
@@ -221,11 +240,11 @@ export class CommentItem extends LitElement {
       ${when(
         this.detail || this.configMapData?.basic.withReplies,
         () => html`
-          <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}>
+          <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-expanded=${this.showReplyForm} aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Add Reply')}>
             <div class="icon-button-icon ">
               <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
             </div>
-            <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Add reply')}</span>
+            <span class="icon-button-text">${this.showReplyForm ? msg('Cancel reply') : msg('Add Reply')}</span>
           </button>
           `
       )}

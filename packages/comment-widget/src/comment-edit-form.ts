@@ -76,7 +76,21 @@ export class CommentEditForm extends LitElement {
 
   override disconnectedCallback(): void {
     this.removeEventListener('keydown', this.onKeydown);
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
     super.disconnectedCallback();
+  }
+
+  private onBeforeUnload = (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    event.returnValue = '';
+  };
+
+  private syncBeforeUnload() {
+    if (this.dirty) {
+      window.addEventListener('beforeunload', this.onBeforeUnload);
+    } else {
+      window.removeEventListener('beforeunload', this.onBeforeUnload);
+    }
   }
 
   private onKeydown = (event: KeyboardEvent) => {
@@ -137,6 +151,7 @@ export class CommentEditForm extends LitElement {
       if (this.content === this.initialRaw) {
         this.content = this.baseline;
       }
+      this.syncBeforeUnload();
       editor.setFocus();
     }
   }
@@ -146,6 +161,7 @@ export class CommentEditForm extends LitElement {
   ) {
     this.content = event.detail.content;
     this.errorMessage = '';
+    this.syncBeforeUnload();
   }
 
   private get hasContent() {
@@ -192,6 +208,7 @@ export class CommentEditForm extends LitElement {
         }
       );
       this.toastManager?.success(msg('Comment updated successfully'));
+      window.removeEventListener('beforeunload', this.onBeforeUnload);
       this.dispatchEvent(
         new CustomEvent('comment-managed', {
           bubbles: true,
@@ -230,6 +247,7 @@ export class CommentEditForm extends LitElement {
     if (this.dirty && !window.confirm(msg('Discard your changes?'))) {
       return;
     }
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
     this.dispatchEvent(
       new CustomEvent('edit-close', { bubbles: true, composed: true })
     );
@@ -257,7 +275,7 @@ export class CommentEditForm extends LitElement {
           <button
             type="button"
             @click=${() => void this.loadLatest()}
-            class="edit-form-retry outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-primary-contrast px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
+            class="edit-form-retry outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-primary-contrast px-4 rounded-base hover:brightness-95 transition-[filter,box-shadow]"
           >
             ${msg('Retry')}
           </button>
@@ -282,7 +300,7 @@ export class CommentEditForm extends LitElement {
           type="button"
           ?disabled=${!this.canSave}
           @click=${this.handleSave}
-          class="edit-form-submit outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-primary-contrast px-4 rounded-base hover:opacity-80 transition-[opacity,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed"
+          class="edit-form-submit outline-none focus-visible:shadow-input h-9 text-sm inline-flex items-center justify-center gap-2 bg-primary-1 text-primary-contrast px-4 rounded-base hover:brightness-95 transition-[filter,box-shadow] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           ${when(this.saving, () => html`<icon-loading></icon-loading>`)}
           ${msg('Save')}
