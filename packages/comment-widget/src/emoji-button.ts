@@ -60,12 +60,12 @@ const sharedEmojiPanel = {
   wrapper: null as HTMLDivElement | null,
   picker: null as Picker | null,
   activeButton: null as EmojiButton | null,
+  styleElement: null as HTMLStyleElement | null,
 
   init() {
-    if (this.wrapper) return this.wrapper;
-
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
+    if (!this.styleElement) {
+      const styleElement = document.createElement('style');
+      styleElement.textContent = `
       .form__emoji-panel {
         box-shadow: 0 0.5em 1em rgba(0, 0, 0, 0.1);
         border-radius: 0.875em;
@@ -104,19 +104,35 @@ const sharedEmojiPanel = {
         --color-border-over: var(--halo-cw-emoji-picker-color-border-over, rgba(0, 0, 0, .1));
       }
     `;
-    document.head.appendChild(styleElement);
+      this.styleElement = styleElement;
+    }
+    if (!this.styleElement.isConnected) {
+      document.head.appendChild(this.styleElement);
+    }
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.className = 'form__emoji-panel';
-    this.wrapper.style.position = 'absolute';
-    this.wrapper.style.zIndex = '9999';
-    document.body.appendChild(this.wrapper);
+    if (this.wrapper && !this.wrapper.isConnected) {
+      // emoji-mart marks the picker as disconnected and stops observing the
+      // document, so let the next open create a usable instance.
+      this.picker = null;
+      this.wrapper.replaceChildren();
+    }
+    if (!this.wrapper) {
+      this.wrapper = document.createElement('div');
+      this.wrapper.className = 'form__emoji-panel';
+      this.wrapper.style.position = 'absolute';
+      this.wrapper.style.zIndex = '9999';
+      this.wrapper.style.display = 'none';
+    }
+    if (!this.wrapper.isConnected) {
+      document.body.appendChild(this.wrapper);
+    }
 
     return this.wrapper;
   },
 
   show() {
     if (this.wrapper) {
+      this.wrapper.style.display = 'block';
       this.wrapper.classList.add('visible');
     }
   },
@@ -124,6 +140,7 @@ const sharedEmojiPanel = {
   hide() {
     if (this.wrapper) {
       this.wrapper.classList.remove('visible');
+      this.wrapper.style.display = 'none';
     }
   },
 
@@ -168,6 +185,7 @@ export class EmojiButton extends LitElement {
       sharedEmojiPanel.activeButton = null;
       sharedEmojiPanel.hide();
     }
+    this.emojiPickerVisible = false;
     super.disconnectedCallback();
   }
 
@@ -217,6 +235,8 @@ export class EmojiButton extends LitElement {
       return;
     }
 
+    sharedEmojiPanel.init();
+
     if (
       sharedEmojiPanel.activeButton &&
       sharedEmojiPanel.activeButton !== this
@@ -239,30 +259,35 @@ export class EmojiButton extends LitElement {
     const { Picker } = await import('emoji-mart');
     const { default: data } = await import('@emoji-mart/data');
 
-    sharedEmojiPanel.picker = new Picker({
-      data,
-      autoFocus: focusSearch,
-      onEmojiSelect: ({ native }: { native: string }) => {
-        const activeButton = sharedEmojiPanel.activeButton;
-        if (activeButton) {
-          activeButton.dispatchEvent(
-            new CustomEvent('emoji-select', { detail: { native } })
-          );
-          activeButton.closeEmojiPicker();
-        }
-      },
-      i18n: localeMap[getLocale()],
-    });
+    if (!this.isConnected || sharedEmojiPanel.activeButton !== this) {
+      this.emojiLoading = false;
+      return;
+    }
 
-    if (sharedEmojiPanel.wrapper) {
-      sharedEmojiPanel.wrapper.appendChild(
+    if (!sharedEmojiPanel.picker) {
+      sharedEmojiPanel.picker = new Picker({
+        data,
+        autoFocus: focusSearch,
+        onEmojiSelect: ({ native }: { native: string }) => {
+          const activeButton = sharedEmojiPanel.activeButton;
+          if (activeButton) {
+            activeButton.dispatchEvent(
+              new CustomEvent('emoji-select', { detail: { native } })
+            );
+            activeButton.closeEmojiPicker();
+          }
+        },
+        i18n: localeMap[getLocale()],
+      });
+
+      sharedEmojiPanel.wrapper?.appendChild(
         sharedEmojiPanel.picker as unknown as Node
       );
-      sharedEmojiPanel.show();
     }
 
     this.emojiPickerVisible = true;
     this.emojiLoading = false;
+    sharedEmojiPanel.show();
     this.setupFloating();
   }
 
