@@ -3,6 +3,10 @@ import '../src/comment-form.ts';
 import '../src/reply-form.ts';
 import { mockApi, until } from './browser-helpers.js';
 
+// Exhausting the storage quota and mounting a full form is slower on CI
+// runners, especially while other browser test files run in parallel.
+const SLOW_UI_TIMEOUT = 10_000;
+
 test.each(['disabled', 'denied', 'invalid JSON', 'null'])(
   'anonymous form renders when account storage is %s',
   async (storage) => {
@@ -60,7 +64,10 @@ test.each([
     owner.currentUser = { metadata: { name: 'admin' }, spec: {} };
     owner.comment = { metadata: { name: 'storage-test' } };
     document.body.append(owner);
-    await until(() => owner.baseFormRef.value?.editorRef.value?.editor);
+    await until(
+      () => owner.baseFormRef.value?.editorRef.value?.editor,
+      SLOW_UI_TIMEOUT
+    );
     const form = owner.baseFormRef.value;
     form.editorRef.value.editor.commands.setContent('<p>My comment</p>');
 
@@ -95,7 +102,10 @@ test.each([
         target: form.shadowRoot.querySelector('form'),
       })
     ).not.toThrow();
-    await until(() => post.mock.calls.length === 1 && !owner.submitting);
+    await until(
+      () => post.mock.calls.length === 1 && !owner.submitting,
+      SLOW_UI_TIMEOUT
+    );
     const endpoint = '/apis/api.halo.run/v1alpha1/comments';
     expect(post.mock.calls[0][0]).toBe(
       tag === 'comment-form' ? endpoint : `${endpoint}/storage-test/reply`
@@ -103,7 +113,7 @@ test.each([
     expect(JSON.parse(post.mock.calls[0][1]).content).toBe(content);
     expect(form.editorRef.value.editor.getText()).toBe('');
     expect(localStorage.getItem(form.getDraftSnapshot().key)).toBeNull();
-    await until(() => !form.uploading);
+    await until(() => !form.uploading, SLOW_UI_TIMEOUT);
     await form.submitData();
     expect(post).toHaveBeenCalledTimes(1);
   }
