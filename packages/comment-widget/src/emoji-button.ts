@@ -18,9 +18,40 @@ import { createRef, type Ref, ref } from 'lit/directives/ref.js';
 import { getLocale } from './locale';
 import baseStyles from './styles/base';
 
+// emoji-mart does not ship a Traditional Chinese translation.
+const zhTW = {
+  search: '搜尋',
+  search_no_results_1: '喔不！',
+  search_no_results_2: '找不到相關表情',
+  pick: '選擇一個表情…',
+  add_custom: '新增自訂表情',
+  categories: {
+    activity: '活動',
+    custom: '自訂',
+    flags: '旗幟',
+    foods: '食物與飲品',
+    frequent: '最近使用',
+    nature: '動物與自然',
+    objects: '物品',
+    people: '表情與角色',
+    places: '旅行與景點',
+    search: '搜尋結果',
+    symbols: '符號',
+  },
+  skins: {
+    choose: '選擇預設膚色',
+    1: '預設',
+    2: '白色',
+    3: '偏白',
+    4: '中等',
+    5: '偏黑',
+    6: '黑色',
+  },
+};
+
 const localeMap = {
   'zh-CN': zh,
-  'zh-TW': zh,
+  'zh-TW': zhTW,
   en: en,
   es: es,
 };
