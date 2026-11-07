@@ -2,6 +2,11 @@ import { afterEach, vi } from 'vitest';
 import '../var.css';
 
 afterEach(() => {
+  const url = new URL(location.href);
+  if (url.searchParams.has('comment-page')) {
+    url.searchParams.delete('comment-page');
+    history.replaceState(history.state, '', url);
+  }
   document.body.replaceChildren();
   document.documentElement.className = '';
   document.documentElement.lang = 'en';

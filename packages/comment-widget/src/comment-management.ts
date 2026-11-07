@@ -154,10 +154,10 @@ export class CommentManagement extends LitElement {
             : ''
         }
         <button type="button" ?disabled=${this.busy} @click=${() => this.run(this.target?.spec.approved ? 'unapprove' : 'approve')}>
-          ${this.target.spec.approved ? msg('Cancel approval') : msg('Approve')}
+          ${this.target.spec.approved ? msg('Cancel Approval') : msg('Approve')}
         </button>
         <button type="button" ?disabled=${this.busy} @click=${() => this.run(this.target?.spec.hidden ? 'unhide' : 'hide')}>
-          ${this.target.spec.hidden ? msg('Make public') : msg('Make private')}
+          ${this.target.spec.hidden ? msg('Make Public') : msg('Make Private')}
         </button>
         <button type="button" class="text-red-500" ?disabled=${this.busy} @click=${() => this.run('delete')}>
           ${msg('Delete')}

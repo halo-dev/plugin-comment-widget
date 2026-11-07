@@ -187,7 +187,7 @@ export class ReplyItem extends LitElement {
         .private=${this.comment?.spec.hidden || this.reply?.spec.hidden}
         .editing=${this.showEditForm}
       >
-        <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-label=${msg('Upvote')}>
+        <button slot="action" class="icon-button group -ml-2" type="button" @click="${this.handleUpvote}" aria-pressed=${this.upvoted}>
           <div class="icon-button-icon ">
           ${when(
             this.upvoted,
@@ -197,9 +197,10 @@ export class ReplyItem extends LitElement {
               html`<i slot="icon" class="i-mingcute-heart-line size-4" aria-hidden="true"></i>`
           )}
           </div>
+          <span class="sr-only">${msg('Upvote')}</span>
           <span class="icon-button-text">${`${this.upvoteCount || 0}`}</span>
         </button>
-        <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
+        <button slot="action" class="reply-button icon-button group" type="button" @click="${this.handleToggleReplyForm}" aria-expanded=${this.showReplyForm} aria-label=${this.showReplyForm ? msg('Cancel reply') : msg('Reply')}>
           <div class="icon-button-icon ">
             <i slot="icon" class="i-tabler:message-circle-plus size-4" aria-hidden="true"></i>
           </div>
@@ -227,13 +228,17 @@ export class ReplyItem extends LitElement {
         )}
         ${when(
           this.quoteReply,
-          () => html`<span
+          () => html`<button
+                type="button"
                 slot="pre-content"
                 @mouseenter=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 @mouseleave=${() => this.handleSetActiveQuoteReply()}
+                @focus=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
+                @blur=${() => this.handleSetActiveQuoteReply()}
+                @click=${() => this.handleSetActiveQuoteReply(this.quoteReply)}
                 class="quote-badge cursor-pointer inline-flex items-center gap-1 px-2 py-1.5 rounded-base bg-muted-3 text-text-2 hover:-translate-y-0.5 hover:text-text-1 hover:bg-muted-2 transition-[transform,color,background-color] text-sm font-medium"
-                ><i class="i-ic:round-reply" aria-hidden="true"></i><span>${this.quoteReply?.owner.displayName}</span>
-              </span>
+                ><i class="i-ic:round-reply" aria-hidden="true"></i><span class="sr-only">${msg('In reply to')} </span><span>${this.quoteReply?.owner.displayName}</span>
+              </button>
               <br slot="pre-content" />`
         )}
       </base-comment-item>

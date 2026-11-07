@@ -139,7 +139,7 @@ test('Comment management regression checks', async () => {
     .shadowRoot.querySelector('comment-management');
   await management.updateComplete;
   management.shadowRoot.querySelector('summary').click();
-  actionButton(management, 'Make private').click();
+  actionButton(management, 'Make Private').click();
   await until(() => item.comment.status.visibleReplyCount === 0);
   assert(
     comment.status.visibleReplyCount === 1,
@@ -175,7 +175,7 @@ test('Comment management regression checks', async () => {
     pagedItem.shadowRoot.querySelector('comment-management');
   await pagedManagement.updateComplete;
   pagedManagement.shadowRoot.querySelector('summary').click();
-  const unapprove = actionButton(pagedManagement, 'Cancel approval');
+  const unapprove = actionButton(pagedManagement, 'Cancel Approval');
   unapprove.focus();
   unapprove.click();
   await until(() => replies.replies[19]?.spec.approved === false);

@@ -396,7 +396,7 @@ export class BaseForm extends LitElement {
       <button
         @click=${this.handleLogout}
         type="button"
-        class="form-logout shrink-0 text-xs text-text-3 hover:text-text-1 px-3 transition-[color,border-color,opacity] py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
+        class="form-logout shrink-0 text-xs text-text-3 hover:text-text-1 px-3 transition-[color,border-color] py-2 rounded-base border border-muted-3 hover:border-muted-4 border-solid"
       >
         ${msg('Logout')}
       </button>
@@ -474,7 +474,7 @@ export class BaseForm extends LitElement {
               <a
                 href=${this.loginUrl}
                 rel="nofollow"
-                class="form-login text-xs text-text-3 hover:text-text-1 px-3 transition-[color,border-color,opacity] py-2 rounded-base border border-muted-3 opacity-100 hover:border-muted-4 hover:opacity-70 border-solid"
+                class="form-login text-xs text-text-3 hover:text-text-1 px-3 transition-[color,border-color] py-2 rounded-base border border-muted-3 hover:border-muted-4 border-solid"
               >
                 ${msg('Login')}
               </a>
@@ -500,7 +500,7 @@ export class BaseForm extends LitElement {
               this.allowNotificationConfigurable,
               () => html`<div class="flex items-center gap-2">
                 <input id="allowNotification" name="allowNotification" type="checkbox" checked />
-                <label for="allowNotification" class="text-xs select-none text-text-3 hover:text-text-1 transition-colors">${msg('Allow notification')}</label>
+                <label for="allowNotification" class="text-xs select-none text-text-3 hover:text-text-1 transition-colors">${msg('Allow Notification')}</label>
               </div>`
             )}
 
@@ -523,7 +523,7 @@ export class BaseForm extends LitElement {
                     <input
                       name="captchaCode"
                       type="text"
-                      placeholder=${msg('Please enter the verification code')}
+                      placeholder=${msg('Verification code…')}
                       aria-label=${msg('Please enter the verification code')}
                       autocomplete="off"
                       spellcheck="false"
@@ -559,7 +559,7 @@ export class BaseForm extends LitElement {
             <button
               .disabled=${this.busy}
               type="submit"
-              class="form-submit outline-none focus-visible:shadow-input h-12 text-sm inline-flex border border-primary-1 border-solid items-center justify-center gap-2 bg-primary-1 text-primary-contrast px-3 rounded-base hover:opacity-80 transition-[opacity,box-shadow]"
+              class="form-submit outline-none focus-visible:shadow-input h-12 text-sm inline-flex border border-primary-1 border-solid items-center justify-center gap-2 bg-primary-1 text-primary-contrast px-3 rounded-base hover:brightness-95 transition-[filter,box-shadow]"
             >
               ${when(
                 this.showLoading,

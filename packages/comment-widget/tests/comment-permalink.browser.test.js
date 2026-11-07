@@ -490,7 +490,7 @@ test('collapsing detail replies preserves the expanded list', async () => {
   expect(repliesOf(widget)).toBe(replies);
   expect(repliesOf(widget).replies).toHaveLength(2);
   expect(repliesOf(widget).shadowRoot.textContent).not.toContain(
-    'View all replies'
+    'View All Replies'
   );
 });
 test('returning to the list moves keyboard focus to the list', async () => {
