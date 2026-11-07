@@ -127,7 +127,7 @@ export class CommentDetail extends LitElement {
         this.activeReplyItem?.closeReplyForm();
       this.activeReplyItem = event.detail;
     }}>
-      <button type="button" class="back text-sm text-primary-1" @click=${this.returnToList}>${msg('Back to comments')}</button>
+      <button type="button" class="back text-sm text-primary-1" @click=${this.returnToList}>${msg('Back to Comments')}</button>
       ${this.loading ? html`<loading-block></loading-block>` : this.error ? html`<p role="status" class="text-sm text-text-2 my-3">${this.error}</p>${this.retryable ? html`<button type="button" class="retry back text-sm text-primary-1" @click=${this.retry}>${msg('Retry')}</button>` : ''}` : keyed(this.requestId, html`<comment-item .comment=${this.comment} .detail=${true} .targetReply=${this.reply}></comment-item>`)}
     </div>`;
   }

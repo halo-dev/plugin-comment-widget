@@ -94,10 +94,6 @@
   <source>Comment submitted successfully, pending review</source>
   <target>评论成功，请等待审核</target>
 </trans-unit>
-<trans-unit id="sa10fbe3fcd6ae148">
-  <source>Add reply</source>
-  <target>加入回复</target>
-</trans-unit>
 <trans-unit id="s1c6fefb092506753">
   <source>Failed to load comment list, please try again later</source>
   <target>加载评论列表失败，请稍后重试</target>
@@ -146,10 +142,6 @@
   <source>Upvote</source>
   <target>点赞</target>
 </trans-unit>
-<trans-unit id="sa82fbb7f361c6f44">
-  <source>Show replies</source>
-  <target>显示回复</target>
-</trans-unit>
 <trans-unit id="se7bee6e9a9b5394c">
   <source>Private</source>
   <target>私密</target>
@@ -193,10 +185,6 @@
 <trans-unit id="s2ca7699f7c5a4996">
   <source>Manage</source>
   <target>管理</target>
-</trans-unit>
-<trans-unit id="s6f23997fffbecc6a">
-  <source>Cancel approval</source>
-  <target>取消通过</target>
 </trans-unit>
 <trans-unit id="se5d01bef737e2e3a">
   <source>Approve</source>
@@ -346,10 +334,6 @@
   <source>Select and copy the link manually</source>
   <target>请选中并手动复制链接</target>
 </trans-unit>
-<trans-unit id="sb490fb4653620603">
-  <source>Back to comments</source>
-  <target>返回评论列表</target>
-</trans-unit>
 <trans-unit id="sd68dcf08044cb636">
   <source>Comment not found or unavailable</source>
   <target>评论不存在或暂不可查看</target>
@@ -357,10 +341,6 @@
 <trans-unit id="s879ba21b93adbbbd">
   <source>Failed to load comment, please try again</source>
   <target>评论加载失败，请重试</target>
-</trans-unit>
-<trans-unit id="sc29d248fb3e5c59b">
-  <source>View all replies</source>
-  <target>查看全部回复</target>
 </trans-unit>
 <trans-unit id="s2c8189544e3ea679">
   <source>Retry</source>
@@ -374,18 +354,6 @@
   <source>Private replies are not publicly visible. Signed-in recipients can view them; anonymous recipients are notified by email when notifications are enabled.</source>
   <target>私密回复不会公开显示。已登录的被回复者可以查看；若启用了邮件通知，匿名被回复者会收到邮件通知。</target>
 </trans-unit>
-<trans-unit id="s6df8f2a4e5b0fe18">
-  <source>Make public</source>
-  <target>设为公开</target>
-</trans-unit>
-<trans-unit id="s424590dc43eddb44">
-  <source>Make private</source>
-  <target>设为私密</target>
-</trans-unit>
-<trans-unit id="s17c8f8524e36987d">
-  <source>Allow notification</source>
-  <target>允许通知</target>
-</trans-unit>
 <trans-unit id="s28dcec8c25fe4ec3">
   <source>IP location</source>
   <target>IP 属地</target>
@@ -393,6 +361,58 @@
 <trans-unit id="sc592307ea80f16b9">
   <source>Unknown</source>
   <target>未知</target>
+</trans-unit>
+<trans-unit id="s80f580f4b68fb45d">
+  <source>Allow Notification</source>
+  <target>允许通知</target>
+</trans-unit>
+<trans-unit id="s95d18a3cf42dfb23">
+  <source>Verification code…</source>
+  <target>验证码…</target>
+</trans-unit>
+<trans-unit id="s967419630f92a823">
+  <source>Back to Comments</source>
+  <target>返回评论列表</target>
+</trans-unit>
+<trans-unit id="sa83d431fe6e3e2fd">
+  <source>Hide Replies</source>
+  <target>收起回复</target>
+</trans-unit>
+<trans-unit id="scdb4863b090af7a4">
+  <source>Show Replies</source>
+  <target>显示回复</target>
+</trans-unit>
+<trans-unit id="s60cfa5a63f8033a8">
+  <source>Add Reply</source>
+  <target>添加回复</target>
+</trans-unit>
+<trans-unit id="sffb4867aafe0bbda">
+  <source>No comments yet</source>
+  <target>暂无评论</target>
+</trans-unit>
+<trans-unit id="sb6990f0585fabb8a">
+  <source>Cancel Approval</source>
+  <target>取消通过</target>
+</trans-unit>
+<trans-unit id="sa96c92e537e246f8">
+  <source>Make Public</source>
+  <target>设为公开</target>
+</trans-unit>
+<trans-unit id="s7e5bf5d1b7f08ba4">
+  <source>Make Private</source>
+  <target>设为私密</target>
+</trans-unit>
+<trans-unit id="s3e9219b89d8a899b">
+  <source>View All Replies</source>
+  <target>查看全部回复</target>
+</trans-unit>
+<trans-unit id="s6ebc9bd6feae62a3">
+  <source>Loading…</source>
+  <target>加载中…</target>
+</trans-unit>
+<trans-unit id="s4d5f8e719d513987">
+  <source>In reply to</source>
+  <target>回复</target>
 </trans-unit>
 </body>
 </file>

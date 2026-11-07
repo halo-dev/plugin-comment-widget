@@ -99,3 +99,202 @@ test.each(['success', 'out-of-range', 'error'])(
     );
   }
 );
+
+test('pagination state is read from and written to the URL', async () => {
+  const requests = [];
+  const pageData = (page) => ({
+    page,
+    size: 20,
+    total: 40,
+    totalPages: 2,
+    hasNext: page < 2,
+    hasPrevious: page > 1,
+    items: [
+      {
+        metadata: { name: `page-${page}` },
+        spec: {
+          content: `page-${page}`,
+          approved: true,
+          owner: { kind: 'User', name: 'admin' },
+        },
+        owner: { displayName: 'Admin' },
+        stats: { upvote: 0 },
+      },
+    ],
+  });
+  mockApi((input) => {
+    const page = Number(
+      new URL(String(input), location.href).searchParams.get('page')
+    );
+    requests.push(page);
+    return new Response(JSON.stringify(pageData(page)), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+  history.replaceState(null, '', '?comment-page=2');
+  await import('../src/comment-list.ts');
+  const element = document.createElement('comment-list');
+  element.scrollIntoView = () => {};
+  document.body.append(element);
+  await until(() => element.comments.items[0]?.metadata.name === 'page-2');
+  assert.equal(requests[0], 2, 'A linked page must be requested initially');
+
+  const pagination = element.shadowRoot.querySelector('comment-pagination');
+  await pagination.updateComplete;
+  pagination.shadowRoot.querySelector('.pagination-trigger').click();
+  pagination.shadowRoot.querySelectorAll('.pagination-pages button')[0].click();
+  await until(() => element.comments.items[0]?.metadata.name === 'page-1');
+  assert.equal(
+    new URL(location.href).searchParams.get('comment-page'),
+    null,
+    'Returning to the first page must remove the URL parameter'
+  );
+});
+
+test('a late response after disconnect does not rewrite the URL', async () => {
+  let resolvePage2;
+  mockApi((input) => {
+    const page = Number(
+      new URL(String(input), location.href).searchParams.get('page')
+    );
+    if (page === 2) {
+      return new Promise((resolve) => {
+        resolvePage2 = () =>
+          resolve(
+            new Response(
+              JSON.stringify({
+                page: 2,
+                size: 20,
+                total: 60,
+                totalPages: 3,
+                hasNext: true,
+                hasPrevious: true,
+                items: [],
+              }),
+              { headers: { 'Content-Type': 'application/json' } }
+            )
+          );
+      });
+    }
+    return new Response(
+      JSON.stringify({
+        page,
+        size: 20,
+        total: 60,
+        totalPages: 3,
+        hasNext: true,
+        hasPrevious: false,
+        items: [],
+      }),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  });
+  await import('../src/comment-list.ts');
+  const element = document.createElement('comment-list');
+  element.scrollIntoView = () => {};
+  document.body.append(element);
+  await until(() => !element.loading);
+  const pending = element.onPageChange({ detail: { page: 2 } });
+  await until(() => resolvePage2);
+  element.remove();
+  resolvePage2();
+  await pending;
+  assert.equal(
+    new URL(location.href).searchParams.get('comment-page'),
+    null,
+    'A disconnected list must not write its page back to the URL'
+  );
+});
+
+test('a failed initial load does not show the empty state', async () => {
+  mockApi(() => new Response('{}', { status: 500 }));
+  await import('../src/comment-list.ts');
+  const element = document.createElement('comment-list');
+  element.toastManager = { error() {} };
+  document.body.append(element);
+  await until(() => element.loadFailed);
+  await element.updateComplete;
+  assert.equal(element.shadowRoot.querySelector('.comment-empty'), null);
+});
+
+test('a popstate request does not inherit the pending push intent', async () => {
+  mockApi((input) => {
+    const page = Number(
+      new URL(String(input), location.href).searchParams.get('page')
+    );
+    return Response.json({
+      page,
+      size: 20,
+      total: 0,
+      totalPages: 1,
+      hasNext: false,
+      hasPrevious: page > 1,
+      items: [],
+    });
+  });
+  await import('../src/comment-list.ts');
+  const element = document.createElement('comment-list');
+  element.scrollIntoView = () => {};
+  document.body.append(element);
+  await until(() => !element.loading);
+
+  // A page click is still in flight when the user goes Back to page 2; the
+  // server has shrunk to one page, so the request falls back to page 1.
+  element.comments.page = 4;
+  element.pageChangeShouldPush = true;
+  history.replaceState(null, '', '?comment-page=2');
+  const push = vi.spyOn(history, 'pushState');
+  element.onLocationChange();
+  await until(() => element.comments.page === 1 && !element.loading);
+
+  assert.equal(
+    push.mock.calls.length,
+    0,
+    'A popstate-driven fetch must replace the current entry, not push'
+  );
+});
+
+test('a reconnected list does not push a stale page intent', async () => {
+  let page2Calls = 0;
+  let resolveFirstPage2;
+  const list = (page) => ({
+    page,
+    size: 20,
+    total: 40,
+    totalPages: 2,
+    hasNext: page < 2,
+    hasPrevious: page > 1,
+    items: [],
+  });
+  mockApi((input) => {
+    const page = Number(
+      new URL(String(input), location.href).searchParams.get('page')
+    );
+    if (page === 2 && ++page2Calls === 1) {
+      return new Promise((resolve) => {
+        resolveFirstPage2 = () => resolve(Response.json(list(2)));
+      });
+    }
+    return Response.json(list(page));
+  });
+  await import('../src/comment-list.ts');
+  const element = document.createElement('comment-list');
+  element.scrollIntoView = () => {};
+  document.body.append(element);
+  await until(() => !element.loading);
+
+  const pending = element.onPageChange({ detail: { page: 2 } });
+  await until(() => page2Calls === 1);
+  const push = vi.spyOn(history, 'pushState');
+  element.remove();
+  document.body.append(element);
+  await until(() => element.comments.page === 2 && !element.loading);
+
+  assert.equal(
+    push.mock.calls.length,
+    0,
+    'Reconnecting must not push a page intent left over from before disconnect'
+  );
+  resolveFirstPage2();
+  await pending;
+});
