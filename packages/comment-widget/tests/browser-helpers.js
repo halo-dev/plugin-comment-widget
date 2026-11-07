@@ -1,11 +1,12 @@
 import { vi } from 'vitest';
 
-export function until(predicate) {
+export function until(predicate, timeout = 4000) {
   return vi.waitFor(
     () => {
-      if (!predicate()) throw new Error('Timed out waiting for UI');
+      if (!predicate())
+        throw new Error(`Timed out waiting for UI: ${predicate}`);
     },
-    { timeout: 4000, interval: 20 }
+    { timeout, interval: 20 }
   );
 }
 
